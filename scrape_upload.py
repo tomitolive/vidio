@@ -296,15 +296,61 @@ def decode_server_url(server_url):
         
         with sync_playwright() as p:
             browser = p.chromium.launch(headless=True)
-            page = browser.new_page(user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36')
+            
+            # Create a context with route handler to intercept video requests
+            context = browser.new_context(user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36')
+            page = context.new_page()
+            
+            video_url_found = None
+            
+            def handle_route(route):
+                nonlocal video_url_found
+                request = route.request
+                url = request.url
+                
+                # Check if this is a video file request
+                if any(ext in url.lower() for ext in ['.mp4', '.m3u8', '.ts', '.webm', '.mkv']):
+                    if not video_url_found:
+                        video_url_found = url
+                        print(f"Intercepted video URL: {url}")
+                
+                route.continue_()
+            
+            page.route('**', handle_route)
             
             try:
                 print(f"Decoding server URL: {server_url}")
-                page.goto(server_url, wait_until='networkidle')
+                page.goto(server_url, wait_until='domcontentloaded')
                 
                 # Wait for video to load
                 import time
-                time.sleep(5)
+                time.sleep(15)
+                
+                if video_url_found:
+                    print(f"Found video URL via network interception: {video_url_found}")
+                    return video_url_found
+                
+                # Fallback: Try to get page content and look for video URLs in scripts
+                page_content = page.content()
+                
+                # Look for common video URL patterns in scripts
+                import re
+                video_patterns = [
+                    r'https?://[^\s"\'<>]+\.m3u8[^\s"\'<>]*',
+                    r'https?://[^\s"\'<>]+\.mp4[^\s"\'<>]*',
+                    r'https?://[^\s"\'<>]+/video/[^\s"\'<>]*',
+                    r'"url":"([^"]+)"',
+                    r'"file":"([^"]+)"',
+                    r'"source":"([^"]+)"',
+                ]
+                
+                for pattern in video_patterns:
+                    matches = re.findall(pattern, page_content)
+                    if matches:
+                        for match in matches:
+                            if match.startswith('http'):
+                                print(f"Found video URL in page content: {match}")
+                                return match
                 
                 # Look for video element
                 video_elem = page.query_selector('video')
@@ -313,6 +359,14 @@ def decode_server_url(server_url):
                     if video_src:
                         print(f"Found direct video URL: {video_src}")
                         return video_src
+                    
+                    # Check for source children
+                    source_elems = page.query_selector_all('video source')
+                    for source in source_elems:
+                        src = source.get_attribute('src')
+                        if src:
+                            print(f"Found source URL: {src}")
+                            return src
                 
                 # Look for source elements
                 source_elems = page.query_selector_all('source')
@@ -334,6 +388,7 @@ def decode_server_url(server_url):
                 return server_url
                 
             finally:
+                context.close()
                 browser.close()
                 
     except Exception as e:
@@ -408,78 +463,29 @@ def scrape_video_url_fallback(page_url, server_preference='EarnVids'):
 
 def upload_to_earnvids(video_url, api_key, title='Video'):
     """
-    Upload video to earnvidsapi using File Upload API
+    Upload video to earnvidsapi.com using URL upload API (simpler and works with iframe URLs)
     """
     try:
-        # Step 1: Get upload server
-        print("Getting upload server...")
-        server_url = "https://earnvidsapi.com/api/upload/server"
-        server_params = {'key': api_key}
-        server_response = requests.get(server_url, params=server_params, timeout=30)
-        server_response.raise_for_status()
-        server_result = server_response.json()
+        print("Uploading to earnvids via URL...")
         
-        if server_result.get('status') != 200:
-            print(f"Failed to get upload server: {server_result.get('msg')}")
-            return None
+        # Use Upload by URL API
+        upload_url = f'https://earnvidsapi.com/api/upload/url?key={api_key}&url={video_url}'
         
-        upload_server = server_result.get('result')
-        print(f"Upload server: {upload_server}")
+        response = requests.get(upload_url, timeout=60)
+        data = response.json()
         
-        # Step 2: Download the video file
-        print("Downloading video file...")
-        video_response = requests.get(video_url, stream=True, timeout=120)
-        video_response.raise_for_status()
-        
-        # Get file size
-        file_size = int(video_response.headers.get('content-length', 0))
-        print(f"Video file size: {file_size / (1024*1024):.2f} MB")
-        
-        # Check if file is too large (earnvidsapi might have limits)
-        if file_size > 5 * 1024 * 1024 * 1024:  # 5GB limit
-            print("Error: File too large (> 5GB)")
-            return None
-        
-        # Save video to temporary file
-        import tempfile
-        import os
-        with tempfile.NamedTemporaryFile(delete=False, suffix='.mp4') as tmp_file:
-            tmp_path = tmp_file.name
-            for chunk in video_response.iter_content(chunk_size=8192):
-                if chunk:
-                    tmp_file.write(chunk)
-        
-        print(f"Video saved to: {tmp_path}")
-        
-        # Step 3: Upload the file
-        print("Uploading to earnvids...")
-        with open(tmp_path, 'rb') as video_file:
-            files = {'file': video_file}
-            data = {
-                'key': api_key,
-                'file_title': title
-            }
-            upload_response = requests.post(upload_server, files=files, data=data, timeout=300)
-            upload_response.raise_for_status()
-        
-        # Clean up temporary file
-        os.unlink(tmp_path)
-        
-        upload_result = upload_response.json()
-        
-        if upload_result.get('status') == 200:
-            files_info = upload_result.get('files', [])
-            if files_info:
-                return files_info[0]  # Return first file info
+        if data.get('status') == 200:
+            result = data.get('result', {})
+            filecode = result.get('filecode')
+            print(f"Upload initiated! File code: {filecode}")
+            print("Note: The video will be processed in the background")
+            return result
         else:
-            print(f"Upload failed: {upload_result.get('msg')}")
+            print(f"Upload failed: {data.get('msg')}")
             return None
-            
+        
     except Exception as e:
-        print(f"Upload error: {e}")
-        # Clean up temporary file if exists
-        if 'tmp_path' in locals() and os.path.exists(tmp_path):
-            os.unlink(tmp_path)
+        print(f"Error uploading to earnvids: {e}")
         return None
 
 
