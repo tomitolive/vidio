@@ -187,7 +187,23 @@ def scrape_video_url(page_url, server_preference='EarnVids'):
                 
                 # Wait a bit for JavaScript to execute
                 import time
-                time.sleep(3)
+                time.sleep(2)
+                
+                # Check if this is a details page (has fa-play button)
+                play_button = page.query_selector('.fi-play, .fa-play, i[class*="play"]')
+                
+                if play_button:
+                    print("Found play button - this is a details page")
+                    # Click the play button to navigate to watch page
+                    play_button.click()
+                    # Wait for navigation
+                    time.sleep(3)
+                    # Get the new URL (watch page)
+                    watch_url = page.url
+                    print(f"Navigated to watch page: {watch_url}")
+                else:
+                    print("No play button found - this might already be a watch page")
+                    watch_url = page_url
                 
                 # Try to find any element with data-link attribute
                 data_links = page.query_selector_all('[data-link]')
