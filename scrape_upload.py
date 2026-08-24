@@ -33,6 +33,44 @@ class ServersList:
         return iframe_url
 
 
+def scrape_category_urls(category_url):
+    """
+    Scrape all video URLs from a category page
+    """
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+    }
+    
+    try:
+        response = requests.get(category_url, headers=headers, timeout=30)
+        response.raise_for_status()
+        
+        soup = BeautifulSoup(response.text, 'html.parser')
+        
+        # Look for video links in the category page
+        # This might need adjustment based on the actual HTML structure
+        video_urls = []
+        
+        # Try to find links with common patterns
+        for link in soup.find_all('a', href=True):
+            href = link['href']
+            # Make absolute URL
+            if not href.startswith('http'):
+                href = urljoin(category_url, href)
+            
+            # Filter for video pages (adjust pattern as needed)
+            if '/مشاهدة-' in href or 'watch' in href or 'video' in href:
+                if href not in video_urls:
+                    video_urls.append(href)
+        
+        print(f"Found {len(video_urls)} video URLs in category")
+        return video_urls
+            
+    except Exception as e:
+        print(f"Error scraping category page: {e}")
+        return []
+
+
 def scrape_video_url(page_url, server_preference='EarnVids'):
     """
     Scrape the video URL from the TV10 page
@@ -128,6 +166,7 @@ def main():
     # Get parameters from environment or command line
     page_url = os.environ.get('PAGE_URL')
     api_key = os.environ.get('EARNVIDS_API_KEY')
+    server_preference = os.environ.get('SERVER_PREFERENCE', 'EarnVids')
     
     if not page_url:
         print("Error: PAGE_URL environment variable not set")
@@ -139,45 +178,123 @@ def main():
     
     print(f"Scraping URL: {page_url}")
     
-    # Step 1: Scrape the iframe URL
-    iframe_url = scrape_video_url(page_url)
-    
-    if not iframe_url:
-        print("Failed to scrape video URL")
-        sys.exit(1)
-    
-    print(f"Found iframe URL: {iframe_url}")
-    
-    # Step 2: Decode the actual video URL
-    decoder = ServersList()
-    video_url = decoder.decode_url(iframe_url)
-    
-    print(f"Video URL: {video_url}")
-    
-    # Step 3: Upload to earnvids
-    print("Uploading to earnvids...")
-    result = upload_to_earnvids(video_url, api_key)
-    
-    if result:
-        filecode = result.get('filecode')
-        print(f"Upload successful! File code: {filecode}")
+    # Check if it's a category page
+    if '/category/' in page_url:
+        print("Detected category page - scraping all videos...")
+        video_urls = scrape_category_urls(page_url)
         
-        # Save result to JSON file
+        if not video_urls:
+            print("No video URLs found in category")
+            sys.exit(1)
+        
+        print(f"Processing {len(video_urls)} videos...")
+        
+        results = []
+        for idx, video_url in enumerate(video_urls, 1):
+            print(f"\n[{idx}/{len(video_urls)}] Processing: {video_url}")
+            
+            # Scrape the iframe URL
+            iframe_url = scrape_video_url(video_url, server_preference)
+            
+            if not iframe_url:
+                print(f"Failed to scrape video URL for {video_url}")
+                results.append({
+                    'success': False,
+                    'original_url': video_url,
+                    'error': 'Failed to scrape video URL'
+                })
+                continue
+            
+            print(f"Found iframe URL: {iframe_url}")
+            
+            # Decode the actual video URL
+            decoder = ServersList()
+            decoded_url = decoder.decode_url(iframe_url)
+            
+            print(f"Video URL: {decoded_url}")
+            
+            # Upload to earnvids
+            print("Uploading to earnvids...")
+            result = upload_to_earnvids(decoded_url, api_key)
+            
+            if result:
+                filecode = result.get('filecode')
+                print(f"Upload successful! File code: {filecode}")
+                results.append({
+                    'success': True,
+                    'filecode': filecode,
+                    'original_url': video_url,
+                    'iframe_url': iframe_url,
+                    'video_url': decoded_url
+                })
+            else:
+                print("Upload failed")
+                results.append({
+                    'success': False,
+                    'original_url': video_url,
+                    'iframe_url': iframe_url,
+                    'video_url': decoded_url,
+                    'error': 'Upload failed'
+                })
+        
+        # Save all results to JSON file
         output = {
-            'success': True,
-            'filecode': filecode,
-            'original_url': page_url,
-            'iframe_url': iframe_url,
-            'video_url': video_url
+            'category_url': page_url,
+            'total_videos': len(video_urls),
+            'successful_uploads': sum(1 for r in results if r['success']),
+            'failed_uploads': sum(1 for r in results if not r['success']),
+            'results': results
         }
         
         with open('upload_result.json', 'w') as f:
             json.dump(output, f, indent=2)
         
-        print("Result saved to upload_result.json")
+        print(f"\n{'='*50}")
+        print(f"Batch processing complete!")
+        print(f"Total: {len(video_urls)} | Success: {output['successful_uploads']} | Failed: {output['failed_uploads']}")
+        print(f"Result saved to upload_result.json")
+        
     else:
-        print("Upload failed")
-        sys.exit(1)
+        # Single video page
+        # Step 1: Scrape the iframe URL
+        iframe_url = scrape_video_url(page_url, server_preference)
+        
+        if not iframe_url:
+            print("Failed to scrape video URL")
+            sys.exit(1)
+        
+        print(f"Found iframe URL: {iframe_url}")
+        
+        # Step 2: Decode the actual video URL
+        decoder = ServersList()
+        video_url = decoder.decode_url(iframe_url)
+        
+        print(f"Video URL: {video_url}")
+        
+        # Step 3: Upload to earnvids
+        print("Uploading to earnvids...")
+        result = upload_to_earnvids(video_url, api_key)
+        
+        if result:
+            filecode = result.get('filecode')
+            print(f"Upload successful! File code: {filecode}")
+            
+            # Save result to JSON file
+            output = {
+                'success': True,
+                'filecode': filecode,
+                'original_url': page_url,
+                'iframe_url': iframe_url,
+                'video_url': video_url
+            }
+            
+            with open('upload_result.json', 'w') as f:
+                json.dump(output, f, indent=2)
+            
+            print("Result saved to upload_result.json")
+        else:
+            print("Upload failed")
+            sys.exit(1)
 
 
 if __name__ == "__main__":

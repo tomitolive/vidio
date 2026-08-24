@@ -8,6 +8,7 @@ GitHub Actions workflow لاستخراج الفيديو من موقع TV10 ور�
 - دعم قائمة السيرفرات (serversList) مع اختيار السيرفر المفضل
 - رفع الفيديو تلقائيًا إلى earnvidsapi.com باستخدام API
 - حفظ النتيجة (filecode) في ملف JSON
+- **دعم صفحات التصنيفات (Category Pages)** - استخراج ورفع جميع الفيديوهات من صفحة تصنيف
 
 ## الإعداد
 
@@ -21,12 +22,25 @@ GitHub Actions workflow لاستخراج الفيديو من موقع TV10 ور�
 
 ### 2. تشغيل الـ Workflow
 
+#### لصفحة فيديو واحدة:
 1. اذهب إلى تبويب "Actions" في المستودع
 2. اختر workflow "Video Scraper & Upload"
 3. اضغط على "Run workflow"
 4. أدخل:
    - **page_url**: رابط صفحة TV10 (مثال: `https://tv10.egydead.live/...`)
    - **server_preference** (اختياري): اسم السيرفر المفضل (مثال: `EarnVids`, `Streamix`, `Voe`)
+
+#### لصفحة تصنيف (Category Page):
+1. اذهب إلى تبويب "Actions" في المستودع
+2. اختر workflow "Video Scraper & Upload"
+3. اضغط على "Run workflow"
+4. أدخل:
+   - **page_url**: رابط صفحة التصنيف (مثال: `https://tv10.egydead.live/category/english-movies/`)
+   - **server_preference** (اختياري): اسم السيرفر المفضل
+
+سيقوم الـ workflow تلقائيًا بالكشف عن نوع الصفحة ومعالجتها:
+- إذا كان الرابط يحتوي على `/category/` سيتم معالجة جميع الفيديوهات في الصفحة
+- إذا كان رابط فيديو عادي سيتم معالجة الفيديو الواحد
 
 ## السيرفرات المدعومة
 
@@ -39,6 +53,7 @@ GitHub Actions workflow لاستخراج الفيديو من موقع TV10 ور�
 
 ## النتيجة
 
+### لصفحة فيديو واحدة:
 بعد اكتمال الـ workflow:
 - سيتم حفظ النتيجة في ملف `upload_result.json` كـ artifact
 - الملف يحتوي على:
@@ -46,6 +61,16 @@ GitHub Actions workflow لاستخراج الفيديو من موقع TV10 ور�
   - `original_url`: الرابط الأصلي
   - `iframe_url`: رابط الـ iframe
   - `video_url`: رابط الفيديو
+
+### لصفحة تصنيف:
+بعد اكتمال الـ workflow:
+- سيتم حفظ النتيجة في ملف `upload_result.json` كـ artifact
+- الملف يحتوي على:
+  - `category_url`: رابط التصنيف
+  - `total_videos`: إجمالي عدد الفيديوهات
+  - `successful_uploads`: عدد الرفعات الناجحة
+  - `failed_uploads`: عدد الرفعات الفاشلة
+  - `results`: قائمة بجميع النتائج لكل فيديو
 
 ## التشغيل المحلي
 
