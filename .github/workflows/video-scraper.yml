@@ -8,10 +8,10 @@ on:
         required: true
         type: string
       server_preference:
-        description: 'Preferred server name (e.g., StreamHG, Mixdrop, Voe)'
+        description: 'Preferred server (Streamix, Voe, DoodStream, EarnVids, etc.)'
         required: false
         type: string
-        default: 'StreamHG'
+        default: 'Streamix'
       api_key:
         description: 'DoodStream API Key'
         required: true
@@ -28,13 +28,14 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.10'
+          python-version: '3.11'
       
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           playwright install chromium
+          playwright install-deps chromium
       
       - name: Run scraper
         env:
@@ -48,12 +49,12 @@ jobs:
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: upload-result
+          name: upload-result-${{ github.run_number }}
           path: upload_result.json
           retention-days: 30
       
       - name: Display result
         if: success()
         run: |
-          echo "Upload completed successfully!"
+          echo "=== Upload Result ==="
           cat upload_result.json

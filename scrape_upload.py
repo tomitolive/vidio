@@ -287,11 +287,65 @@ def scrape_video_url(page_url, server_preference='EarnVids'):
         return scrape_video_url_fallback(page_url, server_preference)
 
 
+def decode_vidaraa_url(server_url):
+    """
+    Decode video URL from vidaraa.cc using their /api/stream endpoint
+    """
+    try:
+        from urllib.parse import urlparse
+        
+        # Extract filecode from URL
+        path = urlparse(server_url).path
+        filecode = path.strip('/').split('/')[-1]
+        
+        if not filecode:
+            print("Could not extract filecode from vidaraa.cc URL")
+            return server_url
+        
+        print(f"Decoding vidaraa.cc URL, filecode: {filecode}")
+        
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Content-Type': 'application/json',
+            'Origin': 'https://vidaraa.cc',
+            'Referer': server_url,
+        }
+        
+        api_url = 'https://vidaraa.cc/api/stream'
+        resp = requests.post(api_url, 
+            json={"filecode": filecode, "device": "web"},
+            headers=headers,
+            timeout=15)
+        
+        if resp.status_code == 200:
+            data = resp.json()
+            streaming_url = data.get('streaming_url')
+            if streaming_url:
+                print(f"Found streaming URL: {streaming_url[:100]}...")
+                return streaming_url
+        
+        print(f"vidaraa.cc API returned status {resp.status_code}")
+        return server_url
+        
+    except Exception as e:
+        print(f"Error decoding vidaraa.cc URL: {e}")
+        return server_url
+
+
 def decode_server_url(server_url):
     """
-    Decode video URL from streaming server (hgcloud.to, vidaraa.cc, etc.)
-    Uses yt-dlp to extract direct video URLs
+    Decode video URL from streaming server (voe.sx, hgcloud.to, vidaraa.cc, etc.)
+    Uses yt-dlp to extract direct video URLs, falls back to Playwright
     """
+    # Handle voe.sx directly with Playwright (yt-dlp doesn't support it)
+    if 'voe.sx' in server_url:
+        print(f"voe.sx detected, using Playwright decoder...")
+        return decode_server_url_playwright(server_url)
+
+    # Handle vidaraa.cc via API (returns direct streaming URL)
+    if 'vidaraa.cc' in server_url:
+        return decode_vidaraa_url(server_url)
+
     try:
         import yt_dlp
         
@@ -343,36 +397,45 @@ def decode_server_url_playwright(server_url):
         with sync_playwright() as p:
             browser = p.chromium.launch(headless=True)
             
-            # Create a context with route handler to intercept video requests
-            context = browser.new_context(user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36')
+            context = browser.new_context(user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36')
             page = context.new_page()
             
             video_url_found = None
             
-            def handle_route(route):
+            def handle_response(response):
                 nonlocal video_url_found
-                request = route.request
-                url = request.url
+                url = response.url
+                ct = response.headers.get('content-type', '')
                 
-                # Check if this is a video file request (exclude ping/error requests)
-                if any(ext in url.lower() for ext in ['.mp4', '.m3u8', '.ts', '.webm', '.mkv']):
-                    # Exclude error/ping URLs
-                    if 'error' not in url.lower() and 'ping' not in url.lower():
+                # Check if this is a video file response
+                if any(ext in url.lower() for ext in ['.mp4', '.m3u8', '.ts', '.webm', '.mkv']) or 'video' in ct:
+                    if 'error' not in url.lower() and 'ping' not in url.lower() and 'jwpltx' not in url.lower():
                         if not video_url_found:
                             video_url_found = url
                             print(f"Intercepted video URL: {url}")
-                
-                route.continue_()
             
-            page.route('**', handle_route)
+            page.on('response', handle_response)
             
             try:
                 print(f"Decoding server URL with Playwright: {server_url}")
-                page.goto(server_url, wait_until='networkidle')
+                page.goto(server_url, wait_until='domcontentloaded', timeout=30000)
                 
-                # Wait for video to load
+                # Wait for page scripts to load
                 import time
-                time.sleep(25)
+                time.sleep(5)
+                
+                # Try clicking play button to trigger video loading
+                try:
+                    play_btn = page.query_selector('button[class*="play"], .play-btn, #play-btn, .vjs-big-play-button, button[aria-label*="Play"], .plyr__control, .jw-display-icon-play')
+                    if play_btn and play_btn.is_visible():
+                        print("Found play button, clicking...")
+                        play_btn.click()
+                        time.sleep(10)
+                except Exception:
+                    pass
+                
+                # Wait for network interception
+                time.sleep(10)
                 
                 if video_url_found:
                     print(f"Found video URL via network interception: {video_url_found}")
@@ -384,19 +447,27 @@ def decode_server_url_playwright(server_url):
                 # Look for common video URL patterns in scripts
                 import re
                 video_patterns = [
-                    r'https?://[^\s"\'<>]+\.m3u8[^\s"\'<>]*',
-                    r'https?://[^\s"\'<>]+\.mp4[^\s"\'<>]*',
-                    r'https?://[^\s"\'<>]+/video/[^\s"\'<>]*',
-                    r'"url":"([^"]+)"',
-                    r'"file":"([^"]+)"',
-                    r'"source":"([^"]+)"',
+                    r'(https?://[^\s"\'<>]+\.m3u8[^\s"\'<>]*)',
+                    r'(https?://[^\s"\'<>]+\.mp4[^\s"\'<>]*)',
+                    r'(https?://[^\s"\'<>]+/video/[^\s"\'<>]*)',
+                    r'"url"\s*:\s*"(https?://[^"]+)"',
+                    r'"file"\s*:\s*"(https?://[^"]+)"',
+                    r'"source"\s*:\s*"(https?://[^"]+)"',
+                    r"var\s+source\s*=\s*['\"]([^'\"]+)['\"]",
                 ]
+                
+                # Filter out known test/decoy URLs
+                decoy_patterns = ['test-videos.co', 'bigbuckbunny', 'jwpltx.com', 'jwpcdn.com']
                 
                 for pattern in video_patterns:
                     matches = re.findall(pattern, page_content)
                     if matches:
                         for match in matches:
                             if match.startswith('http') and 'error' not in match.lower() and 'ping' not in match.lower():
+                                # Skip decoy/test URLs
+                                if any(dp in match.lower() for dp in decoy_patterns):
+                                    print(f"Skipping decoy URL: {match}")
+                                    continue
                                 print(f"Found video URL in page content: {match}")
                                 return match
                 
@@ -540,7 +611,7 @@ def main():
     # Get parameters from environment or command line
     page_url = os.environ.get('PAGE_URL')
     api_key = os.environ.get('EARNVIDS_API_KEY')
-    server_preference = os.environ.get('SERVER_PREFERENCE', 'EarnVids')
+    server_preference = os.environ.get('SERVER_PREFERENCE', 'Streamix')
     
     if not page_url:
         print("Error: PAGE_URL environment variable not set")
