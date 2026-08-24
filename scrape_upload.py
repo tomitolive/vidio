@@ -35,7 +35,7 @@ class ServersList:
 
 def scrape_category_urls(category_url):
     """
-    Scrape all video URLs from a category page
+    Scrape all video URLs from a category page using posts-list structure
     """
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
@@ -47,21 +47,41 @@ def scrape_category_urls(category_url):
         
         soup = BeautifulSoup(response.text, 'html.parser')
         
-        # Look for video links in the category page
-        # This might need adjustment based on the actual HTML structure
+        # Look for posts-list structure
+        posts_list = soup.find('ul', class_='posts-list')
+        
         video_urls = []
         
-        # Try to find links with common patterns
-        for link in soup.find_all('a', href=True):
-            href = link['href']
-            # Make absolute URL
-            if not href.startswith('http'):
-                href = urljoin(category_url, href)
-            
-            # Filter for video pages (adjust pattern as needed)
-            if '/مشاهدة-' in href or 'watch' in href or 'video' in href:
-                if href not in video_urls:
-                    video_urls.append(href)
+        if posts_list:
+            # Extract video URLs from movieItem elements
+            for movie_item in posts_list.find_all('li', class_='movieItem'):
+                link = movie_item.find('a', href=True)
+                if link and link.get('href'):
+                    href = link['href']
+                    # Make absolute URL
+                    if not href.startswith('http'):
+                        href = urljoin(category_url, href)
+                    
+                    # Get title if available
+                    title_elem = link.find('h1', class_='BottomTitle')
+                    title = title_elem.text if title_elem else 'Unknown'
+                    
+                    video_urls.append({
+                        'url': href,
+                        'title': title
+                    })
+        else:
+            # Fallback: try to find links with common patterns
+            for link in soup.find_all('a', href=True):
+                href = link['href']
+                # Make absolute URL
+                if not href.startswith('http'):
+                    href = urljoin(category_url, href)
+                
+                # Filter for video pages (adjust pattern as needed)
+                if '/مشاهدة-' in href or 'watch' in href or 'video' in href:
+                    if href not in [v['url'] for v in video_urls]:
+                        video_urls.append({'url': href, 'title': 'Unknown'})
         
         print(f"Found {len(video_urls)} video URLs in category")
         return video_urls
@@ -181,17 +201,20 @@ def main():
     # Check if it's a category page
     if '/category/' in page_url:
         print("Detected category page - scraping all videos...")
-        video_urls = scrape_category_urls(page_url)
+        video_data = scrape_category_urls(page_url)
         
-        if not video_urls:
+        if not video_data:
             print("No video URLs found in category")
             sys.exit(1)
         
-        print(f"Processing {len(video_urls)} videos...")
+        print(f"Processing {len(video_data)} videos...")
         
         results = []
-        for idx, video_url in enumerate(video_urls, 1):
-            print(f"\n[{idx}/{len(video_urls)}] Processing: {video_url}")
+        for idx, video_info in enumerate(video_data, 1):
+            video_url = video_info['url']
+            video_title = video_info.get('title', 'Unknown')
+            print(f"\n[{idx}/{len(video_data)}] Processing: {video_title}")
+            print(f"URL: {video_url}")
             
             # Scrape the iframe URL
             iframe_url = scrape_video_url(video_url, server_preference)
@@ -200,6 +223,7 @@ def main():
                 print(f"Failed to scrape video URL for {video_url}")
                 results.append({
                     'success': False,
+                    'title': video_title,
                     'original_url': video_url,
                     'error': 'Failed to scrape video URL'
                 })
@@ -223,6 +247,7 @@ def main():
                 results.append({
                     'success': True,
                     'filecode': filecode,
+                    'title': video_title,
                     'original_url': video_url,
                     'iframe_url': iframe_url,
                     'video_url': decoded_url
@@ -231,6 +256,7 @@ def main():
                 print("Upload failed")
                 results.append({
                     'success': False,
+                    'title': video_title,
                     'original_url': video_url,
                     'iframe_url': iframe_url,
                     'video_url': decoded_url,
@@ -240,7 +266,7 @@ def main():
         # Save all results to JSON file
         output = {
             'category_url': page_url,
-            'total_videos': len(video_urls),
+            'total_videos': len(video_data),
             'successful_uploads': sum(1 for r in results if r['success']),
             'failed_uploads': sum(1 for r in results if not r['success']),
             'results': results
@@ -251,7 +277,7 @@ def main():
         
         print(f"\n{'='*50}")
         print(f"Batch processing complete!")
-        print(f"Total: {len(video_urls)} | Success: {output['successful_uploads']} | Failed: {output['failed_uploads']}")
+        print(f"Total: {len(video_data)} | Success: {output['successful_uploads']} | Failed: {output['failed_uploads']}")
         print(f"Result saved to upload_result.json")
         
     else:
