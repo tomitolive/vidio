@@ -10,6 +10,7 @@ import json
 import sys
 import os
 from urllib.parse import urljoin, urlparse
+import yt_dlp
 
 
 class ServersList:
@@ -597,12 +598,88 @@ def scrape_video_url_fallback(page_url, server_preference='EarnVids'):
 
 def upload_to_earnvids(video_url, api_key, title='Video'):
     """
-    Upload video to DoodStream using URL upload API
+    Upload video to DoodStream.
+    For direct URLs: uses remote upload API.
+    For m3u8/HLS: downloads locally first, then uploads file.
     """
-    try:
-        print("Uploading to DoodStream via URL...")
+    import tempfile
+    import subprocess
+    
+    # Check if this is an m3u8/HLS URL (token-based, expires quickly)
+    if '.m3u8' in video_url:
+        print("HLS/m3u8 URL detected - downloading locally first...")
         
-        # Upload URL directly to DoodStream
+        # Download using yt-dlp
+        with tempfile.TemporaryDirectory() as tmpdir:
+            output_path = os.path.join(tmpdir, 'video.mp4')
+            
+            try:
+                ydl_opts = {
+                    'quiet': True,
+                    'no_warnings': True,
+                    'format': 'best[ext=mp4]/best',
+                    'outtmpl': output_path,
+                    'merge_output_format': 'mp4',
+                }
+                
+                with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                    ydl.download([video_url])
+                
+                # Find the downloaded file (yt-dlp might add extension)
+                downloaded_files = [f for f in os.listdir(tmpdir) if f.endswith('.mp4')]
+                if not downloaded_files:
+                    downloaded_files = os.listdir(tmpdir)
+                
+                if not downloaded_files:
+                    print("Download failed - no file found")
+                    return None
+                
+                filepath = os.path.join(tmpdir, downloaded_files[0])
+                file_size = os.path.getsize(filepath)
+                print(f"Downloaded: {downloaded_files[0]} ({file_size / (1024*1024):.1f} MB)")
+                
+                # Get upload server
+                server_resp = requests.get(
+                    f'https://doodapi.com/api/upload/server?key={api_key}',
+                    timeout=30)
+                server_data = server_resp.json()
+                
+                if server_data.get('status') != 200:
+                    print(f"Failed to get upload server: {server_data.get('msg')}")
+                    return None
+                
+                upload_server = server_data['result']
+                print(f"Upload server: {upload_server}")
+                
+                # Upload file
+                with open(filepath, 'rb') as f:
+                    files = {'file': (downloaded_files[0], f, 'video/mp4')}
+                    data = {'api_key': api_key}
+                    
+                    upload_resp = requests.post(
+                        upload_server,
+                        data=data,
+                        files=files,
+                        timeout=600)
+                    upload_result = upload_resp.json()
+                
+                if upload_result.get('status') == 200:
+                    result = upload_result.get('result', [{}])[0]
+                    filecode = result.get('filecode')
+                    print(f"Upload successful! File code: {filecode}")
+                    return result
+                else:
+                    print(f"Upload failed: {upload_result.get('msg')}")
+                    return None
+                    
+            except Exception as e:
+                print(f"Error during download/upload: {e}")
+                return None
+    
+    # For direct URLs (mp4, etc.) - use remote upload
+    try:
+        print("Uploading to DoodStream via remote URL...")
+        
         upload_url = f'https://doodapi.com/api/upload/url?key={api_key}&url={video_url}'
         
         upload_response = requests.get(upload_url, timeout=60)
