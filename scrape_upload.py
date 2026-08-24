@@ -290,6 +290,52 @@ def scrape_video_url(page_url, server_preference='EarnVids'):
 def decode_server_url(server_url):
     """
     Decode video URL from streaming server (hgcloud.to, vidaraa.cc, etc.)
+    Uses yt-dlp to extract direct video URLs
+    """
+    try:
+        import yt_dlp
+        
+        print(f"Decoding server URL with yt-dlp: {server_url}")
+        
+        ydl_opts = {
+            'quiet': True,
+            'no_warnings': True,
+            'extract_flat': False,
+            'format': 'best',
+        }
+        
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            info = ydl.extract_info(server_url, download=False)
+            
+            if info:
+                # Get the best format URL
+                if 'formats' in info and info['formats']:
+                    # Get the best format
+                    best_format = info['formats'][0]
+                    video_url = best_format.get('url')
+                    if video_url:
+                        print(f"Found direct video URL: {video_url}")
+                        return video_url
+                
+                # Fallback to url field
+                if 'url' in info:
+                    print(f"Found video URL: {info['url']}")
+                    return info['url']
+        
+        print("Could not extract video URL with yt-dlp, returning server URL")
+        return server_url
+        
+    except ImportError:
+        print("yt-dlp not installed, falling back to Playwright...")
+        return decode_server_url_playwright(server_url)
+    except Exception as e:
+        print(f"Error decoding server URL with yt-dlp: {e}")
+        return decode_server_url_playwright(server_url)
+
+
+def decode_server_url_playwright(server_url):
+    """
+    Fallback method using Playwright to extract video URL
     """
     try:
         from playwright.sync_api import sync_playwright
@@ -308,23 +354,25 @@ def decode_server_url(server_url):
                 request = route.request
                 url = request.url
                 
-                # Check if this is a video file request
+                # Check if this is a video file request (exclude ping/error requests)
                 if any(ext in url.lower() for ext in ['.mp4', '.m3u8', '.ts', '.webm', '.mkv']):
-                    if not video_url_found:
-                        video_url_found = url
-                        print(f"Intercepted video URL: {url}")
+                    # Exclude error/ping URLs
+                    if 'error' not in url.lower() and 'ping' not in url.lower():
+                        if not video_url_found:
+                            video_url_found = url
+                            print(f"Intercepted video URL: {url}")
                 
                 route.continue_()
             
             page.route('**', handle_route)
             
             try:
-                print(f"Decoding server URL: {server_url}")
-                page.goto(server_url, wait_until='domcontentloaded')
+                print(f"Decoding server URL with Playwright: {server_url}")
+                page.goto(server_url, wait_until='networkidle')
                 
                 # Wait for video to load
                 import time
-                time.sleep(15)
+                time.sleep(25)
                 
                 if video_url_found:
                     print(f"Found video URL via network interception: {video_url_found}")
@@ -348,7 +396,7 @@ def decode_server_url(server_url):
                     matches = re.findall(pattern, page_content)
                     if matches:
                         for match in matches:
-                            if match.startswith('http'):
+                            if match.startswith('http') and 'error' not in match.lower() and 'ping' not in match.lower():
                                 print(f"Found video URL in page content: {match}")
                                 return match
                 
@@ -356,7 +404,7 @@ def decode_server_url(server_url):
                 video_elem = page.query_selector('video')
                 if video_elem:
                     video_src = video_elem.get_attribute('src')
-                    if video_src:
+                    if video_src and video_src.startswith('http'):
                         print(f"Found direct video URL: {video_src}")
                         return video_src
                     
@@ -364,7 +412,7 @@ def decode_server_url(server_url):
                     source_elems = page.query_selector_all('video source')
                     for source in source_elems:
                         src = source.get_attribute('src')
-                        if src:
+                        if src and src.startswith('http'):
                             print(f"Found source URL: {src}")
                             return src
                 
@@ -372,7 +420,7 @@ def decode_server_url(server_url):
                 source_elems = page.query_selector_all('source')
                 for source in source_elems:
                     src = source.get_attribute('src')
-                    if src:
+                    if src and src.startswith('http'):
                         print(f"Found source URL: {src}")
                         return src
                 
@@ -380,7 +428,7 @@ def decode_server_url(server_url):
                 iframe = page.query_selector('iframe')
                 if iframe:
                     iframe_src = iframe.get_attribute('src')
-                    if iframe_src:
+                    if iframe_src and iframe_src.startswith('http') and not iframe_src.startswith('javascript'):
                         print(f"Found iframe: {iframe_src}")
                         return iframe_src
                 
@@ -392,7 +440,7 @@ def decode_server_url(server_url):
                 browser.close()
                 
     except Exception as e:
-        print(f"Error decoding server URL: {e}")
+        print(f"Error decoding server URL with Playwright: {e}")
         return server_url
 
 
@@ -463,29 +511,28 @@ def scrape_video_url_fallback(page_url, server_preference='EarnVids'):
 
 def upload_to_earnvids(video_url, api_key, title='Video'):
     """
-    Upload video to earnvidsapi.com using URL upload API (simpler and works with iframe URLs)
+    Upload video to DoodStream using URL upload API
     """
     try:
-        print("Uploading to earnvids via URL...")
+        print("Uploading to DoodStream via URL...")
         
-        # Use Upload by URL API
-        upload_url = f'https://earnvidsapi.com/api/upload/url?key={api_key}&url={video_url}'
+        # Upload URL directly to DoodStream
+        upload_url = f'https://doodapi.com/api/upload/url?key={api_key}&url={video_url}'
         
-        response = requests.get(upload_url, timeout=60)
-        data = response.json()
+        upload_response = requests.get(upload_url, timeout=60)
+        upload_result = upload_response.json()
         
-        if data.get('status') == 200:
-            result = data.get('result', {})
+        if upload_result.get('status') == 200:
+            result = upload_result.get('result', {})
             filecode = result.get('filecode')
-            print(f"Upload initiated! File code: {filecode}")
-            print("Note: The video will be processed in the background")
+            print(f"Upload successful! File code: {filecode}")
             return result
         else:
-            print(f"Upload failed: {data.get('msg')}")
+            print(f"Upload failed: {upload_result.get('msg')}")
             return None
         
     except Exception as e:
-        print(f"Error uploading to earnvids: {e}")
+        print(f"Error uploading to DoodStream: {e}")
         return None
 
 

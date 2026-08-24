@@ -8,12 +8,12 @@ on:
         required: true
         type: string
       server_preference:
-        description: 'Preferred server name (e.g., EarnVids, Streamix, Voe)'
+        description: 'Preferred server name (e.g., StreamHG, Mixdrop, Voe)'
         required: false
         type: string
-        default: 'EarnVids'
+        default: 'StreamHG'
       api_key:
-        description: 'EarnVids API Key'
+        description: 'DoodStream API Key'
         required: true
         type: string
 

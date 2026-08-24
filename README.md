@@ -1,26 +1,18 @@
 # Video Scraper & Upload
 
-GitHub Actions workflow لاستخراج الفيديو من موقع TV10 ورفعه إلى earnvidsapi.com.
+GitHub Actions workflow لاستخراج الفيديو من موقع TV10 ورفعه إلى DoodStream.
 
 ## المميزات
 
 - استخراج رابط الفيديو من صفحة TV10
 - دعم قائمة السيرفرات (serversList) مع اختيار السيرفر المفضل
-- رفع الفيديو تلقائيًا إلى earnvidsapi.com باستخدام API
+- رفع الفيديو تلقائيًا إلى DoodStream باستخدام API
 - حفظ النتيجة (filecode) في ملف JSON
 - **دعم صفحات التصنيفات (Category Pages)** - استخراج ورفع جميع الفيديوهات من صفحة تصنيف
 
 ## الإعداد
 
-### 1. إضافة GitHub Secret
-
-اذهب إلى إعدادات المستودع في GitHub:
-- Settings → Secrets and variables → Actions → New repository secret
-- أضف السكرت التالي:
-  - Name: `EARNVIDS_API_KEY`
-  - Value: مفتاح API الخاص بك من earnvidsapi.com
-
-### 2. تشغيل الـ Workflow
+### 1. تشغيل الـ Workflow
 
 #### لصفحة فيديو واحدة:
 1. اذهب إلى تبويب "Actions" في المستودع
@@ -28,7 +20,8 @@ GitHub Actions workflow لاستخراج الفيديو من موقع TV10 ور�
 3. اضغط على "Run workflow"
 4. أدخل:
    - **page_url**: رابط صفحة TV10 (مثال: `https://tv10.egydead.live/...`)
-   - **server_preference** (اختياري): اسم السيرفر المفضل (مثال: `EarnVids`, `Streamix`, `Voe`)
+   - **api_key**: مفتاح API الخاص بك من DoodStream
+   - **server_preference** (اختياري): اسم السيرفر المفضل (مثال: `StreamHG`, `Mixdrop`, `Voe`)
 
 #### لصفحة تصنيف (Category Page):
 1. اذهب إلى تبويب "Actions" في المستودع
@@ -36,6 +29,7 @@ GitHub Actions workflow لاستخراج الفيديو من موقع TV10 ور�
 3. اضغط على "Run workflow"
 4. أدخل:
    - **page_url**: رابط صفحة التصنيف (مثال: `https://tv10.egydead.live/category/english-movies/`)
+   - **api_key**: مفتاح API الخاص بك من DoodStream
    - **server_preference** (اختياري): اسم السيرفر المفضل
 
 سيقوم الـ workflow تلقائيًا بالكشف عن نوع الصفحة ومعالجتها:
@@ -44,12 +38,12 @@ GitHub Actions workflow لاستخراج الفيديو من موقع TV10 ور�
 
 ## السيرفرات المدعومة
 
-- EarnVids
-- Streamix
-- Voe
-- Mixdrop
 - StreamHG
+- Mixdrop
+- Voe
+- Streamix
 - Byse
+- DoodStream
 
 ## النتيجة
 
@@ -79,7 +73,7 @@ GitHub Actions workflow لاستخراج الفيديو من موقع TV10 ور�
 ```bash
 pip install -r requirements.txt
 export PAGE_URL="https://tv10.egydead.live/..."
-export EARNVIDS_API_KEY="your_api_key"
+export EARNVIDS_API_KEY="your_doodstream_api_key"
 python scrape_upload.py
 ```
 
