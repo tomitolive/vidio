@@ -407,9 +407,18 @@ def decode_server_url_playwright(server_url):
                 url = response.url
                 ct = response.headers.get('content-type', '')
                 
+                # Exclude non-video file types
+                exclude_exts = ['.woff', '.woff2', '.ttf', '.otf', '.js', '.css', '.png', '.jpg', '.gif', '.svg', '.ico', '.json', '.xml', '.html']
+                url_lower = url.lower()
+                if any(url_lower.endswith(ext) or (ext + '?') in url_lower for ext in exclude_exts):
+                    return
+                
                 # Check if this is a video file response
-                if any(ext in url.lower() for ext in ['.mp4', '.m3u8', '.ts', '.webm', '.mkv']) or 'video' in ct:
-                    if 'error' not in url.lower() and 'ping' not in url.lower() and 'jwpltx' not in url.lower():
+                is_video_ext = any(url_lower.endswith(ext) or url_lower.endswith(ext + '/') or (ext + '?') in url_lower or f'.{ext}?' in url_lower for ext in ['.mp4', '.m3u8', '.ts', '.webm', '.mkv'])
+                is_video_ct = 'video' in ct
+                
+                if is_video_ext or is_video_ct:
+                    if 'error' not in url_lower and 'ping' not in url_lower and 'jwpltx' not in url_lower:
                         if not video_url_found:
                             video_url_found = url
                             print(f"Intercepted video URL: {url}")
@@ -456,17 +465,23 @@ def decode_server_url_playwright(server_url):
                     r"var\s+source\s*=\s*['\"]([^'\"]+)['\"]",
                 ]
                 
-                # Filter out known test/decoy URLs
+                # Filter out known test/decoy URLs and non-video files
                 decoy_patterns = ['test-videos.co', 'bigbuckbunny', 'jwpltx.com', 'jwpcdn.com']
+                non_video_exts = ['.woff', '.woff2', '.ttf', '.otf', '.js', '.css', '.png', '.jpg', '.gif', '.svg', '.ico']
                 
                 for pattern in video_patterns:
                     matches = re.findall(pattern, page_content)
                     if matches:
                         for match in matches:
                             if match.startswith('http') and 'error' not in match.lower() and 'ping' not in match.lower():
+                                match_lower = match.lower()
                                 # Skip decoy/test URLs
-                                if any(dp in match.lower() for dp in decoy_patterns):
+                                if any(dp in match_lower for dp in decoy_patterns):
                                     print(f"Skipping decoy URL: {match}")
+                                    continue
+                                # Skip non-video files
+                                if any(match_lower.endswith(ext) or (ext + '?') in match_lower for ext in non_video_exts):
+                                    print(f"Skipping non-video file: {match}")
                                     continue
                                 print(f"Found video URL in page content: {match}")
                                 return match
