@@ -287,6 +287,60 @@ def scrape_video_url(page_url, server_preference='EarnVids'):
         return scrape_video_url_fallback(page_url, server_preference)
 
 
+def decode_server_url(server_url):
+    """
+    Decode video URL from streaming server (hgcloud.to, vidaraa.cc, etc.)
+    """
+    try:
+        from playwright.sync_api import sync_playwright
+        
+        with sync_playwright() as p:
+            browser = p.chromium.launch(headless=True)
+            page = browser.new_page(user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36')
+            
+            try:
+                print(f"Decoding server URL: {server_url}")
+                page.goto(server_url, wait_until='networkidle')
+                
+                # Wait for video to load
+                import time
+                time.sleep(5)
+                
+                # Look for video element
+                video_elem = page.query_selector('video')
+                if video_elem:
+                    video_src = video_elem.get_attribute('src')
+                    if video_src:
+                        print(f"Found direct video URL: {video_src}")
+                        return video_src
+                
+                # Look for source elements
+                source_elems = page.query_selector_all('source')
+                for source in source_elems:
+                    src = source.get_attribute('src')
+                    if src:
+                        print(f"Found source URL: {src}")
+                        return src
+                
+                # Look for iframe
+                iframe = page.query_selector('iframe')
+                if iframe:
+                    iframe_src = iframe.get_attribute('src')
+                    if iframe_src:
+                        print(f"Found iframe: {iframe_src}")
+                        return iframe_src
+                
+                print("Could not extract direct video URL, returning server URL")
+                return server_url
+                
+            finally:
+                browser.close()
+                
+    except Exception as e:
+        print(f"Error decoding server URL: {e}")
+        return server_url
+
+
 def scrape_video_url_fallback(page_url, server_preference='EarnVids'):
     """
     Fallback method using requests only
@@ -478,9 +532,8 @@ def main():
             
             print(f"Found iframe URL: {iframe_url}")
             
-            # Decode the actual video URL
-            decoder = ServersList()
-            decoded_url = decoder.decode_url(iframe_url)
+            # Decode the actual video URL using server decoder
+            decoded_url = decode_server_url(iframe_url)
             
             print(f"Video URL: {decoded_url}")
             
@@ -538,9 +591,8 @@ def main():
         
         print(f"Found iframe URL: {iframe_url}")
         
-        # Step 2: Decode the actual video URL
-        decoder = ServersList()
-        video_url = decoder.decode_url(iframe_url)
+        # Step 2: Decode the actual video URL using server decoder
+        video_url = decode_server_url(iframe_url)
         
         print(f"Video URL: {video_url}")
         
