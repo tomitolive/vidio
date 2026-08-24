@@ -19,18 +19,96 @@ class ServersList:
     def decode_url(iframe_url):
         """
         Decode the actual video URL from iframe source
-        This is a placeholder - implement actual decoding logic based on the specific service
         """
-        # For vidaraa.cc and similar services, the iframe URL might need processing
-        # This is where you would add the specific decoding logic
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        }
         
-        # For now, return the iframe URL as-is (assuming it's a direct video URL)
-        # In production, you might need to:
-        # 1. Fetch the iframe page
-        # 2. Extract the actual video source from the page
-        # 3. Return the direct video URL
-        
-        return iframe_url
+        try:
+            # Handle morencius.com URLs
+            if 'morencius.com' in iframe_url:
+                print("Decoding morencius.com URL...")
+                response = requests.get(iframe_url, headers=headers, timeout=30)
+                response.raise_for_status()
+                
+                soup = BeautifulSoup(response.text, 'html.parser')
+                
+                # Look for iframe with video source
+                iframe = soup.find('iframe')
+                if iframe and iframe.get('src'):
+                    video_src = iframe['src']
+                    # Make absolute URL if needed
+                    if not video_src.startswith('http'):
+                        video_src = urljoin(iframe_url, video_src)
+                    print(f"Found video source: {video_src}")
+                    return video_src
+                
+                # Look for video source in script tags
+                for script in soup.find_all('script'):
+                    if script.string:
+                        # Try to find video URLs in the script
+                        if '.mp4' in script.string or 'source' in script.string.lower():
+                            print("Found potential video source in script")
+                            # Return the iframe URL as fallback for now
+                            return iframe_url
+                
+                # Look for video tag with src
+                video = soup.find('video')
+                if video and video.get('src'):
+                    video_src = video['src']
+                    if not video_src.startswith('http'):
+                        video_src = urljoin(iframe_url, video_src)
+                    print(f"Found video tag source: {video_src}")
+                    return video_src
+                
+                # Look for source tags inside video
+                for source in soup.find_all('source'):
+                    if source.get('src'):
+                        video_src = source['src']
+                        if not video_src.startswith('http'):
+                            video_src = urljoin(iframe_url, video_src)
+                        print(f"Found source tag: {video_src}")
+                        return video_src
+                
+                # Fallback: return iframe URL
+                print("Could not extract direct video URL, using iframe URL")
+                return iframe_url
+            
+            # Handle vidaraa.cc URLs
+            elif 'vidaraa.cc' in iframe_url:
+                print("Decoding vidaraa.cc URL...")
+                response = requests.get(iframe_url, headers=headers, timeout=30)
+                response.raise_for_status()
+                
+                soup = BeautifulSoup(response.text, 'html.parser')
+                
+                # Look for iframe with video source
+                iframe = soup.find('iframe')
+                if iframe and iframe.get('src'):
+                    video_src = iframe['src']
+                    if not video_src.startswith('http'):
+                        video_src = urljoin(iframe_url, video_src)
+                    print(f"Found video source: {video_src}")
+                    return video_src
+                
+                # Look for video tag
+                video = soup.find('video')
+                if video and video.get('src'):
+                    video_src = video['src']
+                    if not video_src.startswith('http'):
+                        video_src = urljoin(iframe_url, video_src)
+                    print(f"Found video tag source: {video_src}")
+                    return video_src
+                
+                print("Could not extract direct video URL from vidaraa.cc")
+                return iframe_url
+            
+            # For other services, return as-is
+            return iframe_url
+            
+        except Exception as e:
+            print(f"Error decoding URL: {e}")
+            return iframe_url
 
 
 def scrape_category_urls(category_url):
@@ -93,7 +171,109 @@ def scrape_category_urls(category_url):
 
 def scrape_video_url(page_url, server_preference='EarnVids'):
     """
-    Scrape the video URL from the TV10 page
+    Scrape the video URL from the TV10 page using Playwright for JavaScript-rendered content
+    """
+    try:
+        from playwright.sync_api import sync_playwright
+        
+        with sync_playwright() as p:
+            # Launch browser in headless mode
+            browser = p.chromium.launch(headless=True)
+            page = browser.new_page(user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36')
+            
+            try:
+                # Load the page
+                page.goto(page_url, wait_until='domcontentloaded')
+                
+                # Wait a bit for JavaScript to execute
+                import time
+                time.sleep(3)
+                
+                # Try to find any element with data-link attribute
+                data_links = page.query_selector_all('[data-link]')
+                
+                if data_links:
+                    print(f"Found {len(data_links)} elements with data-link attribute")
+                    servers = []
+                    for elem in data_links:
+                        link = elem.get_attribute('data-link')
+                        # Try to get the name from the element
+                        name_elem = elem.query_selector('p')
+                        name = name_elem.text_content() if name_elem else 'Unknown'
+                        servers.append({'name': name, 'link': link})
+                    
+                    print(f"Found {len(servers)} servers:")
+                    for server in servers:
+                        print(f"  - {server['name']}: {server['link']}")
+                    
+                    # Try to find preferred server (case-insensitive)
+                    for server in servers:
+                        if server_preference.lower() in server['name'].lower():
+                            print(f"Selected server: {server['name']}")
+                            return server['link']
+                    
+                    # If preferred not found, use first one
+                    if servers:
+                        print(f"Preferred server '{server_preference}' not found, using first available: {servers[0]['name']}")
+                        return servers[0]['link']
+                else:
+                    print("No elements with data-link found")
+                
+                # Get the page HTML after JavaScript execution
+                page_html = page.content()
+                soup = BeautifulSoup(page_html, 'html.parser')
+                
+                # Find serversList
+                servers_list = soup.find('ul', class_='serversList')
+                
+                if servers_list:
+                    # Extract all server links
+                    servers = []
+                    for li in servers_list.find_all('li', {'data-link': True}):
+                        server_name = li.find('p').text if li.find('p') else 'Unknown'
+                        server_link = li['data-link']
+                        servers.append({'name': server_name, 'link': server_link})
+                    
+                    print(f"Found {len(servers)} servers in HTML:")
+                    for server in servers:
+                        print(f"  - {server['name']}: {server['link']}")
+                    
+                    # Try to find preferred server (case-insensitive)
+                    for server in servers:
+                        if server_preference.lower() in server['name'].lower():
+                            print(f"Selected server: {server['name']}")
+                            return server['link']
+                    
+                    # If preferred not found, use first one
+                    if servers:
+                        print(f"Preferred server '{server_preference}' not found, using first available: {servers[0]['name']}")
+                        return servers[0]['link']
+                else:
+                    print("No serversList found even after JavaScript execution")
+                    
+                    # Fallback to iframe
+                    iframe = soup.find('iframe')
+                    if iframe and iframe.get('src'):
+                        iframe_src = iframe['src']
+                        print(f"Found iframe: {iframe_src}")
+                        return iframe_src
+                    
+                    return None
+                    
+            finally:
+                browser.close()
+                
+    except ImportError:
+        print("Playwright not installed, falling back to requests...")
+        return scrape_video_url_fallback(page_url, server_preference)
+    except Exception as e:
+        print(f"Error with Playwright: {e}")
+        return scrape_video_url_fallback(page_url, server_preference)
+
+
+def scrape_video_url_fallback(page_url, server_preference='EarnVids'):
+    """
+    Fallback method using requests only
     """
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
@@ -105,48 +285,50 @@ def scrape_video_url(page_url, server_preference='EarnVids'):
         
         soup = BeautifulSoup(response.text, 'html.parser')
         
-        # First try to find serversList
-        servers_list = soup.find('ul', class_='serversList')
+        # Extract post ID from the page
+        body = soup.find('body')
+        post_id = None
+        if body and body.get('class'):
+            for cls in body.get('class'):
+                if cls.startswith('postid-'):
+                    post_id = cls.replace('postid-', '')
+                    break
         
-        if servers_list:
-            # Extract all server links
-            servers = []
-            for li in servers_list.find_all('li', {'data-link': True}):
-                server_name = li.find('p').text if li.find('p') else 'Unknown'
-                server_link = li['data-link']
-                servers.append({'name': server_name, 'link': server_link})
-            
-            print(f"Found {len(servers)} servers:")
-            for server in servers:
-                print(f"  - {server['name']}: {server['link']}")
-            
-            # Try to find preferred server
-            for server in servers:
-                if server_preference.lower() in server['name'].lower():
-                    print(f"Selected server: {server['name']}")
-                    return server['link']
-            
-            # If preferred not found, use first one
-            if servers:
-                print(f"Using first available server: {servers[0]['name']}")
-                return servers[0]['link']
+        print(f"Post ID: {post_id}")
+        
+        # Try to load servers via Ajax
+        try:
+            ajax_url = "https://tv10.egydead.live/wp-admin/admin-ajax.php"
+            ajax_data = {
+                'action': 'get_servers',
+                'post_id': post_id
+            }
+            ajax_response = requests.post(ajax_url, data=ajax_data, headers=headers, timeout=30)
+            if ajax_response.status_code == 200 and ajax_response.text:
+                print("Ajax response received")
+                print(f"Response length: {len(ajax_response.text)}")
+                ajax_soup = BeautifulSoup(ajax_response.text, 'html.parser')
+                servers_list = ajax_soup.find('ul', class_='serversList')
+                if servers_list:
+                    print("Found serversList in Ajax response")
+        except Exception as e:
+            print(f"Ajax request failed: {e}")
         
         # Fallback: try to find iframe with video
         iframe = soup.find('iframe')
         
         if not iframe:
-            # Try to find iframe with specific attributes
             iframe = soup.find('iframe', {'src': True})
         
         if iframe and iframe.get('src'):
             iframe_src = iframe['src']
-            # Make sure it's absolute URL
             if not iframe_src.startswith('http'):
                 iframe_src = urljoin(page_url, iframe_src)
             
+            print(f"Found iframe: {iframe_src}")
             return iframe_src
         else:
-            print("No iframe or serversList found on the page")
+            print("No iframe found on the page")
             return None
             
     except Exception as e:
