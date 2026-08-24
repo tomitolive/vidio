@@ -352,31 +352,80 @@ def scrape_video_url_fallback(page_url, server_preference='EarnVids'):
         return None
 
 
-def upload_to_earnvids(video_url, api_key):
+def upload_to_earnvids(video_url, api_key, title='Video'):
     """
-    Upload video to earnvidsapi using Upload by URL API
+    Upload video to earnvidsapi using File Upload API
     """
-    upload_url = "https://earnvidsapi.com/api/upload/url"
-    
-    params = {
-        'key': api_key,
-        'url': video_url
-    }
-    
     try:
-        response = requests.get(upload_url, params=params, timeout=30)
-        response.raise_for_status()
+        # Step 1: Get upload server
+        print("Getting upload server...")
+        server_url = "https://earnvidsapi.com/api/upload/server"
+        server_params = {'key': api_key}
+        server_response = requests.get(server_url, params=server_params, timeout=30)
+        server_response.raise_for_status()
+        server_result = server_response.json()
         
-        data = response.json()
+        if server_result.get('status') != 200:
+            print(f"Failed to get upload server: {server_result.get('msg')}")
+            return None
         
-        if data.get('status') == 200:
-            return data.get('result')
+        upload_server = server_result.get('result')
+        print(f"Upload server: {upload_server}")
+        
+        # Step 2: Download the video file
+        print("Downloading video file...")
+        video_response = requests.get(video_url, stream=True, timeout=120)
+        video_response.raise_for_status()
+        
+        # Get file size
+        file_size = int(video_response.headers.get('content-length', 0))
+        print(f"Video file size: {file_size / (1024*1024):.2f} MB")
+        
+        # Check if file is too large (earnvidsapi might have limits)
+        if file_size > 5 * 1024 * 1024 * 1024:  # 5GB limit
+            print("Error: File too large (> 5GB)")
+            return None
+        
+        # Save video to temporary file
+        import tempfile
+        import os
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.mp4') as tmp_file:
+            tmp_path = tmp_file.name
+            for chunk in video_response.iter_content(chunk_size=8192):
+                if chunk:
+                    tmp_file.write(chunk)
+        
+        print(f"Video saved to: {tmp_path}")
+        
+        # Step 3: Upload the file
+        print("Uploading to earnvids...")
+        with open(tmp_path, 'rb') as video_file:
+            files = {'file': video_file}
+            data = {
+                'key': api_key,
+                'file_title': title
+            }
+            upload_response = requests.post(upload_server, files=files, data=data, timeout=300)
+            upload_response.raise_for_status()
+        
+        # Clean up temporary file
+        os.unlink(tmp_path)
+        
+        upload_result = upload_response.json()
+        
+        if upload_result.get('status') == 200:
+            files_info = upload_result.get('files', [])
+            if files_info:
+                return files_info[0]  # Return first file info
         else:
-            print(f"API Error: {data.get('msg')}")
+            print(f"Upload failed: {upload_result.get('msg')}")
             return None
             
     except Exception as e:
-        print(f"Error uploading to earnvids: {e}")
+        print(f"Upload error: {e}")
+        # Clean up temporary file if exists
+        if 'tmp_path' in locals() and os.path.exists(tmp_path):
+            os.unlink(tmp_path)
         return None
 
 
@@ -437,7 +486,7 @@ def main():
             
             # Upload to earnvids
             print("Uploading to earnvids...")
-            result = upload_to_earnvids(decoded_url, api_key)
+            result = upload_to_earnvids(decoded_url, api_key, title=video_title)
             
             if result:
                 filecode = result.get('filecode')
@@ -497,7 +546,7 @@ def main():
         
         # Step 3: Upload to earnvids
         print("Uploading to earnvids...")
-        result = upload_to_earnvids(video_url, api_key)
+        result = upload_to_earnvids(video_url, api_key, title='Video')
         
         if result:
             filecode = result.get('filecode')
