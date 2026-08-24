@@ -1,0 +1,54 @@
+name: Video Scraper & Upload
+
+on:
+  workflow_dispatch:
+    inputs:
+      page_url:
+        description: 'URL of the page to scrape (e.g., TV10 URL)'
+        required: true
+        type: string
+      server_preference:
+        description: 'Preferred server name (e.g., EarnVids, Streamix, Voe)'
+        required: false
+        type: string
+        default: 'EarnVids'
+
+jobs:
+  scrape-and-upload:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      
+      - name: Run scraper
+        env:
+          PAGE_URL: ${{ inputs.page_url }}
+          EARNVIDS_API_KEY: ${{ secrets.EARNVIDS_API_KEY }}
+          SERVER_PREFERENCE: ${{ inputs.server_preference }}
+        run: |
+          python scrape_upload.py
+      
+      - name: Upload result as artifact
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: upload-result
+          path: upload_result.json
+          retention-days: 30
+      
+      - name: Display result
+        if: success()
+        run: |
+          echo "Upload completed successfully!"
+          cat upload_result.json
