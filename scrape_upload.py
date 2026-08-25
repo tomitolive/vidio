@@ -170,6 +170,49 @@ def scrape_category_urls(category_url):
         return []
 
 
+def scrape_video_title(page_url):
+    """
+    Scrape the video title from the page using Playwright
+    Returns title like 'Predator Badlands 2025' from the page's <title> tag
+    """
+    try:
+        from playwright.sync_api import sync_playwright
+        
+        with sync_playwright() as p:
+            browser = p.chromium.launch(headless=True)
+            page = browser.new_page(user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36')
+            
+            try:
+                page.goto(page_url, wait_until='domcontentloaded', timeout=30000)
+                import time
+                time.sleep(2)
+                
+                # Get page title (e.g. "مشاهدة فيلم Predator Badlands 2025 مترجم | ايجي ديد")
+                page_title = page.title()
+                
+                # Extract movie name: remove Arabic prefix/suffix and domain
+                import re
+                # Remove Arabic text and clean up
+                title = page_title
+                # Remove everything after | or - (domain name)
+                title = re.split(r'\s*[|\-]\s*', title)[0]
+                # Remove Arabic words (Unicode range)
+                title = re.sub(r'[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]+', ' ', title)
+                # Remove common Arabic words like "مشاهدة فيلم"
+                title = re.sub(r'[\s]+', ' ', title).strip()
+                
+                if title:
+                    print(f"Scraped title: {title}")
+                    return title
+                
+                return None
+            finally:
+                browser.close()
+    except Exception as e:
+        print(f"Error scraping title: {e}")
+        return None
+
+
 def scrape_video_url(page_url, server_preference='EarnVids'):
     """
     Scrape the video URL from the TV10 page using Playwright for JavaScript-rendered content
@@ -282,6 +325,9 @@ def scrape_video_url(page_url, server_preference='EarnVids'):
                 
     except ImportError:
         print("Playwright not installed, falling back to requests...")
+        return scrape_video_url_fallback(page_url, server_preference)
+    except Exception as e:
+        print(f"Error with Playwright: {e}")
         return scrape_video_url_fallback(page_url, server_preference)
     except Exception as e:
         print(f"Error with Playwright: {e}")
@@ -818,10 +864,13 @@ def main():
         
     else:
         # Single video page
-        # Extract title from URL
-        from urllib.parse import urlparse
-        url_path = urlparse(page_url).path.strip('/')
-        video_title = url_path.replace('-', '.').replace('/', '')
+        # Scrape title from page
+        video_title = scrape_video_title(page_url)
+        if not video_title:
+            # Fallback: extract from URL
+            from urllib.parse import urlparse
+            url_path = urlparse(page_url).path.strip('/')
+            video_title = url_path.replace('-', '.').replace('/', '')
         
         # Step 1: Scrape the iframe URL
         iframe_url = scrape_video_url(page_url, server_preference)
