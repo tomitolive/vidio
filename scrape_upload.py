@@ -596,6 +596,20 @@ def scrape_video_url_fallback(page_url, server_preference='EarnVids'):
         return None
 
 
+def rename_file(api_key, filecode, title):
+    """Rename uploaded file on DoodStream"""
+    try:
+        url = f'https://doodapi.com/api/file/rename?key={api_key}&file_code={filecode}&title={title}'
+        resp = requests.get(url, timeout=15)
+        data = resp.json()
+        if data.get('status') == 200:
+            print(f"Renamed to: {title}")
+        else:
+            print(f"Rename failed: {data.get('msg')}")
+    except Exception as e:
+        print(f"Rename error: {e}")
+
+
 def upload_to_earnvids(video_url, api_key, title='Video'):
     """
     Upload video to DoodStream.
@@ -667,6 +681,9 @@ def upload_to_earnvids(video_url, api_key, title='Video'):
                     result = upload_result.get('result', [{}])[0]
                     filecode = result.get('filecode')
                     print(f"Upload successful! File code: {filecode}")
+                    # Rename file with proper title
+                    if title and filecode:
+                        rename_file(api_key, filecode, title)
                     return result
                 else:
                     print(f"Upload failed: {upload_result.get('msg')}")
@@ -689,6 +706,9 @@ def upload_to_earnvids(video_url, api_key, title='Video'):
             result = upload_result.get('result', {})
             filecode = result.get('filecode')
             print(f"Upload successful! File code: {filecode}")
+            # Rename file with proper title
+            if title and filecode:
+                rename_file(api_key, filecode, title)
             return result
         else:
             print(f"Upload failed: {upload_result.get('msg')}")
@@ -798,6 +818,11 @@ def main():
         
     else:
         # Single video page
+        # Extract title from URL
+        from urllib.parse import urlparse
+        url_path = urlparse(page_url).path.strip('/')
+        video_title = url_path.replace('-', '.').replace('/', '')
+        
         # Step 1: Scrape the iframe URL
         iframe_url = scrape_video_url(page_url, server_preference)
         
@@ -814,7 +839,7 @@ def main():
         
         # Step 3: Upload to earnvids
         print("Uploading to earnvids...")
-        result = upload_to_earnvids(video_url, api_key, title='Video')
+        result = upload_to_earnvids(video_url, api_key, title=video_title)
         
         if result:
             filecode = result.get('filecode')
