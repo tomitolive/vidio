@@ -36,6 +36,7 @@ jobs:
           pip install -r requirements.txt
           playwright install chromium
           playwright install-deps chromium
+          sudo apt-get update && sudo apt-get install -y xvfb
       
       - name: Run scraper
         env:
@@ -43,8 +44,9 @@ jobs:
           EARNVIDS_API_KEY: ${{ inputs.api_key }}
           SERVER_PREFERENCE: ${{ inputs.server_preference }}
           PROXY_URL: ${{ secrets.PROXY_URL }}
+          HEADLESS: "false"
         run: |
-          python scrape_upload.py
+          xvfb-run --auto-servernum python scrape_upload.py
       
       - name: Upload result as artifact
         if: success()

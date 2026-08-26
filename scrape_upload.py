@@ -10,6 +10,7 @@ import json
 import sys
 import os
 from urllib.parse import urljoin, urlparse
+import time
 import yt_dlp
 
 import random
@@ -51,19 +52,82 @@ def parse_playwright_proxy(proxy_url):
         return {'server': proxy_url}
 
 
+def handle_cloudflare_challenge(page, timeout=25):
+    import time
+    start = time.time()
+    if "Just a moment" in page.title() or "Cloudflare" in page.title():
+        print("Cloudflare challenge detected, waiting and attempting auto-click...")
+    else:
+        return True
+
+    while time.time() - start < timeout:
+        title = page.title()
+        if "Just a moment" not in title and "Cloudflare" not in title and title.strip():
+            print(f"Cloudflare passed! Page title: {title}")
+            return True
+        
+        # Try finding Turnstile iframe & clicking
+        try:
+            iframe = page.query_selector('iframe[src*="challenges.cloudflare.com"]')
+            if iframe:
+                box = iframe.bounding_box()
+                if box:
+                    print(f"Found Cloudflare Turnstile iframe at x={box['x']}, y={box['y']}. Clicking...")
+                    page.mouse.click(box['x'] + 35, box['y'] + 35)
+                    time.sleep(2)
+        except Exception:
+            pass
+
+        try:
+            for frame in page.frames:
+                if 'challenges.cloudflare.com' in frame.url or 'turnstile' in frame.url:
+                    cb = frame.query_selector('input[type="checkbox"], .mark, #challenge-stage, label, div[class*="checkbox"]')
+                    if cb:
+                        print("Clicking Turnstile checkbox inside frame...")
+                        cb.click()
+                        time.sleep(2)
+        except Exception:
+            pass
+
+        time.sleep(1.5)
+    return False
+
+
 def launch_stealth_browser(p, user_agent=None):
+    headless_env = os.environ.get('HEADLESS', 'true').lower() == 'true'
     launch_kwargs = {
-        'headless': True,
-        'args': ["--disable-blink-features=AutomationControlled", "--no-sandbox"]
+        'headless': headless_env,
+        'args': [
+            "--disable-blink-features=AutomationControlled",
+            "--no-sandbox",
+            "--disable-setuid-sandbox",
+            "--disable-infobars",
+            "--window-size=1920,1080"
+        ]
     }
     pw_proxy = parse_playwright_proxy(PROXY_URL)
     if pw_proxy:
         launch_kwargs['proxy'] = pw_proxy
     browser = p.chromium.launch(**launch_kwargs)
-    context_kwargs = {}
+    
+    context_kwargs = {
+        'viewport': {'width': 1920, 'height': 1080},
+        'locale': 'en-US'
+    }
     if user_agent:
         context_kwargs['user_agent'] = user_agent
+    else:
+        context_kwargs['user_agent'] = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36'
+        
     context = browser.new_context(**context_kwargs)
+    
+    context.add_init_script('''
+        Object.defineProperty(navigator, 'webdriver', {get: () => undefined});
+        window.chrome = { runtime: {} };
+        Object.defineProperty(navigator, 'languages', {get: () => ['en-US', 'en']});
+        Object.defineProperty(navigator, 'plugins', {get: () => [1, 2, 3, 4, 5]});
+    ''')
+    
     page = context.new_page()
     try:
         from playwright_stealth import stealth_sync
@@ -244,12 +308,7 @@ def scrape_video_title(page_url):
             try:
                 page.goto(page_url, wait_until='domcontentloaded', timeout=30000)
                 import time
-                if "Just a moment" in page.title() or "Cloudflare" in page.title():
-                    print("Cloudflare challenge detected, waiting...")
-                    try:
-                        page.wait_for_function('!document.title.includes("Just a moment") && !document.title.includes("Cloudflare")', timeout=20000)
-                    except Exception:
-                        pass
+                handle_cloudflare_challenge(page)
                 time.sleep(2)
                 
                 # Get page title (e.g. "مشاهدة فيلم Predator Badlands 2025 مترجم | ايجي ديد")
@@ -292,14 +351,7 @@ def scrape_video_url(page_url, server_preference='EarnVids'):
                 # Load the page
                 page.goto(page_url, wait_until='domcontentloaded')
                 
-                # Wait a bit for JavaScript to execute
-                import time
-                if "Just a moment" in page.title() or "Cloudflare" in page.title():
-                    print("Cloudflare challenge detected, waiting...")
-                    try:
-                        page.wait_for_function('!document.title.includes("Just a moment") && !document.title.includes("Cloudflare")', timeout=20000)
-                    except Exception:
-                        pass
+                handle_cloudflare_challenge(page)
                 time.sleep(2)
                 
                 # Check if this is a details page (has fa-play button)
