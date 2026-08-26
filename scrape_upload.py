@@ -52,8 +52,9 @@ def parse_playwright_proxy(proxy_url):
         return {'server': proxy_url}
 
 
-def handle_cloudflare_challenge(page, timeout=25):
+def handle_cloudflare_challenge(page, timeout=60):
     import time
+    import random
     start = time.time()
     if "Just a moment" in page.title() or "Cloudflare" in page.title():
         print("Cloudflare challenge detected, waiting and attempting auto-click...")
@@ -66,6 +67,17 @@ def handle_cloudflare_challenge(page, timeout=25):
             print(f"Cloudflare passed! Page title: {title}")
             return True
         
+        # Simulate human-like mouse movements
+        try:
+            viewport = page.viewport_size
+            if viewport:
+                x = random.randint(100, viewport['width'] - 100)
+                y = random.randint(100, viewport['height'] - 100)
+                page.mouse.move(x, y)
+                time.sleep(random.uniform(0.1, 0.3))
+        except Exception:
+            pass
+        
         # Try finding Turnstile iframe & clicking
         try:
             iframe = page.query_selector('iframe[src*="challenges.cloudflare.com"]')
@@ -74,22 +86,22 @@ def handle_cloudflare_challenge(page, timeout=25):
                 if box:
                     print(f"Found Cloudflare Turnstile iframe at x={box['x']}, y={box['y']}. Clicking...")
                     page.mouse.click(box['x'] + 35, box['y'] + 35)
-                    time.sleep(2)
+                    time.sleep(random.uniform(1.5, 2.5))
         except Exception:
             pass
 
         try:
             for frame in page.frames:
                 if 'challenges.cloudflare.com' in frame.url or 'turnstile' in frame.url:
-                    cb = frame.query_selector('input[type="checkbox"], .mark, #challenge-stage, label, div[class*="checkbox"]')
+                    cb = frame.query_selector('input[type="checkbox"], .mark, #challenge-stage, label, div[class*="checkbox"], [role="checkbox"], .recaptcha-checkbox-border')
                     if cb:
                         print("Clicking Turnstile checkbox inside frame...")
                         cb.click()
-                        time.sleep(2)
+                        time.sleep(random.uniform(1.5, 2.5))
         except Exception:
             pass
 
-        time.sleep(1.5)
+        time.sleep(random.uniform(1.0, 2.0))
     return False
 
 
@@ -102,6 +114,15 @@ def launch_stealth_browser(p, user_agent=None):
             "--no-sandbox",
             "--disable-setuid-sandbox",
             "--disable-infobars",
+            "--disable-dev-shm-usage",
+            "--disable-gpu",
+            "--no-first-run",
+            "--no-default-browser-check",
+            "--disable-background-timer-throttling",
+            "--disable-backgrounding-occluded-windows",
+            "--disable-renderer-backgrounding",
+            "--disable-features=TranslateUI",
+            "--disable-ipc-flooding-protection",
             "--window-size=1920,1080"
         ]
     }
@@ -112,7 +133,11 @@ def launch_stealth_browser(p, user_agent=None):
     
     context_kwargs = {
         'viewport': {'width': 1920, 'height': 1080},
-        'locale': 'en-US'
+        'locale': 'en-US',
+        'timezone_id': 'America/New_York',
+        'permissions': ['geolocation'],
+        'geolocation': {'latitude': 40.7128, 'longitude': -74.0060},
+        'color_scheme': 'light'
     }
     if user_agent:
         context_kwargs['user_agent'] = user_agent
@@ -123,9 +148,32 @@ def launch_stealth_browser(p, user_agent=None):
     
     context.add_init_script('''
         Object.defineProperty(navigator, 'webdriver', {get: () => undefined});
-        window.chrome = { runtime: {} };
+        Object.defineProperty(navigator, 'plugins', {get: () => [
+            {name: 'Chrome PDF Plugin', filename: 'internal-pdf-viewer'},
+            {name: 'Chrome PDF Viewer', filename: 'mhjfbmdgcfjbbpaeojofohoefgiehjai'},
+            {name: 'Native Client', filename: 'internal-nacl-plugin'}
+        ]});
         Object.defineProperty(navigator, 'languages', {get: () => ['en-US', 'en']});
-        Object.defineProperty(navigator, 'plugins', {get: () => [1, 2, 3, 4, 5]});
+        Object.defineProperty(navigator, 'platform', {get: () => 'Win32'});
+        Object.defineProperty(navigator, 'hardwareConcurrency', {get: () => 8});
+        Object.defineProperty(navigator, 'deviceMemory', {get: () => 8});
+        window.chrome = {
+            runtime: {},
+            loadTimes: function() {},
+            csi: function() {},
+            app: {}
+        };
+        Object.defineProperty(navigator, 'permissions', {
+            get: () => ({
+                query: () => Promise.resolve({state: 'granted'})
+            })
+        });
+        const originalQuery = window.navigator.permissions.query;
+        window.navigator.permissions.query = (parameters) => (
+            parameters.name === 'notifications' ?
+                Promise.resolve({state: Notification.permission}) :
+                originalQuery(parameters)
+        );
     ''')
     
     page = context.new_page()
