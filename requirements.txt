@@ -3,3 +3,4 @@ beautifulsoup4>=4.9.3
 lxml>=4.6.3
 playwright>=1.40.0
 yt-dlp>=2023.0.0
+playwright-stealth>=1.0.6

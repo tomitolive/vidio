@@ -177,14 +177,29 @@ def scrape_video_title(page_url):
     """
     try:
         from playwright.sync_api import sync_playwright
+        try:
+            from playwright_stealth import stealth_sync
+        except ImportError:
+            stealth_sync = None
         
         with sync_playwright() as p:
-            browser = p.chromium.launch(headless=True)
+            browser = p.chromium.launch(
+                headless=True,
+                args=["--disable-blink-features=AutomationControlled"]
+            )
             page = browser.new_page(user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36')
+            if stealth_sync:
+                stealth_sync(page)
             
             try:
                 page.goto(page_url, wait_until='domcontentloaded', timeout=30000)
                 import time
+                if "Just a moment" in page.title() or "Cloudflare" in page.title():
+                    print("Cloudflare challenge detected, waiting...")
+                    try:
+                        page.wait_for_function('!document.title.includes("Just a moment") && !document.title.includes("Cloudflare")', timeout=20000)
+                    except Exception:
+                        pass
                 time.sleep(2)
                 
                 # Get page title (e.g. "مشاهدة فيلم Predator Badlands 2025 مترجم | ايجي ديد")
@@ -219,11 +234,20 @@ def scrape_video_url(page_url, server_preference='EarnVids'):
     """
     try:
         from playwright.sync_api import sync_playwright
+        try:
+            from playwright_stealth import stealth_sync
+        except ImportError:
+            stealth_sync = None
         
         with sync_playwright() as p:
             # Launch browser in headless mode
-            browser = p.chromium.launch(headless=True)
+            browser = p.chromium.launch(
+                headless=True,
+                args=["--disable-blink-features=AutomationControlled"]
+            )
             page = browser.new_page(user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36')
+            if stealth_sync:
+                stealth_sync(page)
             
             try:
                 # Load the page
@@ -231,6 +255,12 @@ def scrape_video_url(page_url, server_preference='EarnVids'):
                 
                 # Wait a bit for JavaScript to execute
                 import time
+                if "Just a moment" in page.title() or "Cloudflare" in page.title():
+                    print("Cloudflare challenge detected, waiting...")
+                    try:
+                        page.wait_for_function('!document.title.includes("Just a moment") && !document.title.includes("Cloudflare")', timeout=20000)
+                    except Exception:
+                        pass
                 time.sleep(2)
                 
                 # Check if this is a details page (has fa-play button)
@@ -440,12 +470,21 @@ def decode_server_url_playwright(server_url):
     """
     try:
         from playwright.sync_api import sync_playwright
+        try:
+            from playwright_stealth import stealth_sync
+        except ImportError:
+            stealth_sync = None
         
         with sync_playwright() as p:
-            browser = p.chromium.launch(headless=True)
+            browser = p.chromium.launch(
+                headless=True,
+                args=["--disable-blink-features=AutomationControlled"]
+            )
             
             context = browser.new_context(user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36')
             page = context.new_page()
+            if stealth_sync:
+                stealth_sync(page)
             
             video_url_found = None
             
