@@ -42,7 +42,7 @@ jobs:
           PAGE_URL: ${{ inputs.page_url }}
           EARNVIDS_API_KEY: ${{ inputs.api_key }}
           SERVER_PREFERENCE: ${{ inputs.server_preference }}
-          PROXY_URL: ${{ secrets.PROXY_URL || 'http://ohzgotst:ea339u0rwqy8@p.webshare.io:80' }}
+          PROXY_URL: ${{ secrets.PROXY_URL }}
         run: |
           python scrape_upload.py
       

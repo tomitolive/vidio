@@ -12,7 +12,7 @@ import os
 from urllib.parse import urljoin, urlparse
 import yt_dlp
 
-PROXY_URL = os.environ.get('PROXY_URL', 'http://ohzgotst:ea339u0rwqy8@p.webshare.io:80')
+PROXY_URL = os.environ.get('PROXY_URL', '').strip() or None
 REQUESTS_PROXIES = {'http': PROXY_URL, 'https': PROXY_URL} if PROXY_URL else None
 
 if PROXY_URL:
