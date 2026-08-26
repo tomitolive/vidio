@@ -4,3 +4,5 @@ lxml>=4.6.3
 playwright>=1.40.0
 yt-dlp>=2023.0.0
 playwright-stealth>=1.0.6
+undetected-chromedriver>=3.5.0
+selenium>=4.0.0

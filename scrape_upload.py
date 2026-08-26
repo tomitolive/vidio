@@ -185,6 +185,209 @@ def launch_stealth_browser(p, user_agent=None):
     return browser, context, page
 
 
+def get_page_with_flaresolverr(url):
+    """
+    Get page content using flaresolverr API to bypass Cloudflare
+    """
+    try:
+        flaresolverr_url = os.environ.get('FLARESOLVERR_URL', 'http://localhost:8191/v1')
+        
+        payload = {
+            "cmd": "request.get",
+            "url": url,
+            "maxTimeout": 60000  # 60 seconds
+        }
+        
+        # Add proxy if available
+        if PROXY_URL:
+            payload["proxy"] = {
+                "http": PROXY_URL,
+                "https": PROXY_URL
+            }
+        
+        response = requests.post(flaresolverr_url, json=payload, timeout=90)
+        result = response.json()
+        
+        if result.get('status') == 'ok':
+            solution = result.get('solution', {})
+            return solution.get('response'), solution.get('url')
+        else:
+            print(f"FlareSolverr error: {result}")
+            return None, None
+            
+    except Exception as e:
+        print(f"Error with FlareSolverr: {e}")
+        return None, None
+
+
+def launch_firefox_browser():
+    """
+    Launch Firefox browser for scraping
+    """
+    try:
+        from selenium import webdriver
+        from selenium.webdriver.firefox.options import Options
+        from selenium.webdriver.common.by import By
+        
+        headless_env = os.environ.get('HEADLESS', 'true').lower() == 'true'
+        
+        options = Options()
+        
+        # Add anti-detection arguments
+        options.set_preference("dom.webdriver.enabled", False)
+        options.set_preference("useAutomationExtension", False)
+        options.add_argument("--disable-blink-features=AutomationControlled")
+        options.add_argument("--no-sandbox")
+        options.add_argument("--disable-dev-shm-usage")
+        
+        # Set headless
+        if headless_env:
+            options.add_argument("--headless")
+        
+        # Add proxy if available
+        if PROXY_URL:
+            options.set_preference("network.proxy.type", 1)
+            proxy_parts = PROXY_URL.split(':')
+            if len(proxy_parts) == 2:
+                options.set_preference("network.proxy.http", proxy_parts[0])
+                options.set_preference("network.proxy.http_port", int(proxy_parts[1]))
+                options.set_preference("network.proxy.ssl", proxy_parts[0])
+                options.set_preference("network.proxy.ssl_port", int(proxy_parts[1]))
+        
+        # Create driver
+        driver = webdriver.Firefox(options=options)
+        
+        # Set page load timeout
+        driver.set_page_load_timeout(60)
+        
+        return driver
+        
+    except Exception as e:
+        print(f"Error launching Firefox: {e}")
+        return None
+
+
+def launch_undetected_browser():
+    """
+    Launch undetected-chromedriver for better Cloudflare bypass
+    """
+    try:
+        import undetected_chromedriver as uc
+        from selenium.webdriver.common.by import By
+        from selenium.webdriver.support.ui import WebDriverWait
+        from selenium.webdriver.support import expected_conditions as EC
+        
+        headless_env = os.environ.get('HEADLESS', 'true').lower() == 'true'
+        
+        options = uc.ChromeOptions()
+        
+        # Add anti-detection arguments
+        options.add_argument("--disable-blink-features=AutomationControlled")
+        options.add_argument("--no-sandbox")
+        options.add_argument("--disable-setuid-sandbox")
+        options.add_argument("--disable-infobars")
+        options.add_argument("--disable-dev-shm-usage")
+        options.add_argument("--disable-gpu")
+        options.add_argument("--window-size=1920,1080")
+        options.add_argument("--start-maximized")
+        
+        # Set headless
+        options.headless = headless_env
+        
+        # Add proxy if available
+        if PROXY_URL:
+            options.add_argument(f"--proxy-server={PROXY_URL}")
+        
+        # Create driver (specify Chrome version 146 to match installed browser)
+        driver = uc.Chrome(options=options, version_main=146)
+        
+        # Set page load timeout
+        driver.set_page_load_timeout(60)
+        
+        return driver
+        
+    except ImportError:
+        print("undetected-chromedriver not installed, falling back to Playwright")
+        return None
+    except Exception as e:
+        print(f"Error launching undetected-chromedriver: {e}")
+        return None
+
+
+def handle_cloudflare_selenium(driver, timeout=60):
+    """
+    Handle Cloudflare challenge with Selenium/undetected-chromedriver
+    """
+    import time
+    import random
+    from selenium.webdriver.common.by import By
+    from selenium.webdriver.support.ui import WebDriverWait
+    from selenium.webdriver.support import expected_conditions as EC
+    
+    start = time.time()
+    
+    while time.time() - start < timeout:
+        try:
+            title = driver.title
+            if "Just a moment" not in title and "Cloudflare" not in title and title.strip():
+                print(f"Cloudflare passed! Page title: {title}")
+                return True
+            
+            # Simulate human-like mouse movements
+            try:
+                from selenium.webdriver.common.action_chains import ActionChains
+                actions = ActionChains(driver)
+                actions.move_by_offset(random.randint(50, 200), random.randint(50, 200))
+                actions.perform()
+                time.sleep(random.uniform(0.1, 0.3))
+            except Exception:
+                pass
+            
+            # Try to find and click Turnstile checkbox/invisible reCAPTCHA
+            try:
+                # Look for iframe with Cloudflare challenge
+                iframes = driver.find_elements(By.TAG_NAME, "iframe")
+                for iframe in iframes:
+                    if "challenges.cloudflare.com" in iframe.get_attribute("src") or "turnstile" in iframe.get_attribute("src"):
+                        driver.switch_to.frame(iframe)
+                        try:
+                            # Try various checkbox selectors
+                            selectors = [
+                                'input[type="checkbox"]',
+                                '.mark',
+                                '#challenge-stage',
+                                'label',
+                                'div[class*="checkbox"]',
+                                '[role="checkbox"]',
+                                '.recaptcha-checkbox-border'
+                            ]
+                            for selector in selectors:
+                                try:
+                                    checkbox = driver.find_element(By.CSS_SELECTOR, selector)
+                                    if checkbox.is_displayed():
+                                        print(f"Clicking Turnstile checkbox with selector: {selector}")
+                                        checkbox.click()
+                                        time.sleep(random.uniform(1.5, 2.5))
+                                        break
+                                except Exception:
+                                    continue
+                        except Exception:
+                            pass
+                        finally:
+                            driver.switch_to.default_content()
+                        break
+            except Exception:
+                pass
+            
+            time.sleep(random.uniform(1.0, 2.0))
+            
+        except Exception as e:
+            print(f"Error during Cloudflare handling: {e}")
+            time.sleep(1)
+    
+    return False
+
+
 class ServersList:
     """Class to decode video URLs from iframe sources"""
     
@@ -344,9 +547,89 @@ def scrape_category_urls(category_url):
 
 def scrape_video_title(page_url):
     """
-    Scrape the video title from the page using Playwright
+    Scrape the video title from the page using Firefox (primary), flaresolverr, undetected-chromedriver, or Playwright (fallbacks)
     Returns title like 'Predator Badlands 2025' from the page's <title> tag
     """
+    import time
+    import re
+    
+    # Try Firefox first
+    print("Using Firefox for title scraping")
+    driver = launch_firefox_browser()
+    if driver:
+        try:
+            driver.get(page_url)
+            time.sleep(5)
+            page_title = driver.title
+            title = page_title
+            title = re.split(r'\s*[|\-]\s*', title)[0]
+            title = re.sub(r'[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]+', ' ', title)
+            title = re.sub(r'[\s]+', ' ', title).strip()
+            
+            if title:
+                print(f"Scraped title: {title}")
+                driver.quit()
+                return title
+            
+            driver.quit()
+        except Exception as e:
+            print(f"Error with Firefox: {e}")
+            try:
+                driver.quit()
+            except:
+                pass
+    
+    # Try flaresolverr
+    print("Using FlareSolverr for title scraping")
+    page_content, final_url = get_page_with_flaresolverr(page_url)
+    if page_content:
+        try:
+            soup = BeautifulSoup(page_content, 'html.parser')
+            title_tag = soup.find('title')
+            if title_tag:
+                page_title = title_tag.text
+                title = page_title
+                title = re.split(r'\s*[|\-]\s*', title)[0]
+                title = re.sub(r'[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]+', ' ', title)
+                title = re.sub(r'[\s]+', ' ', title).strip()
+                
+                if title:
+                    print(f"Scraped title: {title}")
+                    return title
+        except Exception as e:
+            print(f"Error parsing FlareSolverr response: {e}")
+    
+    # Fallback to undetected-chromedriver
+    print("Falling back to undetected-chromedriver for title scraping")
+    driver = launch_undetected_browser()
+    if driver:
+        try:
+            print("Using undetected-chromedriver for title scraping")
+            driver.get(page_url)
+            
+            if handle_cloudflare_selenium(driver):
+                time.sleep(5)
+                page_title = driver.title
+                title = page_title
+                title = re.split(r'\s*[|\-]\s*', title)[0]
+                title = re.sub(r'[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]+', ' ', title)
+                title = re.sub(r'[\s]+', ' ', title).strip()
+                
+                if title:
+                    print(f"Scraped title: {title}")
+                    driver.quit()
+                    return title
+            
+            driver.quit()
+        except Exception as e:
+            print(f"Error with undetected-chromedriver: {e}")
+            try:
+                driver.quit()
+            except:
+                pass
+    
+    # Fallback to Playwright
+    print("Falling back to Playwright for title scraping")
     try:
         from playwright.sync_api import sync_playwright
         
@@ -355,22 +638,13 @@ def scrape_video_title(page_url):
             
             try:
                 page.goto(page_url, wait_until='domcontentloaded', timeout=30000)
-                import time
                 handle_cloudflare_challenge(page)
                 time.sleep(2)
                 
-                # Get page title (e.g. "مشاهدة فيلم Predator Badlands 2025 مترجم | ايجي ديد")
                 page_title = page.title()
-                
-                # Extract movie name: remove Arabic prefix/suffix and domain
-                import re
-                # Remove Arabic text and clean up
                 title = page_title
-                # Remove everything after | or - (domain name)
                 title = re.split(r'\s*[|\-]\s*', title)[0]
-                # Remove Arabic words (Unicode range)
                 title = re.sub(r'[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]+', ' ', title)
-                # Remove common Arabic words like "مشاهدة فيلم"
                 title = re.sub(r'[\s]+', ' ', title).strip()
                 
                 if title:
@@ -387,76 +661,260 @@ def scrape_video_title(page_url):
 
 def scrape_video_url(page_url, server_preference='EarnVids'):
     """
-    Scrape the video URL from the TV10 page using Playwright for JavaScript-rendered content
+    Scrape the video URL from the TV10 page using Firefox (primary), flaresolverr, undetected-chromedriver, or Playwright (fallbacks)
     """
-    try:
-        from playwright.sync_api import sync_playwright
-        
-        with sync_playwright() as p:
-            browser, context, page = launch_stealth_browser(p, user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36')
+    import time
+    from selenium.webdriver.common.by import By
+    from selenium.webdriver.support.ui import WebDriverWait
+    from selenium.webdriver.support import expected_conditions as EC
+    
+    # Try Firefox first
+    print("Using Firefox for URL scraping")
+    driver = launch_firefox_browser()
+    if driver:
+        try:
+            driver.get(page_url)
+            time.sleep(5)
             
+            # Try to find elements with data-link attribute
             try:
-                # Load the page
-                page.goto(page_url, wait_until='domcontentloaded')
-                
-                handle_cloudflare_challenge(page)
-                time.sleep(2)
-                
-                # Check if this is a details page (has fa-play button)
-                play_button = page.query_selector('.fi-play, .fa-play, i[class*="play"]')
-                
-                if play_button:
-                    print("Found play button - this is a details page")
-                    # Click the play button to navigate to watch page
-                    play_button.click()
-                    # Wait for navigation
-                    time.sleep(3)
-                    # Get the new URL (watch page)
-                    watch_url = page.url
-                    print(f"Navigated to watch page: {watch_url}")
-                else:
-                    print("No play button found - this might already be a watch page")
-                    watch_url = page_url
-                
-                # Try to find any element with data-link attribute
-                data_links = page.query_selector_all('[data-link]')
-                
+                data_links = driver.find_elements(By.CSS_SELECTOR, '[data-link]')
                 if data_links:
                     print(f"Found {len(data_links)} elements with data-link attribute")
                     servers = []
                     for elem in data_links:
                         link = elem.get_attribute('data-link')
-                        # Try to get the name from the element
-                        name_elem = elem.query_selector('p')
-                        name = name_elem.text_content() if name_elem else 'Unknown'
+                        try:
+                            name_elem = elem.find_element(By.TAG_NAME, 'p')
+                            name = name_elem.text if name_elem else 'Unknown'
+                        except Exception:
+                            name = 'Unknown'
                         servers.append({'name': name, 'link': link})
                     
                     print(f"Found {len(servers)} servers:")
                     for server in servers:
                         print(f"  - {server['name']}: {server['link']}")
                     
-                    # Try to find preferred server (case-insensitive)
                     for server in servers:
                         if server_preference.lower() in server['name'].lower():
                             print(f"Selected server: {server['name']}")
+                            driver.quit()
                             return server['link']
                     
-                    # If preferred not found, use first one
                     if servers:
                         print(f"Preferred server '{server_preference}' not found, using first available: {servers[0]['name']}")
+                        driver.quit()
                         return servers[0]['link']
-                else:
+            except Exception:
+                print("No elements with data-link found")
+            
+            # Get page HTML and look for serversList
+            time.sleep(3)
+            page_html = driver.page_source
+            soup = BeautifulSoup(page_html, 'html.parser')
+            
+            servers_list = soup.find('ul', class_='serversList')
+            if servers_list:
+                servers = []
+                for li in servers_list.find_all('li', {'data-link': True}):
+                    server_name = li.find('p').text if li.find('p') else 'Unknown'
+                    server_link = li['data-link']
+                    servers.append({'name': server_name, 'link': server_link})
+                
+                print(f"Found {len(servers)} servers in HTML:")
+                for server in servers:
+                    print(f"  - {server['name']}: {server['link']}")
+                
+                for server in servers:
+                    if server_preference.lower() in server['name'].lower():
+                        print(f"Selected server: {server['name']}")
+                        driver.quit()
+                        return server['link']
+                
+                if servers:
+                    print(f"Preferred server '{server_preference}' not found, using first available: {servers[0]['name']}")
+                    driver.quit()
+                    return servers[0]['link']
+            else:
+                print("No serversList found even after JavaScript execution")
+                
+                iframe = soup.find('iframe')
+                if iframe and iframe.get('src'):
+                    iframe_src = iframe['src']
+                    print(f"Found iframe: {iframe_src}")
+                    driver.quit()
+                    return iframe_src
+                
+                driver.quit()
+                return None
+            
+            driver.quit()
+        except Exception as e:
+            print(f"Error with Firefox: {e}")
+            try:
+                driver.quit()
+            except:
+                pass
+    
+    # Try flaresolverr
+    print("Using FlareSolverr for URL scraping")
+    page_content, final_url = get_page_with_flaresolverr(page_url)
+    if page_content:
+        try:
+            soup = BeautifulSoup(page_content, 'html.parser')
+            
+            data_links = soup.find_all(attrs={'data-link': True})
+            if data_links:
+                print(f"Found {len(data_links)} elements with data-link attribute")
+                servers = []
+                for elem in data_links:
+                    link = elem.get('data-link')
+                    name_elem = elem.find('p')
+                    name = name_elem.text if name_elem else 'Unknown'
+                    servers.append({'name': name, 'link': link})
+                
+                print(f"Found {len(servers)} servers:")
+                for server in servers:
+                    print(f"  - {server['name']}: {server['link']}")
+                
+                for server in servers:
+                    if server_preference.lower() in server['name'].lower():
+                        print(f"Selected server: {server['name']}")
+                        return server['link']
+                
+                if servers:
+                    print(f"Preferred server '{server_preference}' not found, using first available: {servers[0]['name']}")
+                    return servers[0]['link']
+            
+            servers_list = soup.find('ul', class_='serversList')
+            if servers_list:
+                servers = []
+                for li in servers_list.find_all('li', {'data-link': True}):
+                    server_name = li.find('p').text if li.find('p') else 'Unknown'
+                    server_link = li['data-link']
+                    servers.append({'name': server_name, 'link': server_link})
+                
+                print(f"Found {len(servers)} servers in HTML:")
+                for server in servers:
+                    print(f"  - {server['name']}: {server['link']}")
+                
+                for server in servers:
+                    if server_preference.lower() in server['name'].lower():
+                        print(f"Selected server: {server['name']}")
+                        return server['link']
+                
+                if servers:
+                    print(f"Preferred server '{server_preference}' not found, using first available: {servers[0]['name']}")
+                    return servers[0]['link']
+            
+            iframe = soup.find('iframe')
+            if iframe and iframe.get('src'):
+                iframe_src = iframe['src']
+                print(f"Found iframe: {iframe_src}")
+                return iframe_src
+            
+            print("No video sources found with FlareSolverr")
+        except Exception as e:
+            print(f"Error parsing FlareSolverr response: {e}")
+    
+    # Fallback to undetected-chromedriver
+    print("Falling back to undetected-chromedriver for URL scraping")
+    driver = launch_undetected_browser()
+    if driver:
+        try:
+            print("Using undetected-chromedriver for URL scraping")
+            driver.get(page_url)
+            
+            if handle_cloudflare_selenium(driver):
+                time.sleep(5)
+                
+                current_url = driver.current_url
+                print(f"Current URL after Cloudflare: {current_url}")
+                
+                page_source = driver.page_source
+                if 'chrome-error' in page_source.lower() or "This site can't be reached" in page_source:
+                    print("On error page, reloading...")
+                    driver.refresh()
+                    time.sleep(5)
+                    page_source = driver.page_source
+                    if 'chrome-error' in page_source.lower():
+                        print("Still on error page after reload, trying direct navigation...")
+                        driver.get(page_url)
+                        time.sleep(5)
+                
+                try:
+                    play_button = driver.find_element(By.CSS_SELECTOR, '.fi-play, .fa-play, i[class*="play"]')
+                    if play_button:
+                        print("Found play button - this is a details page")
+                        play_button.click()
+                        time.sleep(3)
+                        watch_url = driver.current_url
+                        print(f"Navigated to watch page: {watch_url}")
+                    else:
+                        print("No play button found - this might already be a watch page")
+                        watch_url = page_url
+                except Exception:
+                    print("No play button found - this might already be a watch page")
+                    watch_url = page_url
+                
+                try:
+                    data_links = driver.find_elements(By.CSS_SELECTOR, '[data-link]')
+                    if data_links:
+                        print(f"Found {len(data_links)} elements with data-link attribute")
+                        servers = []
+                        for elem in data_links:
+                            link = elem.get_attribute('data-link')
+                            try:
+                                name_elem = elem.find_element(By.TAG_NAME, 'p')
+                                name = name_elem.text if name_elem else 'Unknown'
+                            except Exception:
+                                name = 'Unknown'
+                            servers.append({'name': name, 'link': link})
+                        
+                        print(f"Found {len(servers)} servers:")
+                        for server in servers:
+                            print(f"  - {server['name']}: {server['link']}")
+                        
+                        for server in servers:
+                            if server_preference.lower() in server['name'].lower():
+                                print(f"Selected server: {server['name']}")
+                                driver.quit()
+                                return server['link']
+                        
+                        if servers:
+                            print(f"Preferred server '{server_preference}' not found, using first available: {servers[0]['name']}")
+                            driver.quit()
+                            return servers[0]['link']
+                except Exception:
                     print("No elements with data-link found")
                 
-                # Get the page HTML after JavaScript execution
-                page_html = page.content()
+                time.sleep(3)
+                
+                # Execute JavaScript to wait for serversList to load
+                try:
+                    driver.execute_script("""
+                        return new Promise((resolve) => {
+                            const check = () => {
+                                const list = document.querySelector('.serversList');
+                                if (list && list.children.length > 0) {
+                                    resolve(true);
+                                } else {
+                                    setTimeout(check, 500);
+                                }
+                            };
+                            check();
+                            setTimeout(() => resolve(false), 10000);
+                        });
+                    """)
+                    time.sleep(2)
+                except Exception:
+                    pass
+                
+                page_html = driver.page_source
                 soup = BeautifulSoup(page_html, 'html.parser')
                 
-                # Find serversList
                 servers_list = soup.find('ul', class_='serversList')
-                
                 if servers_list:
-                    # Extract all server links
                     servers = []
                     for li in servers_list.find_all('li', {'data-link': True}):
                         server_name = li.find('p').text if li.find('p') else 'Unknown'
@@ -467,20 +925,150 @@ def scrape_video_url(page_url, server_preference='EarnVids'):
                     for server in servers:
                         print(f"  - {server['name']}: {server['link']}")
                     
-                    # Try to find preferred server (case-insensitive)
+                    for server in servers:
+                        if server_preference.lower() in server['name'].lower():
+                            print(f"Selected server: {server['name']}")
+                            driver.quit()
+                            return server['link']
+                    
+                    if servers:
+                        print(f"Preferred server '{server_preference}' not found, using first available: {servers[0]['name']}")
+                        driver.quit()
+                        return servers[0]['link']
+                else:
+                    print("No serversList found even after JavaScript execution")
+                    print("Page HTML (first 3000 chars):", page_html[:3000])
+                    print("Looking for any li elements with data-link...")
+                    all_li = soup.find_all('li')
+                    print(f"Found {len(all_li)} li elements total")
+                    for li in all_li:
+                        if li.get('data-link'):
+                            print(f"Found li with data-link: {li.get('data-link')}")
+                    
+                    iframe = soup.find('iframe')
+                    if iframe and iframe.get('src'):
+                        iframe_src = iframe['src']
+                        print(f"Found iframe: {iframe_src}")
+                        driver.quit()
+                        return iframe_src
+                    
+                    video = soup.find('video')
+                    if video and video.get('src'):
+                        video_src = video['src']
+                        print(f"Found video src: {video_src}")
+                        driver.quit()
+                        return video_src
+                    
+                    sources = soup.find_all('source')
+                    for source in sources:
+                        if source.get('src'):
+                            source_src = source['src']
+                            print(f"Found source: {source_src}")
+                            driver.quit()
+                            return source_src
+                    
+                    for elem in soup.find_all(attrs={'data-url': True}):
+                        url = elem['data-url']
+                        if url.startswith('http'):
+                            print(f"Found data-url: {url}")
+                            driver.quit()
+                            return url
+                    
+                    for elem in soup.find_all(attrs={'data-src': True}):
+                        url = elem['data-src']
+                        if url.startswith('http'):
+                            print(f"Found data-src: {url}")
+                            driver.quit()
+                            return url
+                    
+                    driver.quit()
+                    return None
+            
+            driver.quit()
+        except Exception as e:
+            print(f"Error with undetected-chromedriver: {e}")
+            try:
+                driver.quit()
+            except:
+                pass
+    
+    # Fallback to Playwright
+    print("Falling back to Playwright for URL scraping")
+    try:
+        from playwright.sync_api import sync_playwright
+        
+        with sync_playwright() as p:
+            browser, context, page = launch_stealth_browser(p, user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36')
+            
+            try:
+                page.goto(page_url, wait_until='domcontentloaded')
+                handle_cloudflare_challenge(page)
+                time.sleep(2)
+                
+                play_button = page.query_selector('.fi-play, .fa-play, i[class*="play"]')
+                
+                if play_button:
+                    print("Found play button - this is a details page")
+                    play_button.click()
+                    time.sleep(3)
+                    watch_url = page.url
+                    print(f"Navigated to watch page: {watch_url}")
+                else:
+                    print("No play button found - this might already be a watch page")
+                    watch_url = page_url
+                
+                data_links = page.query_selector_all('[data-link]')
+                
+                if data_links:
+                    print(f"Found {len(data_links)} elements with data-link attribute")
+                    servers = []
+                    for elem in data_links:
+                        link = elem.get_attribute('data-link')
+                        name_elem = elem.query_selector('p')
+                        name = name_elem.text_content() if name_elem else 'Unknown'
+                        servers.append({'name': name, 'link': link})
+                    
+                    print(f"Found {len(servers)} servers:")
+                    for server in servers:
+                        print(f"  - {server['name']}: {server['link']}")
+                    
                     for server in servers:
                         if server_preference.lower() in server['name'].lower():
                             print(f"Selected server: {server['name']}")
                             return server['link']
                     
-                    # If preferred not found, use first one
+                    if servers:
+                        print(f"Preferred server '{server_preference}' not found, using first available: {servers[0]['name']}")
+                        return servers[0]['link']
+                else:
+                    print("No elements with data-link found")
+                
+                page_html = page.content()
+                soup = BeautifulSoup(page_html, 'html.parser')
+                
+                servers_list = soup.find('ul', class_='serversList')
+                
+                if servers_list:
+                    servers = []
+                    for li in servers_list.find_all('li', {'data-link': True}):
+                        server_name = li.find('p').text if li.find('p') else 'Unknown'
+                        server_link = li['data-link']
+                        servers.append({'name': server_name, 'link': server_link})
+                    
+                    print(f"Found {len(servers)} servers in HTML:")
+                    for server in servers:
+                        print(f"  - {server['name']}: {server['link']}")
+                    
+                    for server in servers:
+                        if server_preference.lower() in server['name'].lower():
+                            print(f"Selected server: {server['name']}")
+                            return server['link']
+                    
                     if servers:
                         print(f"Preferred server '{server_preference}' not found, using first available: {servers[0]['name']}")
                         return servers[0]['link']
                 else:
                     print("No serversList found even after JavaScript execution")
-                    
-                    # Fallback to iframe
                     iframe = soup.find('iframe')
                     if iframe and iframe.get('src'):
                         iframe_src = iframe['src']
@@ -493,12 +1081,6 @@ def scrape_video_url(page_url, server_preference='EarnVids'):
                 context.close()
                 browser.close()
                 
-    except ImportError:
-        print("Playwright not installed, falling back to requests...")
-        return scrape_video_url_fallback(page_url, server_preference)
-    except Exception as e:
-        print(f"Error with Playwright: {e}")
-        return scrape_video_url_fallback(page_url, server_preference)
     except Exception as e:
         print(f"Error with Playwright: {e}")
         return scrape_video_url_fallback(page_url, server_preference)
