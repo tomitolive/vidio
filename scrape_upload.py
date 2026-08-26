@@ -12,7 +12,22 @@ import os
 from urllib.parse import urljoin, urlparse
 import yt_dlp
 
-PROXY_URL = os.environ.get('PROXY_URL', '').strip() or None
+import random
+
+PROXIES_LIST = [
+    "http://ohzgotst:ea339u0rwqy8@31.59.20.176:6754",
+    "http://ohzgotst:ea339u0rwqy8@45.38.107.97:6014",
+    "http://ohzgotst:ea339u0rwqy8@198.105.121.200:6462",
+    "http://ohzgotst:ea339u0rwqy8@64.137.96.74:6641",
+    "http://ohzgotst:ea339u0rwqy8@198.23.243.226:6361",
+    "http://ohzgotst:ea339u0rwqy8@38.154.185.97:6370",
+    "http://ohzgotst:ea339u0rwqy8@84.247.60.125:6095",
+    "http://ohzgotst:ea339u0rwqy8@142.111.67.146:5611",
+    "http://ohzgotst:ea339u0rwqy8@191.96.254.138:6185",
+    "http://ohzgotst:ea339u0rwqy8@31.58.9.4:6077"
+]
+
+PROXY_URL = os.environ.get('PROXY_URL', '').strip() or random.choice(PROXIES_LIST)
 REQUESTS_PROXIES = {'http': PROXY_URL, 'https': PROXY_URL} if PROXY_URL else None
 
 if PROXY_URL:
@@ -20,13 +35,30 @@ if PROXY_URL:
     print(f"Using Proxy: {masked_proxy}")
 
 
+def parse_playwright_proxy(proxy_url):
+    if not proxy_url:
+        return None
+    try:
+        parsed = urlparse(proxy_url)
+        if parsed.username and parsed.password:
+            return {
+                'server': f"{parsed.scheme}://{parsed.hostname}:{parsed.port}",
+                'username': parsed.username,
+                'password': parsed.password
+            }
+        return {'server': proxy_url}
+    except Exception:
+        return {'server': proxy_url}
+
+
 def launch_stealth_browser(p, user_agent=None):
     launch_kwargs = {
         'headless': True,
-        'args': ["--disable-blink-features=AutomationControlled"]
+        'args': ["--disable-blink-features=AutomationControlled", "--no-sandbox"]
     }
-    if PROXY_URL:
-        launch_kwargs['proxy'] = {'server': PROXY_URL}
+    pw_proxy = parse_playwright_proxy(PROXY_URL)
+    if pw_proxy:
+        launch_kwargs['proxy'] = pw_proxy
     browser = p.chromium.launch(**launch_kwargs)
     context_kwargs = {}
     if user_agent:
