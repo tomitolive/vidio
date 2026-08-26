@@ -12,6 +12,14 @@ import os
 from urllib.parse import urljoin, urlparse
 import yt_dlp
 
+PROXY_URL = os.environ.get('PROXY_URL')
+PROXIES = {'http': PROXY_URL, 'https': PROXY_URL} if PROXY_URL else None
+PLAYWRIGHT_PROXY = {"server": PROXY_URL} if PROXY_URL else None
+
+if PROXY_URL:
+    masked_proxy = PROXY_URL.split('@')[-1] if '@' in PROXY_URL else PROXY_URL
+    print(f"Proxy enabled: {masked_proxy}")
+
 
 class ServersList:
     """Class to decode video URLs from iframe sources"""
@@ -29,7 +37,7 @@ class ServersList:
             # Handle morencius.com URLs
             if 'morencius.com' in iframe_url:
                 print("Decoding morencius.com URL...")
-                response = requests.get(iframe_url, headers=headers, timeout=30)
+                response = requests.get(iframe_url, headers=headers, proxies=PROXIES, timeout=30)
                 response.raise_for_status()
                 
                 soup = BeautifulSoup(response.text, 'html.parser')
@@ -121,7 +129,7 @@ def scrape_category_urls(category_url):
     }
     
     try:
-        response = requests.get(category_url, headers=headers, timeout=30)
+        response = requests.get(category_url, headers=headers, proxies=PROXIES, timeout=30)
         response.raise_for_status()
         
         soup = BeautifulSoup(response.text, 'html.parser')
@@ -183,10 +191,13 @@ def scrape_video_title(page_url):
             stealth_sync = None
         
         with sync_playwright() as p:
-            browser = p.chromium.launch(
-                headless=True,
-                args=["--disable-blink-features=AutomationControlled"]
-            )
+            launch_kwargs = {
+                "headless": True,
+                "args": ["--disable-blink-features=AutomationControlled"]
+            }
+            if PLAYWRIGHT_PROXY:
+                launch_kwargs["proxy"] = PLAYWRIGHT_PROXY
+            browser = p.chromium.launch(**launch_kwargs)
             page = browser.new_page(user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36')
             if stealth_sync:
                 stealth_sync(page)
@@ -241,10 +252,13 @@ def scrape_video_url(page_url, server_preference='EarnVids'):
         
         with sync_playwright() as p:
             # Launch browser in headless mode
-            browser = p.chromium.launch(
-                headless=True,
-                args=["--disable-blink-features=AutomationControlled"]
-            )
+            launch_kwargs = {
+                "headless": True,
+                "args": ["--disable-blink-features=AutomationControlled"]
+            }
+            if PLAYWRIGHT_PROXY:
+                launch_kwargs["proxy"] = PLAYWRIGHT_PROXY
+            browser = p.chromium.launch(**launch_kwargs)
             page = browser.new_page(user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36')
             if stealth_sync:
                 stealth_sync(page)
@@ -392,6 +406,7 @@ def decode_vidaraa_url(server_url):
         resp = requests.post(api_url, 
             json={"filecode": filecode, "device": "web"},
             headers=headers,
+            proxies=PROXIES,
             timeout=15)
         
         if resp.status_code == 200:
@@ -434,6 +449,8 @@ def decode_server_url(server_url):
             'extract_flat': False,
             'format': 'best',
         }
+        if PROXY_URL:
+            ydl_opts['proxy'] = PROXY_URL
         
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(server_url, download=False)
@@ -476,10 +493,13 @@ def decode_server_url_playwright(server_url):
             stealth_sync = None
         
         with sync_playwright() as p:
-            browser = p.chromium.launch(
-                headless=True,
-                args=["--disable-blink-features=AutomationControlled"]
-            )
+            launch_kwargs = {
+                "headless": True,
+                "args": ["--disable-blink-features=AutomationControlled"]
+            }
+            if PLAYWRIGHT_PROXY:
+                launch_kwargs["proxy"] = PLAYWRIGHT_PROXY
+            browser = p.chromium.launch(**launch_kwargs)
             
             context = browser.new_context(user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36')
             page = context.new_page()
@@ -720,6 +740,8 @@ def upload_to_earnvids(video_url, api_key, title='Video'):
                     'outtmpl': output_path,
                     'merge_output_format': 'mp4',
                 }
+                if PROXY_URL:
+                    ydl_opts['proxy'] = PROXY_URL
                 
                 with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                     ydl.download([video_url])
