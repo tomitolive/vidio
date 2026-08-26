@@ -12,13 +12,33 @@ import os
 from urllib.parse import urljoin, urlparse
 import yt_dlp
 
-PROXY_URL = os.environ.get('PROXY_URL')
-PROXIES = {'http': PROXY_URL, 'https': PROXY_URL} if PROXY_URL else None
-PLAYWRIGHT_PROXY = {"server": PROXY_URL} if PROXY_URL else None
+PROXY_URL = os.environ.get('PROXY_URL', 'http://ohzgotst:ea339u0rwqy8@p.webshare.io:80')
+REQUESTS_PROXIES = {'http': PROXY_URL, 'https': PROXY_URL} if PROXY_URL else None
 
 if PROXY_URL:
     masked_proxy = PROXY_URL.split('@')[-1] if '@' in PROXY_URL else PROXY_URL
-    print(f"Proxy enabled: {masked_proxy}")
+    print(f"Using Proxy: {masked_proxy}")
+
+
+def launch_stealth_browser(p, user_agent=None):
+    launch_kwargs = {
+        'headless': True,
+        'args': ["--disable-blink-features=AutomationControlled"]
+    }
+    if PROXY_URL:
+        launch_kwargs['proxy'] = {'server': PROXY_URL}
+    browser = p.chromium.launch(**launch_kwargs)
+    context_kwargs = {}
+    if user_agent:
+        context_kwargs['user_agent'] = user_agent
+    context = browser.new_context(**context_kwargs)
+    page = context.new_page()
+    try:
+        from playwright_stealth import stealth_sync
+        stealth_sync(page)
+    except ImportError:
+        pass
+    return browser, context, page
 
 
 class ServersList:
@@ -37,7 +57,7 @@ class ServersList:
             # Handle morencius.com URLs
             if 'morencius.com' in iframe_url:
                 print("Decoding morencius.com URL...")
-                response = requests.get(iframe_url, headers=headers, proxies=PROXIES, timeout=30)
+                response = requests.get(iframe_url, headers=headers, proxies=REQUESTS_PROXIES, timeout=30)
                 response.raise_for_status()
                 
                 soup = BeautifulSoup(response.text, 'html.parser')
@@ -86,7 +106,7 @@ class ServersList:
             # Handle vidaraa.cc URLs
             elif 'vidaraa.cc' in iframe_url:
                 print("Decoding vidaraa.cc URL...")
-                response = requests.get(iframe_url, headers=headers, timeout=30)
+                response = requests.get(iframe_url, headers=headers, proxies=REQUESTS_PROXIES, timeout=30)
                 response.raise_for_status()
                 
                 soup = BeautifulSoup(response.text, 'html.parser')
@@ -129,7 +149,7 @@ def scrape_category_urls(category_url):
     }
     
     try:
-        response = requests.get(category_url, headers=headers, proxies=PROXIES, timeout=30)
+        response = requests.get(category_url, headers=headers, proxies=REQUESTS_PROXIES, timeout=30)
         response.raise_for_status()
         
         soup = BeautifulSoup(response.text, 'html.parser')
@@ -185,22 +205,9 @@ def scrape_video_title(page_url):
     """
     try:
         from playwright.sync_api import sync_playwright
-        try:
-            from playwright_stealth import stealth_sync
-        except ImportError:
-            stealth_sync = None
         
         with sync_playwright() as p:
-            launch_kwargs = {
-                "headless": True,
-                "args": ["--disable-blink-features=AutomationControlled"]
-            }
-            if PLAYWRIGHT_PROXY:
-                launch_kwargs["proxy"] = PLAYWRIGHT_PROXY
-            browser = p.chromium.launch(**launch_kwargs)
-            page = browser.new_page(user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36')
-            if stealth_sync:
-                stealth_sync(page)
+            browser, context, page = launch_stealth_browser(p, user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36')
             
             try:
                 page.goto(page_url, wait_until='domcontentloaded', timeout=30000)
@@ -245,23 +252,9 @@ def scrape_video_url(page_url, server_preference='EarnVids'):
     """
     try:
         from playwright.sync_api import sync_playwright
-        try:
-            from playwright_stealth import stealth_sync
-        except ImportError:
-            stealth_sync = None
         
         with sync_playwright() as p:
-            # Launch browser in headless mode
-            launch_kwargs = {
-                "headless": True,
-                "args": ["--disable-blink-features=AutomationControlled"]
-            }
-            if PLAYWRIGHT_PROXY:
-                launch_kwargs["proxy"] = PLAYWRIGHT_PROXY
-            browser = p.chromium.launch(**launch_kwargs)
-            page = browser.new_page(user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36')
-            if stealth_sync:
-                stealth_sync(page)
+            browser, context, page = launch_stealth_browser(p, user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36')
             
             try:
                 # Load the page
@@ -365,6 +358,7 @@ def scrape_video_url(page_url, server_preference='EarnVids'):
                     return None
                     
             finally:
+                context.close()
                 browser.close()
                 
     except ImportError:
@@ -406,7 +400,7 @@ def decode_vidaraa_url(server_url):
         resp = requests.post(api_url, 
             json={"filecode": filecode, "device": "web"},
             headers=headers,
-            proxies=PROXIES,
+            proxies=REQUESTS_PROXIES,
             timeout=15)
         
         if resp.status_code == 200:
@@ -487,24 +481,9 @@ def decode_server_url_playwright(server_url):
     """
     try:
         from playwright.sync_api import sync_playwright
-        try:
-            from playwright_stealth import stealth_sync
-        except ImportError:
-            stealth_sync = None
         
         with sync_playwright() as p:
-            launch_kwargs = {
-                "headless": True,
-                "args": ["--disable-blink-features=AutomationControlled"]
-            }
-            if PLAYWRIGHT_PROXY:
-                launch_kwargs["proxy"] = PLAYWRIGHT_PROXY
-            browser = p.chromium.launch(**launch_kwargs)
-            
-            context = browser.new_context(user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36')
-            page = context.new_page()
-            if stealth_sync:
-                stealth_sync(page)
+            browser, context, page = launch_stealth_browser(p, user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36')
             
             video_url_found = None
             
@@ -645,7 +624,7 @@ def scrape_video_url_fallback(page_url, server_preference='EarnVids'):
     }
     
     try:
-        response = requests.get(page_url, headers=headers, timeout=30)
+        response = requests.get(page_url, headers=headers, proxies=REQUESTS_PROXIES, timeout=30)
         response.raise_for_status()
         
         soup = BeautifulSoup(response.text, 'html.parser')
@@ -668,7 +647,7 @@ def scrape_video_url_fallback(page_url, server_preference='EarnVids'):
                 'action': 'get_servers',
                 'post_id': post_id
             }
-            ajax_response = requests.post(ajax_url, data=ajax_data, headers=headers, timeout=30)
+            ajax_response = requests.post(ajax_url, data=ajax_data, headers=headers, proxies=REQUESTS_PROXIES, timeout=30)
             if ajax_response.status_code == 200 and ajax_response.text:
                 print("Ajax response received")
                 print(f"Response length: {len(ajax_response.text)}")
@@ -705,7 +684,7 @@ def rename_file(api_key, filecode, title):
     """Rename uploaded file on DoodStream"""
     try:
         url = f'https://doodapi.com/api/file/rename?key={api_key}&file_code={filecode}&title={title}'
-        resp = requests.get(url, timeout=15)
+        resp = requests.get(url, proxies=REQUESTS_PROXIES, timeout=15)
         data = resp.json()
         if data.get('status') == 200:
             print(f"Renamed to: {title}")
@@ -762,6 +741,7 @@ def upload_to_earnvids(video_url, api_key, title='Video'):
                 # Get upload server
                 server_resp = requests.get(
                     f'https://doodapi.com/api/upload/server?key={api_key}',
+                    proxies=REQUESTS_PROXIES,
                     timeout=30)
                 server_data = server_resp.json()
                 
@@ -781,6 +761,7 @@ def upload_to_earnvids(video_url, api_key, title='Video'):
                         upload_server,
                         data=data,
                         files=files,
+                        proxies=REQUESTS_PROXIES,
                         timeout=600)
                     upload_result = upload_resp.json()
                 
@@ -806,7 +787,7 @@ def upload_to_earnvids(video_url, api_key, title='Video'):
         
         upload_url = f'https://doodapi.com/api/upload/url?key={api_key}&url={video_url}'
         
-        upload_response = requests.get(upload_url, timeout=60)
+        upload_response = requests.get(upload_url, proxies=REQUESTS_PROXIES, timeout=60)
         upload_result = upload_response.json()
         
         if upload_result.get('status') == 200:

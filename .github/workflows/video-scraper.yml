@@ -16,10 +16,6 @@ on:
         description: 'DoodStream API Key'
         required: true
         type: string
-      proxy_url:
-        description: 'Proxy URL (optional, e.g. http://user:pass@host:port)'
-        required: false
-        type: string
 
 jobs:
   scrape-and-upload:
@@ -46,7 +42,7 @@ jobs:
           PAGE_URL: ${{ inputs.page_url }}
           EARNVIDS_API_KEY: ${{ inputs.api_key }}
           SERVER_PREFERENCE: ${{ inputs.server_preference }}
-          PROXY_URL: ${{ secrets.PROXY_URL || inputs.proxy_url }}
+          PROXY_URL: ${{ secrets.PROXY_URL || 'http://ohzgotst:ea339u0rwqy8@p.webshare.io:80' }}
         run: |
           python scrape_upload.py
       
