@@ -700,54 +700,87 @@ def scrape_vidsrc_movie(tmdb_id):
     """
     Extract direct video URL from VidSrc using TMDB ID
     Returns: (title_arabic, video_url)
-    Uses yt-dlp to extract the direct video URL
+    Uses Playwright to intercept network requests and extract video URL
     """
+    import time
+    
     vidsrc_url = f'https://vidsrc.sbs/embed/movie/{tmdb_id}'
     print(f"Extracting video from VidSrc for TMDB ID: {tmdb_id}")
     print(f"URL: {vidsrc_url}")
     
     try:
-        import yt_dlp
+        from playwright.sync_api import sync_playwright
         
-        ydl_opts = {
-            'quiet': True,
-            'no_warnings': True,
-            'extract_flat': False,
-            'format': 'best',
-            'socket_timeout': 60,
-            'retries': 3,
-            'fragment_retries': 3,
-        }
-        if PROXY_URL:
-            ydl_opts['proxy'] = PROXY_URL
-        
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            print("Extracting video URL with yt-dlp...")
-            info = ydl.extract_info(vidsrc_url, download=False)
+        with sync_playwright() as p:
+            browser, context, page = launch_stealth_browser(p, user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36')
             
-            if info:
-                # Get title
-                title = info.get('title', f"Movie_{tmdb_id}")
-                print(f"Found title: {title}")
+            video_url_found = None
+            title_found = None
+            
+            def handle_response(response):
+                nonlocal video_url_found
+                url = response.url
+                ct = response.headers.get('content-type', '')
                 
-                # Get the best format URL
-                if 'formats' in info and info['formats']:
-                    best_format = info['formats'][0]
-                    video_url = best_format.get('url')
-                    if video_url:
-                        print(f"Found direct video URL: {video_url[:100]}...")
-                        return title, video_url
+                # Check if this is a video file response
+                is_video_ext = any(url.lower().endswith(ext) or (ext + '?') in url.lower() for ext in ['.mp4', '.m3u8', '.ts', '.webm', '.mkv'])
+                is_video_ct = 'video' in ct
                 
-                # Fallback to url field
-                if 'url' in info:
-                    print(f"Found video URL: {info['url'][:100]}...")
-                    return title, info['url']
-        
-        print("Could not extract video URL with yt-dlp")
-        return None, None
-        
+                if is_video_ext or is_video_ct:
+                    if 'error' not in url.lower() and 'ping' not in url.lower():
+                        if not video_url_found:
+                            video_url_found = url
+                            print(f"Intercepted video URL: {url}")
+            
+            page.on('response', handle_response)
+            
+            try:
+                print("Loading VidSrc page with Playwright...")
+                page.goto(vidsrc_url, wait_until='domcontentloaded', timeout=30000)
+                time.sleep(5)
+                
+                # Get page title
+                page_title = page.title()
+                title_found = page_title.split('|')[0].split('-')[0].strip()
+                print(f"Found title: {title_found}")
+                
+                # Wait for network interception
+                time.sleep(10)
+                
+                if video_url_found:
+                    print(f"Found video URL via network interception: {video_url_found[:100]}...")
+                    return title_found or f"Movie_{tmdb_id}", video_url_found
+                
+                # Fallback: Try to get page content and look for video URLs in scripts
+                page_content = page.content()
+                
+                # Look for common video URL patterns in scripts
+                import re
+                video_patterns = [
+                    r'(https?://[^\s"\'<>]+\.m3u8[^\s"\'<>]*)',
+                    r'(https?://[^\s"\'<>]+\.mp4[^\s"\'<>]*)',
+                    r'"url"\s*:\s*"(https?://[^"]+)"',
+                    r'"file"\s*:\s*"(https?://[^"]+)"',
+                    r'"source"\s*:\s*"(https?://[^"]+)"',
+                ]
+                
+                for pattern in video_patterns:
+                    matches = re.findall(pattern, page_content)
+                    if matches:
+                        for match in matches:
+                            if match.startswith('http') and 'error' not in match.lower():
+                                print(f"Found video URL in page content: {match[:100]}...")
+                                return title_found or f"Movie_{tmdb_id}", match
+                
+                print("Could not extract direct video URL")
+                return None, None
+                
+            finally:
+                context.close()
+                browser.close()
+                
     except Exception as e:
-        print(f"Error extracting video URL with yt-dlp: {e}")
+        print(f"Error extracting video URL with Playwright: {e}")
         return None, None
 
 
