@@ -22,8 +22,8 @@ on:
         type: string
         default: 'Streamix'
       api_key:
-        description: 'DoodStream API Key (required for tv10 source, optional for vidsrc)'
-        required: false
+        description: 'DoodStream API Key (required for both tv10 and vidsrc sources)'
+        required: true
         type: string
 
 jobs:

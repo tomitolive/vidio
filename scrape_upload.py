@@ -698,13 +698,54 @@ def is_movie_processed(tmdb_id):
 
 def scrape_vidsrc_movie(tmdb_id):
     """
-    Get VidSrc embed URL from TMDB ID
-    Returns: (title_arabic, iframe_url)
-    Simply returns the VidSrc embed URL directly
+    Extract direct video URL from VidSrc using TMDB ID
+    Returns: (title_arabic, video_url)
+    Uses yt-dlp to extract the direct video URL
     """
     vidsrc_url = f'https://vidsrc.sbs/embed/movie/{tmdb_id}'
-    print(f"VidSrc embed URL for TMDB ID {tmdb_id}: {vidsrc_url}")
-    return f"Movie_{tmdb_id}", vidsrc_url
+    print(f"Extracting video from VidSrc for TMDB ID: {tmdb_id}")
+    print(f"URL: {vidsrc_url}")
+    
+    try:
+        import yt_dlp
+        
+        ydl_opts = {
+            'quiet': True,
+            'no_warnings': True,
+            'extract_flat': False,
+            'format': 'best',
+        }
+        if PROXY_URL:
+            ydl_opts['proxy'] = PROXY_URL
+        
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            print("Extracting video URL with yt-dlp...")
+            info = ydl.extract_info(vidsrc_url, download=False)
+            
+            if info:
+                # Get title
+                title = info.get('title', f"Movie_{tmdb_id}")
+                print(f"Found title: {title}")
+                
+                # Get the best format URL
+                if 'formats' in info and info['formats']:
+                    best_format = info['formats'][0]
+                    video_url = best_format.get('url')
+                    if video_url:
+                        print(f"Found direct video URL: {video_url[:100]}...")
+                        return title, video_url
+                
+                # Fallback to url field
+                if 'url' in info:
+                    print(f"Found video URL: {info['url'][:100]}...")
+                    return title, info['url']
+        
+        print("Could not extract video URL with yt-dlp")
+        return None, None
+        
+    except Exception as e:
+        print(f"Error extracting video URL with yt-dlp: {e}")
+        return None, None
 
 
 def scrape_video_url(page_url, server_preference='EarnVids'):
@@ -1588,6 +1629,10 @@ def main():
             print("Error: TMDB_ID environment variable not set for VidSrc source")
             sys.exit(1)
         
+        if not api_key:
+            print("Error: EARNVIDS_API_KEY environment variable not set for VidSrc source")
+            sys.exit(1)
+        
         print(f"Processing VidSrc movie with TMDB ID: {tmdb_id}")
         
         # Check if already processed
@@ -1595,31 +1640,44 @@ def main():
             print(f"TMDB ID {tmdb_id} already processed, skipping")
             sys.exit(0)
         
-        # Get VidSrc embed URL
-        video_title, iframe_url = scrape_vidsrc_movie(tmdb_id)
+        # Extract video URL from VidSrc
+        video_title, video_url = scrape_vidsrc_movie(tmdb_id)
         
-        if not iframe_url:
-            print("Failed to get VidSrc embed URL")
+        if not video_url:
+            print("Failed to extract video URL from VidSrc")
             sys.exit(1)
         
-        print(f"VidSrc iframe URL: {iframe_url}")
+        print(f"Video URL: {video_url}")
         
-        # Save as processed
-        save_processed_movie(tmdb_id)
+        # Upload to DoodStream
+        print("Uploading to DoodStream...")
+        result = upload_to_earnvids(video_url, api_key, title=video_title or f"Movie_{tmdb_id}")
         
-        # Save result to JSON file
-        output = {
-            'success': True,
-            'tmdb_id': tmdb_id,
-            'title': video_title,
-            'iframe_url': iframe_url,
-            'embed_code': f'<iframe src="{iframe_url}" allowfullscreen></iframe>'
-        }
+        if result:
+            filecode = result.get('filecode')
+            print(f"Upload successful! File code: {filecode}")
+            
+            # Save as processed
+            save_processed_movie(tmdb_id)
+            
+            # Save result to JSON file
+            output = {
+                'success': True,
+                'filecode': filecode,
+                'tmdb_id': tmdb_id,
+                'title': video_title,
+                'original_url': f'https://vidsrc.sbs/embed/movie/{tmdb_id}',
+                'video_url': video_url
+            }
+            
+            with open('upload_result.json', 'w') as f:
+                json.dump(output, f, indent=2)
+            
+            print("Result saved to upload_result.json")
+        else:
+            print("Upload failed")
+            sys.exit(1)
         
-        with open('upload_result.json', 'w') as f:
-            json.dump(output, f, indent=2)
-        
-        print("Result saved to upload_result.json")
         return
     
     # Handle TV10 source (original logic)

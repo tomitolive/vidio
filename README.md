@@ -23,10 +23,11 @@ GitHub Actions workflow لاستخراج الفيديو من موقع TV10 ور�
 4. أدخل:
    - **source**: `vidsrc`
    - **tmdb_id**: معرف TMDB للفيلم (مثال: `533535`)
+   - **api_key**: مفتاح API الخاص بك من DoodStream
 
 سيقوم النظام بـ:
-- إنشاء رابط VidSrc embed من TMDB ID
-- حفظ الرابط في ملف JSON
+- استخراج الفيلم من VidSrc باستخدام TMDB ID
+- رفع الفيديو تلقائيًا إلى DoodStream
 - حفظ TMDB ID في ملف التتبع لتجنب التكرار
 
 #### لصفحة فيديو واحدة من TV10:
@@ -92,6 +93,7 @@ GitHub Actions workflow لاستخراج الفيديو من موقع TV10 ور�
 pip install -r requirements.txt
 export SOURCE="vidsrc"
 export TMDB_ID="533535"
+export EARNVIDS_API_KEY="your_doodstream_api_key"
 python scrape_upload.py
 ```
 
