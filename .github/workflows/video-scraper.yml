@@ -3,9 +3,18 @@ name: Video Scraper & Upload
 on:
   workflow_dispatch:
     inputs:
+      source:
+        description: 'Source type (tv10 or vidsrc)'
+        required: false
+        type: string
+        default: 'tv10'
       page_url:
-        description: 'URL of the page to scrape (e.g., TV10 URL)'
-        required: true
+        description: 'URL of the page to scrape (for tv10 source)'
+        required: false
+        type: string
+      tmdb_id:
+        description: 'TMDB ID of the movie (for vidsrc source)'
+        required: false
         type: string
       server_preference:
         description: 'Preferred server (Streamix, Voe, DoodStream, EarnVids, etc.)'
@@ -13,8 +22,8 @@ on:
         type: string
         default: 'Streamix'
       api_key:
-        description: 'DoodStream API Key'
-        required: true
+        description: 'DoodStream API Key (required for tv10 source, optional for vidsrc)'
+        required: false
         type: string
 
 jobs:
@@ -45,7 +54,9 @@ jobs:
       
       - name: Run scraper
         env:
+          SOURCE: ${{ inputs.source }}
           PAGE_URL: ${{ inputs.page_url }}
+          TMDB_ID: ${{ inputs.tmdb_id }}
           EARNVIDS_API_KEY: ${{ inputs.api_key }}
           SERVER_PREFERENCE: ${{ inputs.server_preference }}
           PROXY_URL: ${{ secrets.PROXY_URL }}
@@ -58,7 +69,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: upload-result-${{ github.run_number }}
-          path: upload_result.json
+          path: |
+            upload_result.json
+            processed_movies.json
           retention-days: 30
       
       - name: Display result

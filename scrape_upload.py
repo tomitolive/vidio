@@ -659,6 +659,54 @@ def scrape_video_title(page_url):
         return None
 
 
+def load_processed_movies():
+    """Load processed TMDB IDs from JSON file"""
+    try:
+        if os.path.exists('processed_movies.json'):
+            with open('processed_movies.json', 'r') as f:
+                data = json.load(f)
+                return set(data.get('processed_ids', []))
+    except Exception as e:
+        print(f"Error loading processed movies: {e}")
+    return set()
+
+
+def save_processed_movie(tmdb_id):
+    """Save a processed TMDB ID to JSON file"""
+    try:
+        processed_ids = load_processed_movies()
+        processed_ids.add(str(tmdb_id))
+        
+        data = {
+            'processed_ids': list(processed_ids),
+            'last_updated': time.strftime('%Y-%m-%d %H:%M:%S')
+        }
+        
+        with open('processed_movies.json', 'w') as f:
+            json.dump(data, f, indent=2)
+        
+        print(f"Saved TMDB ID {tmdb_id} to processed movies")
+    except Exception as e:
+        print(f"Error saving processed movie: {e}")
+
+
+def is_movie_processed(tmdb_id):
+    """Check if a TMDB ID has already been processed"""
+    processed_ids = load_processed_movies()
+    return str(tmdb_id) in processed_ids
+
+
+def scrape_vidsrc_movie(tmdb_id):
+    """
+    Get VidSrc embed URL from TMDB ID
+    Returns: (title_arabic, iframe_url)
+    Simply returns the VidSrc embed URL directly
+    """
+    vidsrc_url = f'https://vidsrc.sbs/embed/movie/{tmdb_id}'
+    print(f"VidSrc embed URL for TMDB ID {tmdb_id}: {vidsrc_url}")
+    return f"Movie_{tmdb_id}", vidsrc_url
+
+
 def scrape_video_url(page_url, server_preference='EarnVids'):
     """
     Scrape the video URL from the TV10 page using Firefox (primary), flaresolverr, undetected-chromedriver, or Playwright (fallbacks)
@@ -1524,15 +1572,59 @@ def upload_to_earnvids(video_url, api_key, title='Video'):
 def main():
     # Get parameters from environment or command line
     page_url = os.environ.get('PAGE_URL')
+    tmdb_id = os.environ.get('TMDB_ID')
+    source = os.environ.get('SOURCE', 'tv10')  # 'tv10' or 'vidsrc'
     api_key = os.environ.get('EARNVIDS_API_KEY')
     server_preference = os.environ.get('SERVER_PREFERENCE', 'Streamix')
     
-    if not page_url:
-        print("Error: PAGE_URL environment variable not set")
+    # API key is only required for TV10 source
+    if source == 'tv10' and not api_key:
+        print("Error: EARNVIDS_API_KEY environment variable not set for TV10 source")
         sys.exit(1)
     
-    if not api_key:
-        print("Error: EARNVIDS_API_KEY environment variable not set")
+    # Handle VidSrc source
+    if source == 'vidsrc':
+        if not tmdb_id:
+            print("Error: TMDB_ID environment variable not set for VidSrc source")
+            sys.exit(1)
+        
+        print(f"Processing VidSrc movie with TMDB ID: {tmdb_id}")
+        
+        # Check if already processed
+        if is_movie_processed(tmdb_id):
+            print(f"TMDB ID {tmdb_id} already processed, skipping")
+            sys.exit(0)
+        
+        # Get VidSrc embed URL
+        video_title, iframe_url = scrape_vidsrc_movie(tmdb_id)
+        
+        if not iframe_url:
+            print("Failed to get VidSrc embed URL")
+            sys.exit(1)
+        
+        print(f"VidSrc iframe URL: {iframe_url}")
+        
+        # Save as processed
+        save_processed_movie(tmdb_id)
+        
+        # Save result to JSON file
+        output = {
+            'success': True,
+            'tmdb_id': tmdb_id,
+            'title': video_title,
+            'iframe_url': iframe_url,
+            'embed_code': f'<iframe src="{iframe_url}" allowfullscreen></iframe>'
+        }
+        
+        with open('upload_result.json', 'w') as f:
+            json.dump(output, f, indent=2)
+        
+        print("Result saved to upload_result.json")
+        return
+    
+    # Handle TV10 source (original logic)
+    if not page_url:
+        print("Error: PAGE_URL environment variable not set")
         sys.exit(1)
     
     print(f"Scraping URL: {page_url}")
