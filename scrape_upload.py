@@ -700,9 +700,10 @@ def scrape_vidsrc_movie(tmdb_id):
     """
     Extract direct video URL from VidSrc using TMDB ID
     Returns: (title_arabic, video_url)
-    Uses Playwright to intercept network requests and extract video URL
+    Uses Playwright without proxy to intercept network requests
     """
     import time
+    import re
     
     vidsrc_url = f'https://vidsrc.sbs/embed/movie/{tmdb_id}'
     print(f"Extracting video from VidSrc for TMDB ID: {tmdb_id}")
@@ -712,7 +713,13 @@ def scrape_vidsrc_movie(tmdb_id):
         from playwright.sync_api import sync_playwright
         
         with sync_playwright() as p:
-            browser, context, page = launch_stealth_browser(p, user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36')
+            # Launch browser without proxy
+            browser = p.chromium.launch(headless=True)
+            context = browser.new_context(
+                user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                viewport={'width': 1920, 'height': 1080}
+            )
+            page = context.new_page()
             
             video_url_found = None
             title_found = None
@@ -727,7 +734,7 @@ def scrape_vidsrc_movie(tmdb_id):
                 is_video_ct = 'video' in ct
                 
                 if is_video_ext or is_video_ct:
-                    if 'error' not in url.lower() and 'ping' not in url.lower():
+                    if 'error' not in url.lower() and 'ping' not in url.lower() and 'analytics' not in url.lower():
                         if not video_url_found:
                             video_url_found = url
                             print(f"Intercepted video URL: {url}")
@@ -735,8 +742,8 @@ def scrape_vidsrc_movie(tmdb_id):
             page.on('response', handle_response)
             
             try:
-                print("Loading VidSrc page with Playwright...")
-                page.goto(vidsrc_url, wait_until='domcontentloaded', timeout=30000)
+                print("Loading VidSrc page with Playwright (no proxy)...")
+                page.goto(vidsrc_url, wait_until='domcontentloaded', timeout=60000)
                 time.sleep(5)
                 
                 # Get page title
@@ -744,8 +751,18 @@ def scrape_vidsrc_movie(tmdb_id):
                 title_found = page_title.split('|')[0].split('-')[0].strip()
                 print(f"Found title: {title_found}")
                 
+                # Try to click play button to trigger video loading
+                try:
+                    play_btn = page.query_selector('button, .play-btn, #play-btn, .vjs-big-play-button, button[aria-label*="Play"], .play-icon')
+                    if play_btn:
+                        print("Found play button, clicking...")
+                        play_btn.click()
+                        time.sleep(10)
+                except Exception as e:
+                    print(f"Could not click play button: {e}")
+                
                 # Wait for network interception
-                time.sleep(10)
+                time.sleep(15)
                 
                 if video_url_found:
                     print(f"Found video URL via network interception: {video_url_found[:100]}...")
@@ -755,7 +772,6 @@ def scrape_vidsrc_movie(tmdb_id):
                 page_content = page.content()
                 
                 # Look for common video URL patterns in scripts
-                import re
                 video_patterns = [
                     r'(https?://[^\s"\'<>]+\.m3u8[^\s"\'<>]*)',
                     r'(https?://[^\s"\'<>]+\.mp4[^\s"\'<>]*)',
@@ -772,8 +788,8 @@ def scrape_vidsrc_movie(tmdb_id):
                                 print(f"Found video URL in page content: {match[:100]}...")
                                 return title_found or f"Movie_{tmdb_id}", match
                 
-                print("Could not extract direct video URL")
-                return None, None
+                print("Could not extract direct video URL, returning embed URL")
+                return title_found or f"Movie_{tmdb_id}", vidsrc_url
                 
             finally:
                 context.close()
@@ -1685,7 +1701,32 @@ def main():
         
         print(f"Video URL: {video_url}")
         
-        # Upload to DoodStream
+        # Check if it's an embed URL (not a direct video URL)
+        if 'vidsrc.sbs' in video_url:
+            print("Note: This is an embed URL, not a direct video URL")
+            print("DoodStream may not accept embed URLs for upload")
+            print("Saving embed URL to result file...")
+            
+            # Save as processed
+            save_processed_movie(tmdb_id)
+            
+            # Save result to JSON file
+            output = {
+                'success': True,
+                'tmdb_id': tmdb_id,
+                'title': video_title,
+                'embed_url': video_url,
+                'embed_code': f'<iframe src="{video_url}" allowfullscreen></iframe>',
+                'note': 'This is an embed URL, not a direct video URL. DoodStream upload was skipped.'
+            }
+            
+            with open('upload_result.json', 'w') as f:
+                json.dump(output, f, indent=2)
+            
+            print("Result saved to upload_result.json")
+            return
+        
+        # Upload to DoodStream (only if it's a direct video URL)
         print("Uploading to DoodStream...")
         result = upload_to_earnvids(video_url, api_key, title=video_title or f"Movie_{tmdb_id}")
         
