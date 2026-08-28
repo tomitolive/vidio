@@ -714,6 +714,9 @@ def scrape_vidsrc_movie(tmdb_id):
             'no_warnings': True,
             'extract_flat': False,
             'format': 'best',
+            'socket_timeout': 60,
+            'retries': 3,
+            'fragment_retries': 3,
         }
         if PROXY_URL:
             ydl_opts['proxy'] = PROXY_URL
