@@ -821,25 +821,92 @@ def search_yts_movie(title, year=None):
 def scrape_movie_from_tmdb(tmdb_id):
     """
     Extract direct video URL using TMDB + YTS
-    Returns: (title, video_url, quality)
+    Returns: (title, video_url, quality, magnet_link)
     """
     # Get movie details from TMDB
     title, year, overview = get_tmdb_movie_details(tmdb_id)
     
     if not title:
         print("Could not get movie details from TMDB")
-        return None, None, None
+        return None, None, None, None
     
     # Search for movie on YTS
     magnet_link, torrent_url, quality = search_yts_movie(title, year)
     
     if magnet_link:
         print(f"Found movie on YTS: {title} ({year}) - {quality}")
-        # Return the torrent URL (not magnet) for easier handling
-        return title, torrent_url, quality
+        # Return both magnet link and torrent URL
+        return title, torrent_url, quality, magnet_link
     
     print("Could not find movie on YTS")
-    return None, None, None
+    return None, None, None, None
+
+
+def scrape_topcinemaa(page_url):
+    """
+    Extract video URL from topcinemaa.live page
+    Returns: (title, video_url, server_name)
+    Uses Playwright to click on Doodstream server if available
+    """
+    try:
+        from playwright.sync_api import sync_playwright
+        import time
+        
+        print(f"Scraping topcinemaa page with Playwright: {page_url}")
+        
+        with sync_playwright() as p:
+            browser = p.chromium.launch(headless=True)
+            context = browser.new_context()
+            page = context.new_page()
+            
+            page.goto(page_url, wait_until='domcontentloaded', timeout=60000)
+            time.sleep(3)
+            
+            # Extract title
+            title = page.title() or "Unknown Movie"
+            print(f"Found title: {title}")
+            
+            # Look for Doodstream server and click on it
+            try:
+                doodstream_button = page.query_selector('li:has-text("Doodstream")')
+                if doodstream_button:
+                    print("Found Doodstream server, clicking...")
+                    doodstream_button.click()
+                    time.sleep(3)
+                    print("Clicked on Doodstream server")
+                else:
+                    print("Doodstream server not found, using active server")
+            except Exception as e:
+                print(f"Error clicking Doodstream: {e}")
+            
+            # Get the iframe src after clicking
+            iframe = page.query_selector('.player--iframe iframe')
+            if iframe:
+                iframe_src = iframe.get_attribute('src')
+                if iframe_src:
+                    # Remove .html if present
+                    if iframe_src.endswith('.html'):
+                        iframe_src = iframe_src[:-5]
+                        print(f"Removed .html from iframe: {iframe_src}")
+                    
+                    print(f"Found iframe: {iframe_src}")
+                    
+                    # Get server name
+                    active_server = page.query_selector('.server--item.active span')
+                    server_name = active_server.inner_text().strip() if active_server else "Unknown"
+                    
+                    context.close()
+                    browser.close()
+                    
+                    return title, iframe_src, server_name
+            
+            context.close()
+            browser.close()
+            return None, None, None
+            
+    except Exception as e:
+        print(f"Error scraping topcinemaa with Playwright: {e}")
+        return None, None, None
 
 
 def scrape_vidsrc_movie(tmdb_id):
@@ -1430,24 +1497,71 @@ def decode_vidaraa_url(server_url):
         return server_url
 
 
+def decode_vidtube_url(server_url):
+    """
+    Decode video URL from vidtube.one
+    Uses Playwright to extract direct video URL
+    """
+    try:
+        from playwright.sync_api import sync_playwright
+        import time
+        
+        print(f"Decoding vidtube URL with Playwright: {server_url}")
+        
+        with sync_playwright() as p:
+            browser = p.chromium.launch(headless=True)
+            context = browser.new_context()
+            page = context.new_page()
+            
+            video_url = None
+            
+            def handle_response(response):
+                nonlocal video_url
+                url = response.url
+                ct = response.headers.get('content-type', '')
+                
+                # Check for video content type or video extensions
+                is_video_ext = any(url.lower().endswith(ext) for ext in ['.mp4', '.m3u8', '.ts', '.webm'])
+                is_video_ct = 'video' in ct.lower()
+                
+                if is_video_ext or is_video_ct:
+                    if 'error' not in url.lower() and 'ping' not in url.lower():
+                        if not video_url:
+                            video_url = url
+                            print(f'Found video URL: {url}')
+            
+            page.on('response', handle_response)
+            
+            page.goto(server_url, wait_until='domcontentloaded', timeout=60000)
+            time.sleep(10)
+            
+            context.close()
+            browser.close()
+            
+            if video_url:
+                return video_url
+            else:
+                print("Could not extract video URL from vidtube")
+                return server_url
+                
+    except Exception as e:
+        print(f"Error decoding vidtube URL: {e}")
+        return server_url
+
+
 def decode_server_url(server_url):
     """
     Decode video URL from streaming server (voe.sx, hgcloud.to, vidaraa.cc, nxsha.app, etc.)
     Uses yt-dlp to extract direct video URLs, falls back to Playwright
     """
-    # Handle voe.sx directly with Playwright (yt-dlp doesn't support it)
     if 'voe.sx' in server_url:
-        print(f"voe.sx detected, using Playwright decoder...")
         return decode_server_url_playwright(server_url)
-
-    # Handle vidaraa.cc via API (returns direct streaming URL)
     if 'vidaraa.cc' in server_url:
         return decode_vidaraa_url(server_url)
-
-    # Handle nxsha.app with Playwright (new server)
     if 'nxsha.app' in server_url:
-        print(f"nxsha.app detected, using Playwright decoder...")
         return decode_server_url_playwright(server_url)
+    if 'vidtube.one' in server_url or 'vidtube' in server_url:
+        return decode_vidtube_url(server_url)
 
     try:
         import yt_dlp
@@ -1877,7 +1991,7 @@ def main():
             sys.exit(0)
         
         # Extract video URL from TMDB + YTS
-        video_title, video_url, quality = scrape_movie_from_tmdb(tmdb_id)
+        video_title, video_url, quality, magnet_link = scrape_movie_from_tmdb(tmdb_id)
         
         if not video_url:
             print("Failed to extract video URL from VidSrc")
@@ -1887,7 +2001,95 @@ def main():
         
         # Check if it's a torrent URL from YTS
         if 'magnet:?' in video_url or 'yts.gg' in video_url or 'yts.mx' in video_url or 'torrent' in video_url:
-            print("Torrent/Magnet URL detected - saving torrent information...")
+            print("Torrent/Magnet URL detected - attempting automatic download...")
+            
+            # Use magnet link for aria2c (it handles magnet links better)
+            download_url = magnet_link if magnet_link and magnet_link.startswith('magnet:') else video_url
+            
+            # Try to download using aria2c if available
+            import subprocess
+            import tempfile
+            
+            with tempfile.TemporaryDirectory() as tmpdir:
+                # Check if aria2c is available
+                try:
+                    subprocess.run(['aria2c', '--version'], capture_output=True, check=True)
+                    print("aria2c found, attempting download...")
+                    
+                    # Download using aria2c with magnet link
+                    cmd = [
+                        'aria2c',
+                        '-d', tmpdir,
+                        '--allow-overwrite=true',
+                        '--max-tries=5',
+                        '--retry-wait=10',
+                        '--timeout=600',
+                        '--connect-timeout=60',
+                        '--max-file-not-found=5',
+                        '--lowest-speed-limit=10K',
+                        '--seed-time=0',
+                        download_url
+                    ]
+                    
+                    print(f"Downloading with aria2c: {download_url[:100]}...")
+                    result = subprocess.run(cmd, capture_output=True, text=True)
+                    
+                    if result.returncode == 0:
+                        # Find the downloaded file
+                        downloaded_files = [f for f in os.listdir(tmpdir) if f.endswith('.mp4')]
+                        if not downloaded_files:
+                            downloaded_files = [f for f in os.listdir(tmpdir) if f and not f.startswith('.')]
+                        
+                        if downloaded_files:
+                            filepath = os.path.join(tmpdir, downloaded_files[0])
+                            file_size = os.path.getsize(filepath)
+                            print(f"Downloaded: {downloaded_files[0]} ({file_size / (1024*1024):.1f} MB)")
+                            
+                            if file_size < 1024 * 1024:  # Less than 1 MB
+                                print("Downloaded file is too small, likely failed")
+                                # Fall back to saving torrent info
+                                raise Exception("File too small")
+                            
+                            # Upload to DoodStream
+                            print("Uploading to DoodStream...")
+                            upload_result = upload_file_to_doodstream(filepath, api_key, title=video_title or f"Movie_{tmdb_id}")
+                            
+                            if upload_result:
+                                print("Upload successful!")
+                                
+                                # Save as processed
+                                save_processed_movie(tmdb_id)
+                                
+                                # Save result to JSON file
+                                output = {
+                                    'success': True,
+                                    'tmdb_id': tmdb_id,
+                                    'title': video_title,
+                                    'quality': quality,
+                                    'filecode': upload_result.get('filecode'),
+                                    'download_url': upload_result.get('download_url'),
+                                }
+                                
+                                with open('upload_result.json', 'w') as f:
+                                    json.dump(output, f, indent=2)
+                                
+                                print("Result saved to upload_result.json")
+                                return
+                            else:
+                                print("Upload failed")
+                                raise Exception("Upload failed")
+                        else:
+                            print("No file found after download")
+                            raise Exception("No file found")
+                    else:
+                        print(f"aria2c download failed: {result.stderr}")
+                        raise Exception("aria2c failed")
+                        
+                except FileNotFoundError:
+                    print("aria2c not found, falling back to saving torrent info")
+                except Exception as e:
+                    print(f"Automatic download failed: {e}")
+                    print("Falling back to saving torrent information...")
             
             # Save as processed
             save_processed_movie(tmdb_id)
@@ -1899,7 +2101,8 @@ def main():
                 'title': video_title,
                 'quality': quality,
                 'torrent_url': video_url,
-                'note': 'Torrent URL found. Automatic download requires aria2c or transmission. Manual download recommended.'
+                'magnet_link': magnet_link,
+                'note': 'Torrent URL found. Automatic download requires aria2c. Manual download recommended.'
             }
             
             with open('upload_result.json', 'w') as f:
@@ -1958,6 +2161,70 @@ def main():
                 'title': video_title,
                 'original_url': f'https://vidsrc.sbs/embed/movie/{tmdb_id}',
                 'video_url': video_url
+            }
+            
+            with open('upload_result.json', 'w') as f:
+                json.dump(output, f, indent=2)
+            
+            print("Result saved to upload_result.json")
+        else:
+            print("Upload failed")
+            sys.exit(1)
+        
+        return
+    
+    # Handle topcinemaa source
+    if source == 'topcinemaa':
+        if not page_url:
+            print("Error: PAGE_URL environment variable not set for topcinemaa source")
+            sys.exit(1)
+        
+        if not api_key:
+            print("Error: EARNVIDS_API_KEY environment variable not set for topcinemaa source")
+            sys.exit(1)
+        
+        print(f"Processing topcinemaa page: {page_url}")
+        
+        # Check if already processed
+        page_id = page_url.split('/')[-2] if page_url.endswith('/') else page_url.split('/')[-1]
+        if is_movie_processed(page_id):
+            print(f"Page {page_id} already processed, skipping")
+            sys.exit(0)
+        
+        # Extract video URL from topcinemaa
+        video_title, video_url, server_name = scrape_topcinemaa(page_url)
+        
+        if not video_url:
+            print("Failed to extract video URL from topcinemaa")
+            sys.exit(1)
+        
+        print(f"Video URL: {video_url}")
+        print(f"Server: {server_name}")
+        
+        # Decode the server URL if it's from a streaming server
+        print("Decoding server URL...")
+        decoded_url = decode_server_url(video_url)
+        print(f"Decoded URL: {decoded_url}")
+        
+        # Upload to DoodStream
+        print("Uploading to DoodStream...")
+        result = upload_to_earnvids(decoded_url, api_key, title=video_title or "Movie")
+        
+        if result:
+            filecode = result.get('filecode')
+            print(f"Upload successful! File code: {filecode}")
+            
+            # Save as processed
+            save_processed_movie(page_id)
+            
+            # Save result to JSON file
+            output = {
+                'success': True,
+                'filecode': filecode,
+                'title': video_title,
+                'original_url': page_url,
+                'server': server_name,
+                'video_url': decoded_url
             }
             
             with open('upload_result.json', 'w') as f:

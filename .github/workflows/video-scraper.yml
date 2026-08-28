@@ -4,12 +4,12 @@ on:
   workflow_dispatch:
     inputs:
       source:
-        description: 'Source type (tv10 or vidsrc)'
+        description: 'Source type (tv10, vidsrc, or topcinemaa)'
         required: false
         type: string
         default: 'tv10'
       page_url:
-        description: 'URL of the page to scrape (for tv10 source)'
+        description: 'URL of the page to scrape (for tv10 or topcinemaa source)'
         required: false
         type: string
       tmdb_id:
@@ -45,7 +45,7 @@ jobs:
           pip install -r requirements.txt
           playwright install chromium
           playwright install-deps chromium
-          sudo apt-get update && sudo apt-get install -y xvfb
+          sudo apt-get update && sudo apt-get install -y xvfb aria2
       
       - name: Start FlareSolverr
         run: |
