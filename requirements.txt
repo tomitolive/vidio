@@ -6,3 +6,4 @@ yt-dlp>=2023.0.0
 playwright-stealth>=1.0.6
 undetected-chromedriver>=3.5.0
 selenium>=4.0.0
+streamlink>=8.0.0

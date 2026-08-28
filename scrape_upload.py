@@ -700,7 +700,8 @@ def scrape_vidsrc_movie(tmdb_id):
     """
     Extract direct video URL from VidSrc using TMDB ID
     Returns: (title_arabic, video_url)
-    Uses Playwright without proxy to intercept network requests
+    Uses Playwright to find iframe and then decode the server URL
+    Tries different servers from VidSrc server list
     """
     import time
     import re
@@ -721,28 +722,8 @@ def scrape_vidsrc_movie(tmdb_id):
             )
             page = context.new_page()
             
-            video_url_found = None
-            title_found = None
-            
-            def handle_response(response):
-                nonlocal video_url_found
-                url = response.url
-                ct = response.headers.get('content-type', '')
-                
-                # Check if this is a video file response
-                is_video_ext = any(url.lower().endswith(ext) or (ext + '?') in url.lower() for ext in ['.mp4', '.m3u8', '.ts', '.webm', '.mkv'])
-                is_video_ct = 'video' in ct
-                
-                if is_video_ext or is_video_ct:
-                    if 'error' not in url.lower() and 'ping' not in url.lower() and 'analytics' not in url.lower():
-                        if not video_url_found:
-                            video_url_found = url
-                            print(f"Intercepted video URL: {url}")
-            
-            page.on('response', handle_response)
-            
             try:
-                print("Loading VidSrc page with Playwright (no proxy)...")
+                print("Loading VidSrc page with Playwright...")
                 page.goto(vidsrc_url, wait_until='domcontentloaded', timeout=60000)
                 time.sleep(5)
                 
@@ -751,45 +732,75 @@ def scrape_vidsrc_movie(tmdb_id):
                 title_found = page_title.split('|')[0].split('-')[0].strip()
                 print(f"Found title: {title_found}")
                 
-                # Try to click play button to trigger video loading
-                try:
-                    play_btn = page.query_selector('button, .play-btn, #play-btn, .vjs-big-play-button, button[aria-label*="Play"], .play-icon')
-                    if play_btn:
-                        print("Found play button, clicking...")
-                        play_btn.click()
-                        time.sleep(10)
-                except Exception as e:
-                    print(f"Could not click play button: {e}")
-                
-                # Wait for network interception
-                time.sleep(15)
-                
-                if video_url_found:
-                    print(f"Found video URL via network interception: {video_url_found[:100]}...")
-                    return title_found or f"Movie_{tmdb_id}", video_url_found
-                
-                # Fallback: Try to get page content and look for video URLs in scripts
+                # Extract server list from HTML/JavaScript
                 page_content = page.content()
                 
-                # Look for common video URL patterns in scripts
-                video_patterns = [
-                    r'(https?://[^\s"\'<>]+\.m3u8[^\s"\'<>]*)',
-                    r'(https?://[^\s"\'<>]+\.mp4[^\s"\'<>]*)',
-                    r'"url"\s*:\s*"(https?://[^"]+)"',
-                    r'"file"\s*:\s*"(https?://[^"]+)"',
-                    r'"source"\s*:\s*"(https?://[^"]+)"',
+                # Look for server URLs in the page content
+                server_patterns = [
+                    r'"movie_url":"([^"]+)"',
+                    r'"movie_url_v2":"([^"]+)"',
+                    r'movie_url:\s*["\']([^"\']+)["\']',
                 ]
                 
-                for pattern in video_patterns:
+                servers_found = []
+                for pattern in server_patterns:
                     matches = re.findall(pattern, page_content)
-                    if matches:
-                        for match in matches:
-                            if match.startswith('http') and 'error' not in match.lower():
-                                print(f"Found video URL in page content: {match[:100]}...")
-                                return title_found or f"Movie_{tmdb_id}", match
+                    for match in matches:
+                        # Unescape URL
+                        url = match.replace('\\/', '/')
+                        if '{tmdb_id}' in url:
+                            url = url.replace('{tmdb_id}', str(tmdb_id))
+                        if url not in servers_found:
+                            servers_found.append(url)
                 
-                print("Could not extract direct video URL, returning embed URL")
-                return title_found or f"Movie_{tmdb_id}", vidsrc_url
+                if servers_found:
+                    print(f"Found {len(servers_found)} server URLs")
+                    
+                    # Try each server URL
+                    for server_url in servers_found:
+                        print(f"Trying server URL: {server_url}")
+                        
+                        # Try to decode this server URL
+                        decoded_url = decode_server_url(server_url)
+                        if decoded_url and decoded_url != server_url:
+                            print(f"Successfully decoded URL: {decoded_url[:100]}...")
+                            return title_found or f"Movie_{tmdb_id}", decoded_url
+                        else:
+                            # Check if it's a non-sandboxed server (like videasy)
+                            if 'videasy' in server_url.lower():
+                                print(f"Using non-sandboxed server URL directly: {server_url}")
+                                return title_found or f"Movie_{tmdb_id}", server_url
+                
+                # Fallback: Look for iframe with video source
+                iframes = page.query_selector_all('iframe')
+                print(f"Found {len(iframes)} iframes")
+                
+                for iframe in iframes:
+                    iframe_src = iframe.get_attribute('src')
+                    if iframe_src:
+                        print(f"Found iframe: {iframe_src}")
+                        
+                        # If it's a known server, try to decode it
+                        if any(server in iframe_src.lower() for server in ['voe', 'vidaraa', 'mixdrop', 'streamtape', 'doodstream', 'nxsha', 'cinesrc', 'videasy']):
+                            print(f"Found known server iframe, attempting to decode...")
+                            decoded_url = decode_server_url(iframe_src)
+                            if decoded_url and decoded_url != iframe_src:
+                                print(f"Decoded URL: {decoded_url[:100]}...")
+                                return title_found or f"Movie_{tmdb_id}", decoded_url
+                            else:
+                                return title_found or f"Movie_{tmdb_id}", iframe_src
+                        else:
+                            return title_found or f"Movie_{tmdb_id}", iframe_src
+                
+                # If no iframe found, try to find video tag
+                video = page.query_selector('video')
+                if video:
+                    video_src = video.get_attribute('src')
+                    print(f"Found video src: {video_src}")
+                    return title_found or f"Movie_{tmdb_id}", video_src
+                
+                print("No iframe or video found")
+                return None, None
                 
             finally:
                 context.close()
@@ -1275,7 +1286,7 @@ def decode_vidaraa_url(server_url):
 
 def decode_server_url(server_url):
     """
-    Decode video URL from streaming server (voe.sx, hgcloud.to, vidaraa.cc, etc.)
+    Decode video URL from streaming server (voe.sx, hgcloud.to, vidaraa.cc, nxsha.app, etc.)
     Uses yt-dlp to extract direct video URLs, falls back to Playwright
     """
     # Handle voe.sx directly with Playwright (yt-dlp doesn't support it)
@@ -1286,6 +1297,11 @@ def decode_server_url(server_url):
     # Handle vidaraa.cc via API (returns direct streaming URL)
     if 'vidaraa.cc' in server_url:
         return decode_vidaraa_url(server_url)
+
+    # Handle nxsha.app with Playwright (new server)
+    if 'nxsha.app' in server_url:
+        print(f"nxsha.app detected, using Playwright decoder...")
+        return decode_server_url_playwright(server_url)
 
     try:
         import yt_dlp
@@ -1332,141 +1348,109 @@ def decode_server_url(server_url):
 
 def decode_server_url_playwright(server_url):
     """
-    Fallback method using Playwright to extract video URL
+    Fallback method using streamlink to extract video URL
+    (Supports many streaming servers)
     """
     try:
-        from playwright.sync_api import sync_playwright
+        import streamlink
         
-        with sync_playwright() as p:
-            browser, context, page = launch_stealth_browser(p, user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36')
-            
-            video_url_found = None
-            
-            def handle_response(response):
-                nonlocal video_url_found
-                url = response.url
-                ct = response.headers.get('content-type', '')
+        print(f"Decoding server URL with streamlink: {server_url}")
+        
+        # Create streamlink session
+        session = streamlink.Streamlink()
+        
+        # Try to get streams
+        try:
+            streams = session.streams(server_url)
+            if streams:
+                # Get the best quality stream
+                best_quality = None
+                for quality in ['best', '1080p', '720p', '480p', '360p', 'worst']:
+                    if quality in streams:
+                        best_quality = quality
+                        break
                 
-                # Exclude non-video file types
-                exclude_exts = ['.woff', '.woff2', '.ttf', '.otf', '.js', '.css', '.png', '.jpg', '.gif', '.svg', '.ico', '.json', '.xml', '.html']
-                url_lower = url.lower()
-                if any(url_lower.endswith(ext) or (ext + '?') in url_lower for ext in exclude_exts):
-                    return
+                if best_quality:
+                    stream = streams[best_quality]
+                    video_url = stream.url
+                    print(f"Found video URL with streamlink: {video_url[:100]}...")
+                    return video_url
+        except Exception as e:
+            print(f"Streamlink error: {e}")
+        
+        print("Could not extract direct video URL with streamlink")
+        return server_url
                 
-                # Check if this is a video file response
-                is_video_ext = any(url_lower.endswith(ext) or url_lower.endswith(ext + '/') or (ext + '?') in url_lower or f'.{ext}?' in url_lower for ext in ['.mp4', '.m3u8', '.ts', '.webm', '.mkv'])
-                is_video_ct = 'video' in ct
-                
-                if is_video_ext or is_video_ct:
-                    if 'error' not in url_lower and 'ping' not in url_lower and 'jwpltx' not in url_lower:
-                        if not video_url_found:
-                            video_url_found = url
-                            print(f"Intercepted video URL: {url}")
+    except ImportError:
+        print("Streamlink not installed, falling back to requests")
+        # Fallback to requests
+        try:
+            import re
+            from bs4 import BeautifulSoup
             
-            page.on('response', handle_response)
+            print(f"Decoding server URL with requests: {server_url}")
             
+            headers = {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+            }
+            
+            # Try without proxy first
             try:
-                print(f"Decoding server URL with Playwright: {server_url}")
-                page.goto(server_url, wait_until='domcontentloaded', timeout=30000)
-                
-                # Wait for page scripts to load
-                import time
-                time.sleep(5)
-                
-                # Try clicking play button to trigger video loading
-                try:
-                    play_btn = page.query_selector('button[class*="play"], .play-btn, #play-btn, .vjs-big-play-button, button[aria-label*="Play"], .plyr__control, .jw-display-icon-play')
-                    if play_btn and play_btn.is_visible():
-                        print("Found play button, clicking...")
-                        play_btn.click()
-                        time.sleep(10)
-                except Exception:
-                    pass
-                
-                # Wait for network interception
-                time.sleep(10)
-                
-                if video_url_found:
-                    print(f"Found video URL via network interception: {video_url_found}")
-                    return video_url_found
-                
-                # Fallback: Try to get page content and look for video URLs in scripts
-                page_content = page.content()
-                
-                # Look for common video URL patterns in scripts
-                import re
-                video_patterns = [
-                    r'(https?://[^\s"\'<>]+\.m3u8[^\s"\'<>]*)',
-                    r'(https?://[^\s"\'<>]+\.mp4[^\s"\'<>]*)',
-                    r'(https?://[^\s"\'<>]+/video/[^\s"\'<>]*)',
-                    r'"url"\s*:\s*"(https?://[^"]+)"',
-                    r'"file"\s*:\s*"(https?://[^"]+)"',
-                    r'"source"\s*:\s*"(https?://[^"]+)"',
-                    r"var\s+source\s*=\s*['\"]([^'\"]+)['\"]",
-                ]
-                
-                # Filter out known test/decoy URLs and non-video files
-                decoy_patterns = ['test-videos.co', 'bigbuckbunny', 'jwpltx.com', 'jwpcdn.com']
-                non_video_exts = ['.woff', '.woff2', '.ttf', '.otf', '.js', '.css', '.png', '.jpg', '.gif', '.svg', '.ico']
-                
-                for pattern in video_patterns:
-                    matches = re.findall(pattern, page_content)
-                    if matches:
-                        for match in matches:
-                            if match.startswith('http') and 'error' not in match.lower() and 'ping' not in match.lower():
-                                match_lower = match.lower()
-                                # Skip decoy/test URLs
-                                if any(dp in match_lower for dp in decoy_patterns):
-                                    print(f"Skipping decoy URL: {match}")
-                                    continue
-                                # Skip non-video files
-                                if any(match_lower.endswith(ext) or (ext + '?') in match_lower for ext in non_video_exts):
-                                    print(f"Skipping non-video file: {match}")
-                                    continue
-                                print(f"Found video URL in page content: {match}")
-                                return match
-                
-                # Look for video element
-                video_elem = page.query_selector('video')
-                if video_elem:
-                    video_src = video_elem.get_attribute('src')
-                    if video_src and video_src.startswith('http'):
-                        print(f"Found direct video URL: {video_src}")
-                        return video_src
+                response = requests.get(server_url, headers=headers, timeout=30)
+                response.raise_for_status()
+            except:
+                # Try with proxy
+                response = requests.get(server_url, headers=headers, proxies=REQUESTS_PROXIES, timeout=60)
+            
+            soup = BeautifulSoup(response.text, 'html.parser')
+            
+            # Look for video element
+            video = soup.find('video')
+            if video and video.get('src'):
+                video_src = video['src']
+                print(f"Found video src: {video_src}")
+                return video_src
+            
+            # Look for source elements
+            sources = soup.find_all('source')
+            for source in sources:
+                src = source.get('src')
+                if src and src.startswith('http'):
+                    print(f"Found source URL: {src}")
+                    return src
+            
+            # Look for video URLs in scripts
+            for script in soup.find_all('script'):
+                if script.string:
+                    video_patterns = [
+                        r'(https?://[^\s"\'<>]+\.m3u8[^\s"\'<>]*)',
+                        r'(https?://[^\s"\'<>]+\.mp4[^\s"\'<>]*)',
+                        r'"url"\s*:\s*"(https?://[^"]+)"',
+                        r'"file"\s*:\s*"(https?://[^"]+)"',
+                        r'"source"\s*:\s*"(https?://[^"]+)"',
+                    ]
                     
-                    # Check for source children
-                    source_elems = page.query_selector_all('video source')
-                    for source in source_elems:
-                        src = source.get_attribute('src')
-                        if src and src.startswith('http'):
-                            print(f"Found source URL: {src}")
-                            return src
-                
-                # Look for source elements
-                source_elems = page.query_selector_all('source')
-                for source in source_elems:
-                    src = source.get_attribute('src')
-                    if src and src.startswith('http'):
-                        print(f"Found source URL: {src}")
-                        return src
-                
-                # Look for iframe
-                iframe = page.query_selector('iframe')
-                if iframe:
-                    iframe_src = iframe.get_attribute('src')
-                    if iframe_src and iframe_src.startswith('http') and not iframe_src.startswith('javascript'):
-                        print(f"Found iframe: {iframe_src}")
-                        return iframe_src
-                
-                print("Could not extract direct video URL, returning server URL")
-                return server_url
-                
-            finally:
-                context.close()
-                browser.close()
-                
+                    for pattern in video_patterns:
+                        matches = re.findall(pattern, script.string)
+                        if matches:
+                            for match in matches:
+                                if match.startswith('http') and 'error' not in match.lower():
+                                    match_lower = match.lower()
+                                    # Skip non-video files
+                                    non_video_exts = ['.js', '.css', '.png', '.jpg', '.gif', '.svg', '.woff', '.woff2', '.ttf', '.otf', '.ico', '.json', '.xml', '.html']
+                                    if any(match_lower.endswith(ext) or (ext + '?') in match_lower for ext in non_video_exts):
+                                        continue
+                                    print(f"Found video URL in script: {match}")
+                                    return match
+            
+            print("Could not extract direct video URL with requests")
+            return server_url
+            
+        except Exception as e:
+            print(f"Error decoding server URL with requests: {e}")
+            return server_url
     except Exception as e:
-        print(f"Error decoding server URL with Playwright: {e}")
+        print(f"Error decoding server URL: {e}")
         return server_url
 
 
@@ -1702,9 +1686,9 @@ def main():
         print(f"Video URL: {video_url}")
         
         # Check if it's an embed URL (not a direct video URL)
-        if 'vidsrc.sbs' in video_url:
-            print("Note: This is an embed URL, not a direct video URL")
-            print("DoodStream may not accept embed URLs for upload")
+        if 'vidsrc.sbs' in video_url or 'nxsha.app' in video_url or 'cinesrc.st' in video_url or 'videasy.net' in video_url:
+            print("Note: This is an embed URL from VidSrc server")
+            print("These servers do not provide direct video URLs")
             print("Saving embed URL to result file...")
             
             # Save as processed
@@ -1717,7 +1701,7 @@ def main():
                 'title': video_title,
                 'embed_url': video_url,
                 'embed_code': f'<iframe src="{video_url}" allowfullscreen></iframe>',
-                'note': 'This is an embed URL, not a direct video URL. DoodStream upload was skipped.'
+                'note': 'VidSrc servers (nxsha.app, cinesrc.st, videasy.net) do not provide direct video URLs. Only embed URL is available.'
             }
             
             with open('upload_result.json', 'w') as f:
@@ -1725,6 +1709,11 @@ def main():
             
             print("Result saved to upload_result.json")
             return
+        
+        # Decode the server URL if it's from a streaming server
+        print("Decoding server URL...")
+        decoded_url = decode_server_url(video_url)
+        print(f"Decoded URL: {decoded_url}")
         
         # Upload to DoodStream (only if it's a direct video URL)
         print("Uploading to DoodStream...")
