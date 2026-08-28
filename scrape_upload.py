@@ -696,6 +696,152 @@ def is_movie_processed(tmdb_id):
     return str(tmdb_id) in processed_ids
 
 
+def get_tmdb_movie_details(tmdb_id, api_key=None):
+    """
+    Get movie details from TMDB API
+    Returns: (title, year, overview)
+    """
+    try:
+        import requests
+        
+        # Use public TMDB API key if none provided
+        if not api_key:
+            api_key = "2dca580c2a14b55200e784d157207b4d"  # Public TMDB API key
+        
+        url = f"https://api.themoviedb.org/3/movie/{tmdb_id}?api_key={api_key}"
+        response = requests.get(url, timeout=30)
+        response.raise_for_status()
+        
+        data = response.json()
+        title = data.get('title', '')
+        release_date = data.get('release_date', '')
+        year = release_date.split('-')[0] if release_date else ''
+        overview = data.get('overview', '')
+        
+        print(f"TMDB Details: {title} ({year})")
+        return title, year, overview
+        
+    except Exception as e:
+        print(f"Error getting TMDB details: {e}")
+        return None, None, None
+
+
+def search_yts_movie(title, year=None):
+    """
+    Search for movie on YTS using API
+    Returns: (magnet_link, torrent_url, quality)
+    """
+    try:
+        import requests
+        
+        # Build search query
+        search_query = title
+        if year:
+            search_query += f" {year}"
+        
+        # Try multiple YTS domains
+        yts_domains = [
+            "https://yts.mx",
+            "https://yts.am",
+            "https://yts.lt",
+            "https://yts.unblocked",
+        ]
+        
+        for domain in yts_domains:
+            url = f"{domain}/api/v2/list_movies.json?query_term={search_query.replace(' ', '%20')}"
+            
+            print(f"Searching YTS API ({domain}) for: {title} ({year})")
+            
+            headers = {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+            }
+            
+            try:
+                # Try without proxy first
+                response = requests.get(url, headers=headers, timeout=30)
+                response.raise_for_status()
+                
+                data = response.json()
+                
+                if data.get('status') != 'ok':
+                    print(f"YTS API ({domain}) returned error")
+                    continue
+                
+                movies = data.get('data', {}).get('movies', [])
+                
+                if not movies:
+                    print(f"No movies found on YTS ({domain})")
+                    continue
+                
+                # Get the first movie
+                movie = movies[0]
+                print(f"Found on YTS: {movie.get('title')} ({movie.get('year')})")
+                
+                # Get torrents
+                torrents = movie.get('torrents', [])
+                
+                if not torrents:
+                    print("No torrents found for this movie")
+                    continue
+                
+                # Try to get 1080p or 720p
+                best_torrent = None
+                best_quality = None
+                
+                for torrent in torrents:
+                    quality = torrent.get('quality')
+                    if quality in ['1080p', '720p', '480p']:
+                        if not best_quality or quality > best_quality:
+                            best_torrent = torrent
+                            best_quality = quality
+                
+                if best_torrent:
+                    magnet_link = best_torrent.get('url')
+                    hash_code = best_torrent.get('hash')
+                    # Try to construct direct torrent file URL
+                    torrent_url = f"https://yts.gg/torrent/download/{hash_code}"
+                    print(f"Found YTS magnet link and torrent URL: {torrent_url[:100]}... ({best_quality})")
+                    return magnet_link, torrent_url, best_quality
+                
+                print("No suitable torrent quality found")
+                continue
+                
+            except Exception as e:
+                print(f"Error with {domain}: {e}")
+                continue
+        
+        print("All YTS domains failed")
+        return None, None, None
+        
+    except Exception as e:
+        print(f"Error searching YTS: {e}")
+        return None, None, None
+
+
+def scrape_movie_from_tmdb(tmdb_id):
+    """
+    Extract direct video URL using TMDB + YTS
+    Returns: (title, video_url, quality)
+    """
+    # Get movie details from TMDB
+    title, year, overview = get_tmdb_movie_details(tmdb_id)
+    
+    if not title:
+        print("Could not get movie details from TMDB")
+        return None, None, None
+    
+    # Search for movie on YTS
+    magnet_link, torrent_url, quality = search_yts_movie(title, year)
+    
+    if magnet_link:
+        print(f"Found movie on YTS: {title} ({year}) - {quality}")
+        # Return the torrent URL (not magnet) for easier handling
+        return title, torrent_url, quality
+    
+    print("Could not find movie on YTS")
+    return None, None, None
+
+
 def scrape_vidsrc_movie(tmdb_id):
     """
     Extract direct video URL from VidSrc using TMDB ID
@@ -1519,6 +1665,60 @@ def scrape_video_url_fallback(page_url, server_preference='EarnVids'):
         return None
 
 
+def upload_file_to_doodstream(filepath, api_key, title='Video'):
+    """
+    Upload a local file to DoodStream
+    """
+    try:
+        # Get upload server
+        server_resp = requests.get(
+            f'https://doodapi.com/api/upload/server?key={api_key}',
+            proxies=REQUESTS_PROXIES,
+            timeout=30)
+        server_data = server_resp.json()
+        
+        if server_data.get('status') != 200:
+            print(f"Failed to get upload server: {server_data.get('msg')}")
+            return None
+        
+        upload_server = server_data['result']
+        print(f"Upload server: {upload_server}")
+        
+        # Upload file
+        with open(filepath, 'rb') as f:
+            files = {'file': f}
+            data = {
+                'api_key': api_key,
+                'upload_type': 'file'
+            }
+            
+            upload_resp = requests.post(
+                upload_server,
+                files=files,
+                data=data,
+                proxies=REQUESTS_PROXIES,
+                timeout=300)
+            
+            upload_data = upload_resp.json()
+            
+            if upload_data.get('status') == 200:
+                filecode = upload_data.get('result')[0].get('filecode')
+                print(f"Upload successful! File code: {filecode}")
+                
+                # Rename file
+                if title and filecode:
+                    rename_file(api_key, filecode, title)
+                
+                return upload_data
+            else:
+                print(f"Upload failed: {upload_data.get('msg')}")
+                return None
+                
+    except Exception as e:
+        print(f"Error uploading file to DoodStream: {e}")
+        return None
+
+
 def rename_file(api_key, filecode, title):
     """Rename uploaded file on DoodStream"""
     try:
@@ -1676,14 +1876,38 @@ def main():
             print(f"TMDB ID {tmdb_id} already processed, skipping")
             sys.exit(0)
         
-        # Extract video URL from VidSrc
-        video_title, video_url = scrape_vidsrc_movie(tmdb_id)
+        # Extract video URL from TMDB + YTS
+        video_title, video_url, quality = scrape_movie_from_tmdb(tmdb_id)
         
         if not video_url:
             print("Failed to extract video URL from VidSrc")
             sys.exit(1)
         
         print(f"Video URL: {video_url}")
+        
+        # Check if it's a torrent URL from YTS
+        if 'magnet:?' in video_url or 'yts.gg' in video_url or 'yts.mx' in video_url or 'torrent' in video_url:
+            print("Torrent/Magnet URL detected - saving torrent information...")
+            
+            # Save as processed
+            save_processed_movie(tmdb_id)
+            
+            # Save result to JSON file with torrent information
+            output = {
+                'success': True,
+                'tmdb_id': tmdb_id,
+                'title': video_title,
+                'quality': quality,
+                'torrent_url': video_url,
+                'note': 'Torrent URL found. Automatic download requires aria2c or transmission. Manual download recommended.'
+            }
+            
+            with open('upload_result.json', 'w') as f:
+                json.dump(output, f, indent=2)
+            
+            print("Torrent information saved to upload_result.json")
+            print("To download manually, use a torrent client with the provided URL")
+            return
         
         # Check if it's an embed URL (not a direct video URL)
         if 'vidsrc.sbs' in video_url or 'nxsha.app' in video_url or 'cinesrc.st' in video_url or 'videasy.net' in video_url:
