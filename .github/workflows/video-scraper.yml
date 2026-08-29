@@ -52,25 +52,38 @@ jobs:
           docker run -d -p 8191:8191 ghcr.io/flaresolverr/flaresolverr:latest
           sleep 10
       
+      - name: Restore processed movies cache
+        uses: actions/cache@v4
+        with:
+          path: processed_movies.json
+          key: processed-movies-${{ github.repository }}
+          restore-keys: |
+            processed-movies-
+
       - name: Run scraper
         env:
           SOURCE: ${{ inputs.source }}
           PAGE_URL: ${{ inputs.page_url }}
           TMDB_ID: ${{ inputs.tmdb_id }}
+          DOODSTREAM_API_KEY: ${{ inputs.api_key }}
           EARNVIDS_API_KEY: ${{ inputs.api_key }}
           SERVER_PREFERENCE: ${{ inputs.server_preference }}
           PROXY_URL: ${{ secrets.PROXY_URL }}
           HEADLESS: "false"
         run: |
+          if [ -z "${{ inputs.page_url }}" ]; then
+            echo "ERROR: page_url is required for cimafu/jibi source"
+            exit 1
+          fi
           if [ "${{ inputs.source }}" = "cimafu" ] || [ "${{ inputs.source }}" = "jibi" ]; then
             echo "Running Jibi Bot for Cimafu..."
             xvfb-run --auto-servernum python jibi_bot.py "${{ inputs.page_url }}" --api-key "${{ inputs.api_key }}"
           else
             xvfb-run --auto-servernum python scrape_upload.py
           fi
-      
+
       - name: Upload result as artifact
-        if: success()
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: upload-result-${{ github.run_number }}
@@ -80,7 +93,7 @@ jobs:
           retention-days: 30
       
       - name: Display result
-        if: success()
+        if: always()
         run: |
           echo "=== Upload Result ==="
           cat upload_result.json

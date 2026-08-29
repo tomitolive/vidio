@@ -13,7 +13,7 @@ import time
 import re
 import random
 import argparse
-from urllib.parse import urlparse, urljoin
+from urllib.parse import urlparse, urljoin, quote
 
 import requests
 from bs4 import BeautifulSoup
@@ -78,6 +78,8 @@ def is_video_url(url: str, content_type: str = "") -> bool:
 
 def clean_url(url: str) -> str:
     url = url.strip()
+    # Fix common typos (htpps, htpps, htttp, etc.)
+    url = re.sub(r"^ht+p+s?://", "https://", url, flags=re.IGNORECASE)
     # Strip duplicate protocols (e.g. https://https:// -> https://)
     url = re.sub(r"^(https?:/*)+", "https://", url, flags=re.IGNORECASE)
     if url.startswith("://"):
@@ -85,6 +87,208 @@ def clean_url(url: str) -> str:
     elif not url.startswith("http://") and not url.startswith("https://"):
         url = "https://" + url
     return url
+
+
+DOODSTREAM_HOSTS = (
+    "doodstream.com", "dood.", "d0o0d.", "ds2play.", "ds2video.",
+    "playmogo.com", "dood.wf", "dood.so", "dood.cx", "dood.la",
+    "dood.re", "dood.yt", "dood.to", "dood.watch", "dood.pm",
+)
+
+
+def is_doodstream_embed(url: str) -> bool:
+    """Return True if URL is a DoodStream-family embed page."""
+    lower = url.lower()
+    return any(host in lower for host in DOODSTREAM_HOSTS)
+
+
+def extract_doodstream_filecode(url: str) -> str | None:
+    """Extract DoodStream filecode from embed / download URLs."""
+    patterns = (
+        r"/(?:e|f|d|embed)/([a-zA-Z0-9]+)",
+        r"/([a-zA-Z0-9]{8,})(?:[/?#]|$)",
+    )
+    for pat in patterns:
+        match = re.search(pat, url)
+        if match:
+            return match.group(1)
+    return None
+
+
+PROCESSED_DB_FILE = "processed_movies.json"
+
+
+def normalize_page_key(url: str) -> str:
+    """Normalize page URL for duplicate detection."""
+    url = clean_url(url).rstrip("/").lower()
+    return url
+
+
+def load_processed_db() -> dict:
+    """Load local DB of already-uploaded movies."""
+    if os.path.exists(PROCESSED_DB_FILE):
+        try:
+            with open(PROCESSED_DB_FILE, encoding="utf-8") as f:
+                return json.load(f)
+        except (json.JSONDecodeError, OSError):
+            pass
+    return {}
+
+
+def save_processed_db(db: dict):
+    """Persist processed movies DB."""
+    with open(PROCESSED_DB_FILE, "w", encoding="utf-8") as f:
+        json.dump(db, f, indent=2, ensure_ascii=False)
+
+
+def extract_movie_title_from_page(page_url: str, proxy_url: str = "") -> str:
+    """Extract movie title from watch page (og:title or <title>)."""
+    headers = {
+        "User-Agent": (
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) "
+            "Chrome/124.0.0.0 Safari/537.36"
+        )
+    }
+    try:
+        proxies = get_requests_proxies(proxy_url)
+        resp = requests.get(clean_url(page_url), headers=headers, proxies=proxies, timeout=15)
+        resp.raise_for_status()
+        soup = BeautifulSoup(resp.text, "html.parser")
+        og = soup.find("meta", property="og:title")
+        if og and og.get("content"):
+            return og["content"].strip()
+        title_tag = soup.find("title")
+        if title_tag and title_tag.text:
+            return title_tag.text.split("|")[0].strip()
+    except Exception as e:
+        print(f"[dedup] Could not extract page title: {e}")
+    return ""
+
+
+def extract_title_keywords(title: str) -> list[str]:
+    """Extract meaningful keywords from a movie title for fuzzy matching."""
+    if not title:
+        return []
+    # Remove common Arabic/English filler words
+    stopwords = {
+        "مشاهدة", "فيلم", "وتحميل", "مترجم", "مباشر", "watch", "download",
+        "movie", "film", "online", "free", "hd", "full",
+    }
+    # Keep alphanumeric tokens and years
+    tokens = re.findall(r"[a-z0-9\u0600-\u06ff]+", title.lower())
+    keywords = [t for t in tokens if t not in stopwords and len(t) > 2]
+    # Always keep 4-digit years
+    years = re.findall(r"\b((?:19|20)\d{2})\b", title)
+    keywords.extend(years)
+    return list(dict.fromkeys(keywords))  # dedupe, preserve order
+
+
+def list_doodstream_files(api_key: str, proxy_url: str = "") -> list[dict]:
+    """Fetch all files from DoodStream account."""
+    if not api_key:
+        return []
+    files = []
+    page = 1
+    proxies = get_requests_proxies(proxy_url)
+    while True:
+        try:
+            resp = requests.get(
+                f"https://doodapi.com/api/file/list?key={api_key}&page={page}&per_page=100",
+                proxies=proxies,
+                timeout=20,
+            )
+            data = resp.json()
+            if data.get("status") != 200:
+                break
+            batch = data.get("result", {}).get("files", [])
+            if not batch:
+                break
+            files.extend(batch)
+            total_pages = data.get("result", {}).get("total_pages", 1)
+            if page >= total_pages:
+                break
+            page += 1
+        except Exception as e:
+            print(f"[dedup] Error listing files: {e}")
+            break
+    return files
+
+
+def find_existing_upload(
+    api_key: str,
+    page_url: str,
+    movie_title: str = "",
+    source_filecode: str = "",
+    proxy_url: str = "",
+) -> dict | None:
+    """
+    Check if this movie was already uploaded.
+    Returns existing file info dict or None.
+    """
+    page_key = normalize_page_key(page_url)
+    db = load_processed_db()
+
+    # 1. Check local processed DB by page URL
+    if page_key in db:
+        entry = db[page_key]
+        print(f"[dedup] Already processed (local DB): {entry.get('title', page_key)}")
+        print(f"[dedup] Existing filecode: {entry.get('filecode')}")
+        return entry
+
+    # 2. Check local DB by source filecode
+    if source_filecode:
+        for entry in db.values():
+            if entry.get("source_filecode") == source_filecode:
+                print(f"[dedup] Source filecode already cloned: {source_filecode}")
+                print(f"[dedup] Existing filecode: {entry.get('filecode')}")
+                return entry
+
+    # 3. Check DoodStream account by title keywords
+    if api_key and movie_title:
+        keywords = extract_title_keywords(movie_title)
+        if len(keywords) >= 2:
+            account_files = list_doodstream_files(api_key, proxy_url)
+            for f in account_files:
+                file_title = (f.get("title") or "").lower()
+                file_code = f.get("file_code") or f.get("filecode")
+                if not file_code:
+                    continue
+                # Match if most keywords appear in existing file title
+                matches = sum(1 for kw in keywords if kw in file_title)
+                if matches >= max(2, len(keywords) - 1):
+                    print(f"[dedup] Found existing file on account: '{f.get('title')}'")
+                    print(f"[dedup] Existing filecode: {file_code}")
+                    return {
+                        "filecode": file_code,
+                        "title": f.get("title"),
+                        "source": "account_match",
+                        "skipped": True,
+                    }
+
+    return None
+
+
+def mark_as_processed(
+    page_url: str,
+    filecode: str,
+    title: str = "",
+    source_filecode: str = "",
+    embed_url: str = "",
+):
+    """Record a successful upload in local DB."""
+    db = load_processed_db()
+    page_key = normalize_page_key(page_url)
+    db[page_key] = {
+        "filecode": filecode,
+        "title": title,
+        "source_filecode": source_filecode,
+        "embed_url": embed_url,
+        "page_url": page_url,
+        "uploaded_at": time.strftime("%Y-%m-%d %H:%M:%S"),
+    }
+    save_processed_db(db)
+    print(f"[dedup] Saved to {PROCESSED_DB_FILE}: {title or page_key}")
 
 
 # ─── 3. Server List Parser ──────────────────────────────────────────────────
@@ -334,11 +538,9 @@ def try_doodstream_clone(embed_url: str, api_key: str, proxy_url: str = "") -> d
     if not api_key:
         return {"success": False, "error": "No DoodStream API key"}
 
-    match = re.search(r"/(?:e|f|d)/([a-zA-Z0-9]+)", embed_url)
-    if not match:
+    file_code = extract_doodstream_filecode(embed_url)
+    if not file_code:
         return {"success": False, "error": "Could not parse DoodStream filecode"}
-
-    file_code = match.group(1)
     print(f"[doodstream] Triggering direct file clone for filecode: {file_code}")
     try:
         proxies = get_requests_proxies(proxy_url)
@@ -368,7 +570,7 @@ def try_doodstream_upload(stream_url: str, api_key: str, proxy_url: str = "", ti
     try:
         proxies = get_requests_proxies(proxy_url)
         resp = requests.get(
-            f"https://doodapi.com/api/upload/url?key={api_key}&url={stream_url}",
+            f"https://doodapi.com/api/upload/url?key={api_key}&url={quote(stream_url, safe='')}",
             proxies=proxies,
             timeout=30,
         )
@@ -440,7 +642,29 @@ def run_jibi_bot(page_url: str, api_key: str = "", download: bool = False):
         "filecode": None,
         "servers_found": [],
         "errors": [],
+        "skipped_duplicate": False,
     }
+
+    # Step 0: Extract movie title and check for duplicates BEFORE any upload
+    movie_title = extract_movie_title_from_page(page_url, proxy_url)
+    if movie_title:
+        print(f"[jibi] Movie title: {movie_title}")
+
+    existing = find_existing_upload(api_key, page_url, movie_title, proxy_url=proxy_url)
+    if existing and existing.get("filecode"):
+        result["success"] = True
+        result["filecode"] = existing["filecode"]
+        result["skipped_duplicate"] = True
+        result["movie_title"] = existing.get("title") or movie_title
+        print(f"[jibi] Skipping upload — movie already exists! filecode={existing['filecode']}")
+        # Remember this page so we skip faster next time
+        mark_as_processed(
+            page_url=page_url,
+            filecode=existing["filecode"],
+            title=existing.get("title") or movie_title,
+        )
+        _save_result(result)
+        return result
 
     # Step 1: Extract Servers List
     servers = extract_servers_from_page(page_url, proxy_url)
@@ -458,12 +682,47 @@ def run_jibi_bot(page_url: str, api_key: str = "", download: bool = False):
             _save_result(result)
             return result
 
-    # Step 2: Iterate through servers to find a working direct stream
+    # Step 2a: Fast-path — try DoodStream clone on ALL dood embeds (no browser needed)
+    if not result["filecode"] and api_key:
+        dood_servers = [s for s in servers if is_doodstream_embed(s["embed_url"])]
+        if dood_servers:
+            print(f"\n[jibi] Phase 1: Trying DoodStream clone on {len(dood_servers)} embed(s)...")
+        for s in dood_servers:
+            embed_url = s["embed_url"]
+            source_fc = extract_doodstream_filecode(embed_url) or ""
+
+            # Check duplicate by source filecode before cloning
+            dup = find_existing_upload(
+                api_key, page_url, movie_title,
+                source_filecode=source_fc, proxy_url=proxy_url,
+            )
+            if dup and dup.get("filecode"):
+                result["success"] = True
+                result["selected_server"] = s
+                result["direct_stream_url"] = embed_url
+                result["filecode"] = dup["filecode"]
+                result["skipped_duplicate"] = True
+                print(f"[jibi] Skipping clone — already exists! filecode={dup['filecode']}")
+                break
+
+            print(f"[jibi] Clone attempt '{s['name']}': {embed_url[:90]}")
+            clone_res = try_doodstream_clone(embed_url, api_key, proxy_url)
+            if clone_res["success"]:
+                result["success"] = True
+                result["selected_server"] = s
+                result["direct_stream_url"] = embed_url
+                result["filecode"] = clone_res["filecode"]
+                result["source_filecode"] = source_fc
+                print(f"[jibi] DoodStream clone success! Filecode: {clone_res['filecode']}")
+                break
+            print(f"[jibi] Clone failed: {clone_res.get('error')}, trying next dood server...")
+
+    # Step 2b: Iterate remaining servers for direct stream extraction
     if not result["direct_stream_url"]:
         # Prioritize servers known for direct video / fast processing
         def server_priority(s):
             url = s["embed_url"].lower()
-            if any(k in url for k in ("dood", "ds2play", "d0o0d")):
+            if is_doodstream_embed(url):
                 return 1
             if "earnvids" in url or "lulustream" in url or "luluvdo" in url:
                 return 2
@@ -474,25 +733,13 @@ def run_jibi_bot(page_url: str, api_key: str = "", download: bool = False):
         sorted_servers = sorted(servers, key=server_priority)
 
         for s in sorted_servers:
+            if result["filecode"] and is_doodstream_embed(s["embed_url"]):
+                continue  # already tried clone in phase 1
+
             embed_url = s["embed_url"]
             print(f"\n[jibi] Testing server '{s['name']}': {embed_url[:90]}")
 
-            # 2a. Direct DoodStream embed clone optimization
-            if any(k in embed_url.lower() for k in ("dood.", "ds2play.", "d0o0d.")):
-                print(f"[jibi] Recognized DoodStream embed: {embed_url}")
-                if api_key:
-                    clone_res = try_doodstream_clone(embed_url, api_key, proxy_url)
-                    if clone_res["success"]:
-                        result["success"] = True
-                        result["selected_server"] = s
-                        result["direct_stream_url"] = embed_url
-                        result["filecode"] = clone_res["filecode"]
-                        print(f"[jibi] DoodStream direct file clone success! Filecode: {clone_res['filecode']}")
-                        break
-                    else:
-                        print(f"[jibi] DoodStream clone failed: {clone_res.get('error')}, falling back to resolver...")
-
-            # 2b. Quick yt-dlp check on embed URL
+            # Quick yt-dlp check on embed URL
             yt_res = try_yt_dlp_extract(embed_url, proxy_url)
             if yt_res["success"] and is_video_url(yt_res["stream_url"]):
                 stream_url = yt_res["stream_url"]
@@ -511,7 +758,7 @@ def run_jibi_bot(page_url: str, api_key: str = "", download: bool = False):
                     print(f"[jibi] Stream extracted via yt-dlp: {stream_url[:100]}")
                     break
 
-            # 2c. Playwright popup-safe network interception
+            # Playwright popup-safe network interception
             stream_found = resolve_stream_from_embed(embed_url, proxy_url, referer=page_url)
             if stream_found:
                 if download:
@@ -534,11 +781,21 @@ def run_jibi_bot(page_url: str, api_key: str = "", download: bool = False):
 
     # Step 3: Handle Upload if not already done in 2a
     if result["success"] and result["direct_stream_url"] and api_key and not result["filecode"]:
-        up_res = try_doodstream_upload(result["direct_stream_url"], api_key, proxy_url)
+        up_res = try_doodstream_upload(result["direct_stream_url"], api_key, proxy_url, title=movie_title)
         if up_res["success"]:
             result["filecode"] = up_res["filecode"]
         else:
             result["errors"].append(f"Upload failed: {up_res.get('error')}")
+
+    # Step 4: Save to processed DB after successful NEW upload
+    if result["success"] and result["filecode"] and not result.get("skipped_duplicate"):
+        mark_as_processed(
+            page_url=page_url,
+            filecode=result["filecode"],
+            title=movie_title,
+            source_filecode=result.get("source_filecode", ""),
+            embed_url=(result.get("selected_server") or {}).get("embed_url", ""),
+        )
 
     _save_result(result)
     return result
@@ -549,13 +806,17 @@ def _save_result(result: dict):
         json.dump(result, f, indent=2, ensure_ascii=False)
 
     # Standardized upload_result.json for GitHub Actions & downstream integrations
+    fc = result.get("filecode")
     upload_res = {
         "status": "success" if result.get("success") else "error",
         "page_url": result.get("page_url"),
         "video_url": result.get("direct_stream_url"),
-        "filecode": result.get("filecode"),
-        "doodstream_url": f"https://doodstream.com/e/{result['filecode']}" if result.get("filecode") else None,
+        "filecode": fc,
+        "doodstream_url": f"https://doodstream.com/e/{fc}" if fc else None,
+        "playmogo_url": f"https://playmogo.com/e/{fc}" if fc else None,
         "selected_server": result.get("selected_server"),
+        "servers_tried": len(result.get("servers_found", [])),
+        "skipped_duplicate": result.get("skipped_duplicate", False),
         "errors": result.get("errors", []),
     }
     with open("upload_result.json", "w", encoding="utf-8") as f:
