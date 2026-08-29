@@ -581,6 +581,9 @@ def is_remote_uploadable(url: str) -> bool:
     if "master.m3u8" in lower or "/hls" in lower:
         return False
     return True
+
+
+def try_doodstream_clone(embed_url: str, api_key: str, proxy_url: str = "") -> dict:
     """Clone an existing DoodStream file to account using filecode."""
     if not api_key:
         return {"success": False, "error": "No DoodStream API key"}
