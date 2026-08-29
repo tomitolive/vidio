@@ -18,6 +18,8 @@ from urllib.parse import urlparse, urljoin, quote
 import requests
 from bs4 import BeautifulSoup
 
+from catalog import get_entry_by_page, update_doodstream_in_catalog
+
 # ─── 1. Proxies Configuration ───────────────────────────────────────────────
 
 PROXIES_LIST = [
@@ -860,15 +862,28 @@ def run_jibi_bot(page_url: str, api_key: str = "", download: bool = False):
         if not result["errors"]:
             result["errors"].append("No working server found for upload")
 
-    # Step 4: Save to processed DB after successful NEW upload
-    if result["success"] and result["filecode"] and not result.get("skipped_duplicate"):
-        mark_as_processed(
-            page_url=page_url,
+    # Step 4: Save to processed DB + catalog after successful upload
+    if result["success"] and result["filecode"]:
+        catalog_entry = update_doodstream_in_catalog(
             filecode=result["filecode"],
-            title=movie_title,
-            source_filecode=result.get("source_filecode", ""),
+            page_url=page_url,
+            title=result.get("movie_title") or movie_title,
             embed_url=(result.get("selected_server") or {}).get("embed_url", ""),
+            source_filecode=result.get("source_filecode", ""),
+            tmdb_id=(get_entry_by_page(page_url) or {}).get("tmdb_id"),
         )
+        result["doodstream_url"] = catalog_entry.get("doodstream_url")
+        result["playmogo_url"] = catalog_entry.get("playmogo_url")
+        result["tmdb_id"] = catalog_entry.get("tmdb_id")
+
+        if not result.get("skipped_duplicate"):
+            mark_as_processed(
+                page_url=page_url,
+                filecode=result["filecode"],
+                title=movie_title,
+                source_filecode=result.get("source_filecode", ""),
+                embed_url=(result.get("selected_server") or {}).get("embed_url", ""),
+            )
 
     _save_result(result)
     return result
@@ -880,13 +895,16 @@ def _save_result(result: dict):
 
     # Standardized upload_result.json for GitHub Actions & downstream integrations
     fc = result.get("filecode")
+    catalog_entry = get_entry_by_page(result.get("page_url", "")) or {}
     upload_res = {
         "status": "success" if result.get("success") and result.get("filecode") else "error",
         "page_url": result.get("page_url"),
         "video_url": result.get("direct_stream_url"),
+        "tmdb_id": result.get("tmdb_id") or catalog_entry.get("tmdb_id"),
         "filecode": fc,
-        "doodstream_url": f"https://doodstream.com/e/{fc}" if fc else None,
-        "playmogo_url": f"https://playmogo.com/e/{fc}" if fc else None,
+        "doodstream_url": result.get("doodstream_url") or (f"https://doodstream.com/e/{fc}" if fc else None),
+        "playmogo_url": result.get("playmogo_url") or (f"https://playmogo.com/e/{fc}" if fc else None),
+        "vidsrc_url": catalog_entry.get("vidsrc_url"),
         "selected_server": result.get("selected_server"),
         "servers_tried": len(result.get("servers_found", [])),
         "skipped_duplicate": result.get("skipped_duplicate", False),
@@ -895,7 +913,7 @@ def _save_result(result: dict):
     with open("upload_result.json", "w", encoding="utf-8") as f:
         json.dump(upload_res, f, indent=2, ensure_ascii=False)
 
-    print(f"\n[jibi] Results saved to jibi_result.json & upload_result.json")
+    print(f"\n[jibi] Results saved to jibi_result.json, upload_result.json & tmdb_movies.json")
 
 
 def main():

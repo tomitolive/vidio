@@ -20,6 +20,8 @@ from urllib.parse import unquote
 import requests
 from bs4 import BeautifulSoup
 
+from catalog import load_catalog, save_catalog, normalize_key, normalize_page_key, update_doodstream_in_catalog
+
 TMDB_CATALOG_FILE = "tmdb_movies.json"
 DEFAULT_TMDB_API_KEY = "2dca580c2a14b55200e784d157207b4d"
 
@@ -44,27 +46,6 @@ def detect_media_type(title: str, page_url: str = "") -> str:
 
 def get_tmdb_api_key() -> str:
     return os.environ.get("TMDB_API_KEY", DEFAULT_TMDB_API_KEY).strip()
-
-
-def load_catalog() -> dict:
-    if os.path.exists(TMDB_CATALOG_FILE):
-        try:
-            with open(TMDB_CATALOG_FILE, encoding="utf-8") as f:
-                return json.load(f)
-        except (json.JSONDecodeError, OSError):
-            pass
-    return {"movies": {}, "last_updated": None}
-
-
-def save_catalog(catalog: dict):
-    catalog["last_updated"] = time.strftime("%Y-%m-%d %H:%M:%S")
-    with open(TMDB_CATALOG_FILE, "w", encoding="utf-8") as f:
-        json.dump(catalog, f, indent=2, ensure_ascii=False)
-    print(f"[tmdb] Catalog saved to {TMDB_CATALOG_FILE}")
-
-
-def normalize_key(text: str) -> str:
-    return re.sub(r"\s+", " ", text.strip().lower())
 
 
 def clean_title(title: str) -> str:
@@ -240,7 +221,7 @@ def add_movie_to_catalog(
         catalog["movies"][key] = entry
         return entry
 
-    key = normalize_key(source_title or search_result.get("title") or str(search_result["tmdb_id"]))
+    key = normalize_page_key(page_url) if page_url else normalize_key(source_title or search_result.get("title") or str(search_result["tmdb_id"]))
     entry = {
         "success": True,
         "type": search_result.get("type", "movie"),
@@ -257,6 +238,10 @@ def add_movie_to_catalog(
         "page_url": page_url,
         "query": search_result.get("query"),
         "vidsrc_url": search_result.get("vidsrc_url"),
+        "filecode": None,
+        "doodstream_url": None,
+        "playmogo_url": None,
+        "doodstream_download_url": None,
         "searched_at": time.strftime("%Y-%m-%d %H:%M:%S"),
     }
     catalog["movies"][key] = entry
@@ -276,7 +261,7 @@ def process_title(title: str, catalog: dict, page_url: str = "", api_key: str = 
     query = re.sub(r"\b((?:19|20)\d{2})\b", "", cleaned).strip()
     query = query or cleaned
 
-    key = normalize_key(page_url or cleaned)
+    key = normalize_page_key(page_url) if page_url else normalize_key(cleaned)
     if key in catalog.get("movies", {}) and catalog["movies"][key].get("tmdb_id"):
         existing = catalog["movies"][key]
         print(f"[tmdb] Already in catalog: {existing.get('title')} -> ID {existing.get('tmdb_id')}")
@@ -319,6 +304,7 @@ def run_tmdb_bot(
             print(f"[tmdb] Title error: {e}")
 
     save_catalog(catalog)
+    print(f"[tmdb] Catalog saved to {TMDB_CATALOG_FILE}")
 
     summary = {
         "total": len(results),
