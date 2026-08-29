@@ -113,5 +113,13 @@ jobs:
       - name: Display result
         if: always()
         run: |
-          echo "=== Upload Result ==="
-          cat upload_result.json
+          if [ "${{ inputs.source }}" = "tmdb" ]; then
+            echo "=== TMDB Catalog (tmdb_movies.json) ==="
+            cat tmdb_movies.json 2>/dev/null || echo "No catalog file"
+            echo ""
+            echo "=== TMDB Search Result (tmdb_search_result.json) ==="
+            cat tmdb_search_result.json 2>/dev/null || echo "No search result file"
+          else
+            echo "=== Upload Result ==="
+            cat upload_result.json 2>/dev/null || echo "No upload result file"
+          fi

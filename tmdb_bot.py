@@ -26,7 +26,20 @@ DEFAULT_TMDB_API_KEY = "2dca580c2a14b55200e784d157207b4d"
 STOPWORDS = {
     "مشاهدة", "فيلم", "وتحميل", "مترجم", "مباشر", "watch", "download",
     "movie", "film", "online", "free", "hd", "full", "cima4u", "cimafu",
+    "مسلسل", "حلقة", "الحلقة", "موسم", "series", "season", "episode",
 }
+
+
+def detect_media_type(title: str, page_url: str = "") -> str:
+    """Guess if content is a TV series or movie."""
+    text = f"{title} {page_url}".lower()
+    tv_signals = (
+        "مسلسل", "موسم", "حلقة", "series", "season", "episode",
+        "/tv/", "/series/", "مسلسل-",
+    )
+    if any(s in text for s in tv_signals):
+        return "tv"
+    return "movie"
 
 
 def get_tmdb_api_key() -> str:
@@ -94,8 +107,8 @@ def extract_title_from_page(page_url: str) -> str:
     return clean_title(slug)
 
 
-def search_tmdb(title: str, year: str | None = None, api_key: str = "") -> dict:
-    """Search TMDB and return best match."""
+def search_tmdb(title: str, year: str | None = None, api_key: str = "", media_type: str = "auto") -> dict:
+    """Search TMDB movie or TV and return best match."""
     api_key = api_key or get_tmdb_api_key()
 
     queries = [title]
@@ -104,81 +117,107 @@ def search_tmdb(title: str, year: str | None = None, api_key: str = "") -> dict:
     queries.append(re.sub(r"[:.\-]", " ", title))
     queries = list(dict.fromkeys(q.strip() for q in queries if q.strip()))
 
-    def do_search(query: str, use_year: bool) -> list:
-        params = {
-            "api_key": api_key,
-            "query": query,
-            "include_adult": "false",
-            "language": "en-US",
-        }
-        if use_year and year:
-            params["year"] = year
-        print(f"[tmdb] Searching: '{query}'" + (f" ({year})" if use_year and year else ""))
-        resp = requests.get("https://api.themoviedb.org/3/search/movie", params=params, timeout=20)
-        resp.raise_for_status()
-        return resp.json().get("results", [])
+    types_to_try = []
+    if media_type == "auto":
+        guessed = detect_media_type(title)
+        types_to_try = [guessed, "tv" if guessed == "movie" else "movie"]
+    else:
+        types_to_try = [media_type]
 
-    # Pass 1: all query variants with year
-    for query in queries:
-        results = do_search(query, use_year=True)
-        if results:
-            best = pick_best_match(results, title, year)
-            return _format_result(best, query)
+    best_overall = None
+    best_score = -1
 
-    # Pass 2: all query variants without year
-    for query in queries:
-        results = do_search(query, use_year=False)
-        if results:
-            best = pick_best_match(results, title, year)
-            return _format_result(best, query)
+    for mtype in types_to_try:
+        for query in queries:
+            for use_year in (True, False):
+                if not use_year and not year:
+                    continue
+                results = _tmdb_api_search(query, year if use_year else None, mtype, api_key)
+                if not results:
+                    continue
+                candidate = pick_best_match(results, title, year, mtype)
+                score = _match_score(candidate, title, year, mtype)
+                if score > best_score:
+                    best_score = score
+                    best_overall = _format_result(candidate, query, mtype)
 
+    if best_overall:
+        return best_overall
     return {"success": False, "error": "No results on TMDB", "query": title}
 
 
-def _format_result(best: dict, query: str) -> dict:
-    release_date = best.get("release_date", "")
+def _tmdb_api_search(query: str, year: str | None, media_type: str, api_key: str) -> list:
+    endpoint = "tv" if media_type == "tv" else "movie"
+    params = {
+        "api_key": api_key,
+        "query": query,
+        "include_adult": "false",
+        "language": "en-US",
+    }
+    if year and media_type == "movie":
+        params["year"] = year
+    if year and media_type == "tv":
+        params["first_air_date_year"] = year
+
+    label = f"{media_type}:{query}" + (f" ({year})" if year else "")
+    print(f"[tmdb] Searching {label}")
+    resp = requests.get(f"https://api.themoviedb.org/3/search/{endpoint}", params=params, timeout=20)
+    resp.raise_for_status()
+    return resp.json().get("results", [])
+
+
+def _match_score(item: dict, query: str, year: str | None, media_type: str) -> float:
+    query_lower = query.lower()
+    title = (item.get("title") or item.get("name") or "").lower()
+    original = (item.get("original_title") or item.get("original_name") or "").lower()
+    date = item.get("release_date") or item.get("first_air_date") or ""
+    item_year = date[:4]
+    s = item.get("popularity", 0) / 10.0
+
+    if query_lower in title or query_lower in original:
+        s += 50
+    if title in query_lower or original in query_lower:
+        s += 30
+
+    query_tokens = set(re.findall(r"[a-z0-9]+", query_lower))
+    title_tokens = set(re.findall(r"[a-z0-9]+", title + " " + original))
+    s += len(query_tokens & title_tokens) * 5
+
+    if year and item_year == year:
+        s += 40
+    elif year and item_year and abs(int(item_year) - int(year)) <= 1:
+        s += 15
+
+    if media_type == detect_media_type(query):
+        s += 10
+
+    return s
+
+
+def _format_result(best: dict, query: str, media_type: str) -> dict:
+    date = best.get("release_date") or best.get("first_air_date") or ""
+    title = best.get("title") or best.get("name")
+    original = best.get("original_title") or best.get("original_name")
+    tmdb_id = best["id"]
+    vidsrc_path = "tv" if media_type == "tv" else "movie"
     return {
         "success": True,
-        "tmdb_id": best["id"],
-        "title": best.get("title"),
-        "original_title": best.get("original_title"),
-        "year": release_date[:4] if release_date else "",
+        "type": media_type,
+        "tmdb_id": tmdb_id,
+        "title": title,
+        "original_title": original,
+        "year": date[:4] if date else "",
         "overview": best.get("overview", ""),
         "poster_path": best.get("poster_path"),
         "vote_average": best.get("vote_average"),
         "popularity": best.get("popularity"),
         "query": query,
+        "vidsrc_url": f"https://vidsrc.sbs/embed/{vidsrc_path}/{tmdb_id}",
     }
 
 
-def pick_best_match(results: list, query: str, year: str | None = None) -> dict:
-    """Pick the most likely TMDB result."""
-    query_lower = query.lower()
-
-    def score(movie: dict) -> float:
-        title = (movie.get("title") or "").lower()
-        original = (movie.get("original_title") or "").lower()
-        movie_year = (movie.get("release_date") or "")[:4]
-        s = movie.get("popularity", 0) / 10.0
-
-        if query_lower in title or query_lower in original:
-            s += 50
-        if title in query_lower or original in query_lower:
-            s += 30
-
-        query_tokens = set(re.findall(r"[a-z0-9]+", query_lower))
-        title_tokens = set(re.findall(r"[a-z0-9]+", title + " " + original))
-        overlap = len(query_tokens & title_tokens)
-        s += overlap * 5
-
-        if year and movie_year == year:
-            s += 40
-        elif year and movie_year and abs(int(movie_year) - int(year)) <= 1:
-            s += 15
-
-        return s
-
-    return max(results, key=score)
+def pick_best_match(results: list, query: str, year: str | None = None, media_type: str = "movie") -> dict:
+    return max(results, key=lambda item: _match_score(item, query, year, media_type))
 
 
 def add_movie_to_catalog(
@@ -204,6 +243,7 @@ def add_movie_to_catalog(
     key = normalize_key(source_title or search_result.get("title") or str(search_result["tmdb_id"]))
     entry = {
         "success": True,
+        "type": search_result.get("type", "movie"),
         "tmdb_id": search_result["tmdb_id"],
         "title": search_result.get("title"),
         "original_title": search_result.get("original_title"),
@@ -216,12 +256,12 @@ def add_movie_to_catalog(
         "source_title": source_title,
         "page_url": page_url,
         "query": search_result.get("query"),
-        "vidsrc_url": f"https://vidsrc.sbs/embed/movie/{search_result['tmdb_id']}",
+        "vidsrc_url": search_result.get("vidsrc_url"),
         "searched_at": time.strftime("%Y-%m-%d %H:%M:%S"),
     }
     catalog["movies"][key] = entry
     print(
-        f"[tmdb] Found: {entry['title']} ({entry['year']}) "
+        f"[tmdb] Found [{entry['type']}]: {entry['title']} ({entry['year']}) "
         f"-> ID {entry['tmdb_id']}"
     )
     return entry
@@ -242,7 +282,8 @@ def process_title(title: str, catalog: dict, page_url: str = "", api_key: str = 
         print(f"[tmdb] Already in catalog: {existing.get('title')} -> ID {existing.get('tmdb_id')}")
         return existing
 
-    result = search_tmdb(query, year=year, api_key=api_key)
+    media_type = detect_media_type(cleaned, page_url)
+    result = search_tmdb(query, year=year, api_key=api_key, media_type=media_type)
     return add_movie_to_catalog(catalog, result, source_title=title, page_url=page_url)
 
 
