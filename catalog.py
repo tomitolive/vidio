@@ -4,6 +4,7 @@ import json
 import os
 import re
 import time
+import requests
 from dotenv import load_dotenv
 from supabase import create_client, Client
 
@@ -146,6 +147,55 @@ def find_tmdb_id_by_title(title: str) -> int | None:
             return entry.get("tmdb_id")
     
     return None
+
+
+def search_tmdb_api(title: str, year: str = "") -> int | None:
+    """Search TMDB API for movie ID by title and year."""
+    api_key = os.environ.get("TMDB_API_KEY")
+    if not api_key:
+        print("[tmdb] TMDB_API_KEY not found, skipping API search")
+        return None
+    
+    if not title:
+        return None
+    
+    try:
+        # Extract year from title if not provided
+        if not year:
+            year_match = re.search(r'\b(19|20)\d{2}\b', title)
+            if year_match:
+                year = year_match.group()
+        
+        # Clean title for search
+        clean_title = re.sub(r'\b(19|20)\d{2}\b', '', title).strip()
+        clean_title = re.sub(r'\s+', ' ', clean_title)
+        
+        # Search TMDB
+        url = "https://api.themoviedb.org/3/search/movie"
+        params = {
+            "api_key": api_key,
+            "query": clean_title,
+            "language": "en-US"
+        }
+        if year:
+            params["year"] = year
+        
+        response = requests.get(url, params=params, timeout=10)
+        data = response.json()
+        
+        if data.get("results"):
+            # Return first result's ID
+            first_result = data["results"][0]
+            tmdb_id = first_result.get("id")
+            print(f"[tmdb] Found TMDB ID: {tmdb_id} for '{clean_title}' ({year})")
+            return tmdb_id
+        
+        print(f"[tmdb] No results found for '{clean_title}' ({year})")
+        return None
+        
+    except Exception as e:
+        print(f"[tmdb] Error searching TMDB API: {e}")
+        return None
 
 
 def import_from_doodstream_account(api_key: str) -> dict:

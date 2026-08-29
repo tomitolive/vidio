@@ -59,6 +59,7 @@ jobs:
           DOODSTREAM_API_KEY: ${{ inputs.api_key }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+          TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
         run: |
           echo "Running Jibi Bot..."
           if [ -n "${{ inputs.tmdb_id }}" ]; then

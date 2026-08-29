@@ -18,7 +18,7 @@ from urllib.parse import urlparse, urljoin, quote
 import requests
 from bs4 import BeautifulSoup
 
-from catalog import get_entry_by_page, update_doodstream_in_catalog, find_tmdb_id_by_title, import_from_doodstream_account, save_to_supabase
+from catalog import get_entry_by_page, update_doodstream_in_catalog, find_tmdb_id_by_title, import_from_doodstream_account, save_to_supabase, search_tmdb_api
 
 # ─── 1. Proxies Configuration ───────────────────────────────────────────────
 
@@ -864,8 +864,15 @@ def run_jibi_bot(page_url: str, api_key: str = "", download: bool = False, tmdb_
 
     # Step 4: Save to processed DB + catalog after successful upload
     if result["success"] and result["filecode"]:
-        # Try to find tmdb_id: manual override > by title > by page URL
-        resolved_tmdb_id = tmdb_id or find_tmdb_id_by_title(movie_title) or (get_entry_by_page(page_url) or {}).get("tmdb_id")
+        # Try to find tmdb_id: manual override > by title (catalog) > TMDB API > by page URL
+        resolved_tmdb_id = tmdb_id
+        if not resolved_tmdb_id:
+            resolved_tmdb_id = find_tmdb_id_by_title(movie_title)
+        if not resolved_tmdb_id:
+            resolved_tmdb_id = search_tmdb_api(movie_title)
+        if not resolved_tmdb_id:
+            resolved_tmdb_id = (get_entry_by_page(page_url) or {}).get("tmdb_id")
+        
         catalog_entry = update_doodstream_in_catalog(
             filecode=result["filecode"],
             page_url=page_url,
