@@ -8,8 +8,8 @@ on:
         required: true
         type: string
       tmdb_id:
-        description: 'TMDB ID of the movie (required for Supabase database)'
-        required: true
+        description: 'TMDB ID of the movie (optional - bot will try to find it automatically)'
+        required: false
         type: string
       api_key:
         description: 'DoodStream API Key'
@@ -61,7 +61,12 @@ jobs:
           SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
         run: |
           echo "Running Jibi Bot..."
-          xvfb-run --auto-servernum python jibi_bot.py "${{ inputs.page_url }}" --api-key "${{ inputs.api_key }}" --tmdb-id "${{ inputs.tmdb_id }}"
+          if [ -n "${{ inputs.tmdb_id }}" ]; then
+            xvfb-run --auto-servernum python jibi_bot.py "${{ inputs.page_url }}" --api-key "${{ inputs.api_key }}" --tmdb-id "${{ inputs.tmdb_id }}"
+          else
+            echo "No tmdb_id provided, bot will try to find it automatically..."
+            xvfb-run --auto-servernum python jibi_bot.py "${{ inputs.page_url }}" --api-key "${{ inputs.api_key }}"
+          fi
 
       - name: Upload result as artifact
         if: always()
