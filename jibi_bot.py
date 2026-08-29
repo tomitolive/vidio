@@ -18,7 +18,7 @@ from urllib.parse import urlparse, urljoin, quote
 import requests
 from bs4 import BeautifulSoup
 
-from catalog import get_entry_by_page, update_doodstream_in_catalog
+from catalog import get_entry_by_page, update_doodstream_in_catalog, find_tmdb_id_by_title, import_from_doodstream_account
 
 # ─── 1. Proxies Configuration ───────────────────────────────────────────────
 
@@ -690,7 +690,7 @@ def download_locally(stream_url: str, proxy_url: str = "", output_dir: str = "."
 
 # ─── 6. Main Orchestrator ───────────────────────────────────────────────────
 
-def run_jibi_bot(page_url: str, api_key: str = "", download: bool = False):
+def run_jibi_bot(page_url: str, api_key: str = "", download: bool = False, tmdb_id: int = None):
     page_url = clean_url(page_url)
     proxy_url = get_random_proxy()
     if proxy_url:
@@ -864,13 +864,15 @@ def run_jibi_bot(page_url: str, api_key: str = "", download: bool = False):
 
     # Step 4: Save to processed DB + catalog after successful upload
     if result["success"] and result["filecode"]:
+        # Try to find tmdb_id: manual override > by title > by page URL
+        resolved_tmdb_id = tmdb_id or find_tmdb_id_by_title(movie_title) or (get_entry_by_page(page_url) or {}).get("tmdb_id")
         catalog_entry = update_doodstream_in_catalog(
             filecode=result["filecode"],
             page_url=page_url,
             title=result.get("movie_title") or movie_title,
             embed_url=(result.get("selected_server") or {}).get("embed_url", ""),
             source_filecode=result.get("source_filecode", ""),
-            tmdb_id=(get_entry_by_page(page_url) or {}).get("tmdb_id"),
+            tmdb_id=resolved_tmdb_id,
         )
         result["doodstream_url"] = catalog_entry.get("doodstream_url")
         result["playmogo_url"] = catalog_entry.get("playmogo_url")
@@ -922,15 +924,27 @@ def main():
                         help="Movie watch page URL to scrape")
     parser.add_argument("--api-key", default=os.environ.get("DOODSTREAM_API_KEY", ""),
                         help="DoodStream API Key for Remote Upload")
+    parser.add_argument("--tmdb-id", type=int, default=None,
+                        help="Manually specify TMDB ID (overrides auto-detection)")
     parser.add_argument("--download", action="store_true",
                         help="Download stream locally")
+    parser.add_argument("--import-doodstream", action="store_true",
+                        help="Import all videos from DoodStream account and update catalog")
     args = parser.parse_args()
+
+    # Handle import mode
+    if args.import_doodstream:
+        if not args.api_key:
+            print("Error: --api-key required for --import-doodstream")
+            sys.exit(1)
+        res = import_from_doodstream_account(args.api_key)
+        sys.exit(0 if res.get("success") else 1)
 
     if not args.url:
         print("Error: Please provide a URL argument or set PAGE_URL environment variable.")
         sys.exit(1)
 
-    res = run_jibi_bot(args.url, api_key=args.api_key, download=args.download)
+    res = run_jibi_bot(args.url, api_key=args.api_key, download=args.download, tmdb_id=args.tmdb_id)
     sys.exit(0 if res.get("success") and (res.get("filecode") or args.download) else 1)
 
 

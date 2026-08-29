@@ -111,6 +111,122 @@ def update_doodstream_in_catalog(
     return entry
 
 
+def find_tmdb_id_by_title(title: str) -> int | None:
+    """Search for tmdb_id by movie title in the catalog."""
+    if not title:
+        return None
+    
+    catalog = load_catalog()
+    movies = catalog.get("movies", {})
+    title_normalized = normalize_key(title)
+    
+    # Direct match
+    if title_normalized in movies:
+        return movies[title_normalized].get("tmdb_id")
+    
+    # Fuzzy match by title/source_title
+    for key, entry in movies.items():
+        entry_title = normalize_key(entry.get("title") or entry.get("source_title", ""))
+        if entry_title and entry_title == title_normalized:
+            return entry.get("tmdb_id")
+    
+    return None
+
+
+def import_from_doodstream_account(api_key: str) -> dict:
+    """Import all videos from DoodStream account and update catalog with tmdb_id matches."""
+    import requests
+    
+    if not api_key:
+        print("[import] Error: DoodStream API key required")
+        return {"success": False, "error": "No API key"}
+    
+    print("[import] Fetching videos from DoodStream account...")
+    files = []
+    page = 1
+    
+    while True:
+        try:
+            resp = requests.get(
+                f"https://doodapi.com/api/file/list?key={api_key}&page={page}&per_page=100",
+                timeout=20,
+            )
+            data = resp.json()
+            if data.get("status") != 200:
+                break
+            batch = data.get("result", {}).get("files", [])
+            if not batch:
+                break
+            files.extend(batch)
+            total_pages = data.get("result", {}).get("total_pages", 1)
+            if page >= total_pages:
+                break
+            page += 1
+        except Exception as e:
+            print(f"[import] Error fetching page {page}: {e}")
+            break
+    
+    print(f"[import] Found {len(files)} videos in account")
+    
+    catalog = load_catalog()
+    movies = catalog.setdefault("movies", {})
+    updated_count = 0
+    
+    for file_info in files:
+        filecode = file_info.get("file_code") or file_info.get("filecode")
+        title = file_info.get("title", "")
+        
+        if not filecode:
+            continue
+        
+        # Try to find tmdb_id by title
+        tmdb_id = find_tmdb_id_by_title(title)
+        
+        # Find existing entry by filecode or create new key
+        existing_key = None
+        for key, entry in movies.items():
+            if entry.get("filecode") == filecode:
+                existing_key = key
+                break
+        
+        # Use title as key if no existing entry
+        if not existing_key:
+            existing_key = normalize_key(title) if title else filecode
+        
+        entry = movies.get(existing_key, {})
+        entry.update({
+            "success": True,
+            "filecode": filecode,
+            "doodstream_url": f"https://doodstream.com/e/{filecode}",
+            "playmogo_url": f"https://playmogo.com/e/{filecode}",
+            "doodstream_download_url": f"https://playmogo.com/d/{filecode}",
+            "title": title or entry.get("title", ""),
+            "source_title": title or entry.get("source_title", ""),
+            "uploaded_at": file_info.get("upload_date") or entry.get("uploaded_at", time.strftime("%Y-%m-%d %H:%M:%S")),
+        })
+        
+        if tmdb_id:
+            entry["tmdb_id"] = tmdb_id
+            media_type = entry.get("type", "movie")
+            entry["vidsrc_url"] = f"https://vidsrc.sbs/embed/{media_type}/{tmdb_id}"
+            print(f"[import] Matched: '{title}' -> tmdb_id={tmdb_id}")
+            updated_count += 1
+        else:
+            print(f"[import] No match: '{title}' (filecode: {filecode})")
+        
+        movies[existing_key] = entry
+    
+    save_catalog(catalog)
+    print(f"[import] Catalog updated. Total entries: {len(movies)}, Matched with tmdb_id: {updated_count}")
+    
+    return {
+        "success": True,
+        "total_files": len(files),
+        "updated_entries": updated_count,
+        "catalog_entries": len(movies),
+    }
+
+
 def get_entry_by_page(page_url: str) -> dict | None:
     catalog = load_catalog()
     key = _find_catalog_key(catalog, page_url=page_url)
