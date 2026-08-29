@@ -4,6 +4,21 @@ import json
 import os
 import re
 import time
+from dotenv import load_dotenv
+from supabase import create_client, Client
+
+load_dotenv()
+
+# Initialize Supabase client
+supabase: Client | None = None
+try:
+    supabase_url = os.environ.get("SUPABASE_URL")
+    supabase_key = os.environ.get("SUPABASE_KEY")
+    if supabase_url and supabase_key:
+        supabase = create_client(supabase_url, supabase_key)
+        print("[supabase] Connected to Supabase")
+except Exception as e:
+    print(f"[supabase] Failed to connect: {e}")
 
 CATALOG_FILE = "tmdb_movies.json"
 
@@ -233,3 +248,35 @@ def get_entry_by_page(page_url: str) -> dict | None:
     if key:
         return catalog["movies"][key]
     return None
+
+
+def save_to_supabase(tmdb_id: int, title: str, doodstream_url: str, doodstream_download_url: str) -> bool:
+    """Save movie data to Supabase database."""
+    if not supabase:
+        print("[supabase] Not connected, skipping database save")
+        return False
+    
+    try:
+        data = {
+            "tmdb_id": tmdb_id,
+            "title": title,
+            "doodstream_url": doodstream_url,
+            "doodstream_download_url": doodstream_download_url,
+        }
+        
+        # Check if movie already exists
+        existing = supabase.table("movies").select("*").eq("tmdb_id", tmdb_id).execute()
+        
+        if existing.data:
+            # Update existing record
+            supabase.table("movies").update(data).eq("tmdb_id", tmdb_id).execute()
+            print(f"[supabase] Updated movie: {title} (tmdb_id: {tmdb_id})")
+        else:
+            # Insert new record
+            supabase.table("movies").insert(data).execute()
+            print(f"[supabase] Inserted movie: {title} (tmdb_id: {tmdb_id})")
+        
+        return True
+    except Exception as e:
+        print(f"[supabase] Error saving to database: {e}")
+        return False

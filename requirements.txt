@@ -7,3 +7,5 @@ playwright-stealth>=1.0.6
 undetected-chromedriver>=3.5.0
 selenium>=4.0.0
 streamlink>=8.0.0
+supabase>=2.0.0
+python-dotenv>=1.0.0

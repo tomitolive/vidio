@@ -18,7 +18,7 @@ from urllib.parse import urlparse, urljoin, quote
 import requests
 from bs4 import BeautifulSoup
 
-from catalog import get_entry_by_page, update_doodstream_in_catalog, find_tmdb_id_by_title, import_from_doodstream_account
+from catalog import get_entry_by_page, update_doodstream_in_catalog, find_tmdb_id_by_title, import_from_doodstream_account, save_to_supabase
 
 # ─── 1. Proxies Configuration ───────────────────────────────────────────────
 
@@ -877,6 +877,15 @@ def run_jibi_bot(page_url: str, api_key: str = "", download: bool = False, tmdb_
         result["doodstream_url"] = catalog_entry.get("doodstream_url")
         result["playmogo_url"] = catalog_entry.get("playmogo_url")
         result["tmdb_id"] = catalog_entry.get("tmdb_id")
+        
+        # Save to Supabase if tmdb_id is available
+        if resolved_tmdb_id:
+            save_to_supabase(
+                tmdb_id=resolved_tmdb_id,
+                title=catalog_entry.get("title") or movie_title,
+                doodstream_url=catalog_entry.get("doodstream_url"),
+                doodstream_download_url=catalog_entry.get("doodstream_download_url")
+            )
 
         if not result.get("skipped_duplicate"):
             mark_as_processed(
