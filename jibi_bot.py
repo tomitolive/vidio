@@ -430,7 +430,20 @@ def run_jibi_bot(page_url: str, api_key: str = "", download: bool = False):
             embed_url = s["embed_url"]
             print(f"\n[jibi] Testing server '{s['name']}': {embed_url[:90]}")
 
-            # 2a. Quick yt-dlp check on embed URL
+            # 2a. Direct DoodStream embed remote upload optimization
+            if any(k in embed_url.lower() for k in ("dood.", "ds2play.", "d0o0d.")):
+                result["success"] = True
+                result["selected_server"] = s
+                result["direct_stream_url"] = embed_url
+                print(f"[jibi] Recognized DoodStream embed: {embed_url}")
+                if api_key:
+                    up_res = try_doodstream_upload(embed_url, api_key, proxy_url)
+                    if up_res["success"]:
+                        result["filecode"] = up_res["filecode"]
+                        print(f"[jibi] DoodStream remote upload/clone success! Filecode: {up_res['filecode']}")
+                        break
+
+            # 2b. Quick yt-dlp check on embed URL
             yt_res = try_yt_dlp_extract(embed_url, proxy_url)
             if yt_res["success"] and is_video_url(yt_res["stream_url"]):
                 stream_url = yt_res["stream_url"]
@@ -449,7 +462,7 @@ def run_jibi_bot(page_url: str, api_key: str = "", download: bool = False):
                     print(f"[jibi] Stream extracted via yt-dlp: {stream_url[:100]}")
                     break
 
-            # 2b. Playwright popup-safe network interception
+            # 2c. Playwright popup-safe network interception
             stream_found = resolve_stream_from_embed(embed_url, proxy_url, referer=page_url)
             if stream_found:
                 if download:
@@ -470,21 +483,13 @@ def run_jibi_bot(page_url: str, api_key: str = "", download: bool = False):
                     print(f"[jibi] Stream extracted via Playwright: {stream_found[:100]}")
                     break
 
-    # Step 3: Handle Upload / Download Actions
-    if result["success"] and result["direct_stream_url"]:
-        stream_url = result["direct_stream_url"]
-
-        if api_key:
-            up_res = try_doodstream_upload(stream_url, api_key, proxy_url)
-            if up_res["success"]:
-                result["filecode"] = up_res["filecode"]
-            else:
-                result["errors"].append(f"Upload failed: {up_res.get('error')}")
-
-        if download:
-            download_locally(stream_url, proxy_url)
-    else:
-        result["errors"].append("Failed to resolve playable stream from any server.")
+    # Step 3: Handle Upload if not already done in 2a
+    if result["success"] and result["direct_stream_url"] and api_key and not result["filecode"]:
+        up_res = try_doodstream_upload(result["direct_stream_url"], api_key, proxy_url)
+        if up_res["success"]:
+            result["filecode"] = up_res["filecode"]
+        else:
+            result["errors"].append(f"Upload failed: {up_res.get('error')}")
 
     _save_result(result)
     return result
@@ -493,7 +498,21 @@ def run_jibi_bot(page_url: str, api_key: str = "", download: bool = False):
 def _save_result(result: dict):
     with open("jibi_result.json", "w", encoding="utf-8") as f:
         json.dump(result, f, indent=2, ensure_ascii=False)
-    print(f"\n[jibi] Results saved to jibi_result.json")
+
+    # Standardized upload_result.json for GitHub Actions & downstream integrations
+    upload_res = {
+        "status": "success" if result.get("success") else "error",
+        "page_url": result.get("page_url"),
+        "video_url": result.get("direct_stream_url"),
+        "filecode": result.get("filecode"),
+        "doodstream_url": f"https://doodstream.com/e/{result['filecode']}" if result.get("filecode") else None,
+        "selected_server": result.get("selected_server"),
+        "errors": result.get("errors", []),
+    }
+    with open("upload_result.json", "w", encoding="utf-8") as f:
+        json.dump(upload_res, f, indent=2, ensure_ascii=False)
+
+    print(f"\n[jibi] Results saved to jibi_result.json & upload_result.json")
 
 
 def main():
