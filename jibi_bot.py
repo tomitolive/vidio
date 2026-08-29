@@ -78,8 +78,10 @@ def is_video_url(url: str, content_type: str = "") -> bool:
 
 def clean_url(url: str) -> str:
     url = url.strip()
-    if url.startswith("//"):
-        url = "https:" + url
+    if url.startswith("://"):
+        url = "https" + url
+    elif not url.startswith("http://") and not url.startswith("https://"):
+        url = "https://" + url
     return url
 
 
@@ -380,6 +382,7 @@ def download_locally(stream_url: str, proxy_url: str = "", output_dir: str = "."
 # ─── 6. Main Orchestrator ───────────────────────────────────────────────────
 
 def run_jibi_bot(page_url: str, api_key: str = "", download: bool = False):
+    page_url = clean_url(page_url)
     proxy_url = get_random_proxy()
     if proxy_url:
         masked = proxy_url.split("@")[-1] if "@" in proxy_url else proxy_url
