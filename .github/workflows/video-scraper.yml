@@ -3,30 +3,16 @@ name: Video Scraper & Upload
 on:
   workflow_dispatch:
     inputs:
-      source:
-        description: 'Source type (cimafu, jibi, tmdb, tv10, vidsrc, or topcinemaa)'
-        required: false
-        type: string
-        default: 'cimafu'
       page_url:
-        description: 'URL of the page to scrape (for cimafu/jibi/tmdb source)'
-        required: false
-        type: string
-      movie_titles:
-        description: 'Movie titles for TMDB search (comma separated, for tmdb source)'
-        required: false
+        description: 'URL of the page to scrape'
+        required: true
         type: string
       tmdb_id:
-        description: 'TMDB ID of the movie (for vidsrc source)'
-        required: false
+        description: 'TMDB ID of the movie (required for Supabase database)'
+        required: true
         type: string
-      server_preference:
-        description: 'Preferred server (Streamix, Voe, DoodStream, EarnVids, etc.)'
-        required: false
-        type: string
-        default: 'Streamix'
       api_key:
-        description: 'DoodStream API Key (required for both tv10 and vidsrc sources)'
+        description: 'DoodStream API Key'
         required: true
         type: string
 
@@ -67,36 +53,15 @@ jobs:
             movies-cache-
             processed-movies-
 
-      - name: Run scraper
+      - name: Run jibi_bot
         env:
-          SOURCE: ${{ inputs.source }}
           PAGE_URL: ${{ inputs.page_url }}
-          TMDB_ID: ${{ inputs.tmdb_id }}
-          MOVIE_TITLES: ${{ inputs.movie_titles }}
-          TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
           DOODSTREAM_API_KEY: ${{ inputs.api_key }}
-          EARNVIDS_API_KEY: ${{ inputs.api_key }}
-          SERVER_PREFERENCE: ${{ inputs.server_preference }}
-          PROXY_URL: ${{ secrets.PROXY_URL }}
-          HEADLESS: "false"
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
         run: |
-          if [ "${{ inputs.source }}" = "tmdb" ]; then
-            echo "Running TMDB Bot..."
-            if [ -z "${{ inputs.page_url }}" ] && [ -z "${{ inputs.movie_titles }}" ]; then
-              echo "ERROR: page_url or movie_titles required for tmdb source"
-              exit 1
-            fi
-            python tmdb_bot.py
-          elif [ "${{ inputs.source }}" = "cimafu" ] || [ "${{ inputs.source }}" = "jibi" ]; then
-            if [ -z "${{ inputs.page_url }}" ]; then
-              echo "ERROR: page_url is required for cimafu/jibi source"
-              exit 1
-            fi
-            echo "Running Jibi Bot for Cimafu..."
-            xvfb-run --auto-servernum python jibi_bot.py "${{ inputs.page_url }}" --api-key "${{ inputs.api_key }}"
-          else
-            xvfb-run --auto-servernum python scrape_upload.py
-          fi
+          echo "Running Jibi Bot..."
+          xvfb-run --auto-servernum python jibi_bot.py "${{ inputs.page_url }}" --api-key "${{ inputs.api_key }}" --tmdb-id "${{ inputs.tmdb_id }}"
 
       - name: Upload result as artifact
         if: always()
@@ -107,22 +72,13 @@ jobs:
             upload_result.json
             processed_movies.json
             tmdb_movies.json
-            tmdb_search_result.json
           retention-days: 30
       
       - name: Display result
         if: always()
         run: |
-          if [ "${{ inputs.source }}" = "tmdb" ]; then
-            echo "=== TMDB Catalog (tmdb_movies.json) ==="
-            cat tmdb_movies.json 2>/dev/null || echo "No catalog file"
-            echo ""
-            echo "=== TMDB Search Result (tmdb_search_result.json) ==="
-            cat tmdb_search_result.json 2>/dev/null || echo "No search result file"
-          else
-            echo "=== Upload Result ==="
-            cat upload_result.json 2>/dev/null || echo "No upload result file"
-            echo ""
-            echo "=== Catalog (tmdb_movies.json) ==="
-            cat tmdb_movies.json 2>/dev/null || echo "No catalog file"
-          fi
+          echo "=== Upload Result ==="
+          cat upload_result.json 2>/dev/null || echo "No upload result file"
+          echo ""
+          echo "=== Catalog (tmdb_movies.json) ==="
+          cat tmdb_movies.json 2>/dev/null || echo "No catalog file"
