@@ -329,6 +329,36 @@ def try_yt_dlp_extract(url: str, proxy_url: str = "") -> dict:
         return {"success": False, "error": str(e)}
 
 
+def try_doodstream_clone(embed_url: str, api_key: str, proxy_url: str = "") -> dict:
+    """Clone an existing DoodStream file to account using filecode."""
+    if not api_key:
+        return {"success": False, "error": "No DoodStream API key"}
+
+    match = re.search(r"/(?:e|f|d)/([a-zA-Z0-9]+)", embed_url)
+    if not match:
+        return {"success": False, "error": "Could not parse DoodStream filecode"}
+
+    file_code = match.group(1)
+    print(f"[doodstream] Triggering direct file clone for filecode: {file_code}")
+    try:
+        proxies = get_requests_proxies(proxy_url)
+        resp = requests.get(
+            f"https://doodapi.com/api/file/clone?key={api_key}&file_code={file_code}",
+            proxies=proxies,
+            timeout=25,
+        )
+        data = resp.json()
+        if data.get("status") == 200:
+            new_filecode = data.get("result", {}).get("filecode")
+            print(f"[doodstream] Direct clone success! New Filecode: {new_filecode}")
+            return {"success": True, "filecode": new_filecode}
+        else:
+            return {"success": False, "error": data.get("msg", "Clone API error")}
+    except Exception as e:
+        print(f"[doodstream] Clone error: {e}")
+        return {"success": False, "error": str(e)}
+
+
 def try_doodstream_upload(stream_url: str, api_key: str, proxy_url: str = "", title: str = "Video") -> dict:
     """Remote upload stream_url to DoodStream."""
     if not api_key:
@@ -447,18 +477,20 @@ def run_jibi_bot(page_url: str, api_key: str = "", download: bool = False):
             embed_url = s["embed_url"]
             print(f"\n[jibi] Testing server '{s['name']}': {embed_url[:90]}")
 
-            # 2a. Direct DoodStream embed remote upload optimization
+            # 2a. Direct DoodStream embed clone optimization
             if any(k in embed_url.lower() for k in ("dood.", "ds2play.", "d0o0d.")):
-                result["success"] = True
-                result["selected_server"] = s
-                result["direct_stream_url"] = embed_url
                 print(f"[jibi] Recognized DoodStream embed: {embed_url}")
                 if api_key:
-                    up_res = try_doodstream_upload(embed_url, api_key, proxy_url)
-                    if up_res["success"]:
-                        result["filecode"] = up_res["filecode"]
-                        print(f"[jibi] DoodStream remote upload/clone success! Filecode: {up_res['filecode']}")
+                    clone_res = try_doodstream_clone(embed_url, api_key, proxy_url)
+                    if clone_res["success"]:
+                        result["success"] = True
+                        result["selected_server"] = s
+                        result["direct_stream_url"] = embed_url
+                        result["filecode"] = clone_res["filecode"]
+                        print(f"[jibi] DoodStream direct file clone success! Filecode: {clone_res['filecode']}")
                         break
+                    else:
+                        print(f"[jibi] DoodStream clone failed: {clone_res.get('error')}, falling back to resolver...")
 
             # 2b. Quick yt-dlp check on embed URL
             yt_res = try_yt_dlp_extract(embed_url, proxy_url)
