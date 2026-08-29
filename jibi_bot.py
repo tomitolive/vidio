@@ -533,7 +533,54 @@ def try_yt_dlp_extract(url: str, proxy_url: str = "") -> dict:
         return {"success": False, "error": str(e)}
 
 
-def try_doodstream_clone(embed_url: str, api_key: str, proxy_url: str = "") -> dict:
+def verify_doodstream_file(
+    api_key: str,
+    filecode: str,
+    proxy_url: str = "",
+    max_wait: int = 45,
+    interval: int = 5,
+) -> dict:
+    """Poll DoodStream until file actually exists and is playable."""
+    if not filecode:
+        return {"success": False, "error": "No filecode to verify"}
+
+    proxies = get_requests_proxies(proxy_url)
+    deadline = time.time() + max_wait
+    print(f"[verify] Checking filecode {filecode} on account...")
+
+    while time.time() < deadline:
+        try:
+            resp = requests.get(
+                f"https://doodapi.com/api/file/info?key={api_key}&file_code={filecode}",
+                proxies=proxies,
+                timeout=15,
+            )
+            data = resp.json()
+            if data.get("status") == 200:
+                info = (data.get("result") or [{}])[0]
+                if info.get("filecode") and str(info.get("canplay")) == "1":
+                    print(f"[verify] File confirmed on account: {info.get('title')}")
+                    return {"success": True, "info": info}
+                if info.get("status") == "Not found or not your file":
+                    print(f"[verify] File not ready yet, waiting...")
+        except Exception as e:
+            print(f"[verify] Check error: {e}")
+        time.sleep(interval)
+
+    return {"success": False, "error": "File not found on DoodStream account after upload"}
+
+
+def is_remote_uploadable(url: str) -> bool:
+    """DoodStream remote upload works best with direct mp4 URLs, not HLS/m3u8."""
+    lower = url.lower()
+    if ".m3u8" in lower:
+        return False
+    if lower.endswith((".mp4", ".mkv", ".avi", ".webm", ".mov")):
+        return True
+    # Allow other direct URLs but warn on streaming manifests
+    if "master.m3u8" in lower or "/hls" in lower:
+        return False
+    return True
     """Clone an existing DoodStream file to account using filecode."""
     if not api_key:
         return {"success": False, "error": "No DoodStream API key"}
@@ -552,8 +599,11 @@ def try_doodstream_clone(embed_url: str, api_key: str, proxy_url: str = "") -> d
         data = resp.json()
         if data.get("status") == 200:
             new_filecode = data.get("result", {}).get("filecode")
-            print(f"[doodstream] Direct clone success! New Filecode: {new_filecode}")
-            return {"success": True, "filecode": new_filecode}
+            verify = verify_doodstream_file(api_key, new_filecode, proxy_url, max_wait=20)
+            if verify["success"]:
+                print(f"[doodstream] Clone verified! Filecode: {new_filecode}")
+                return {"success": True, "filecode": new_filecode}
+            return {"success": False, "error": "Clone returned filecode but file not on account"}
         else:
             return {"success": False, "error": data.get("msg", "Clone API error")}
     except Exception as e:
@@ -577,7 +627,7 @@ def try_doodstream_upload(stream_url: str, api_key: str, proxy_url: str = "", ti
         data = resp.json()
         if data.get("status") == 200:
             filecode = data.get("result", {}).get("filecode")
-            print(f"[doodstream] Remote upload success! Filecode: {filecode}")
+            print(f"[doodstream] Remote upload queued, filecode: {filecode}")
 
             if filecode and title:
                 requests.get(
@@ -585,7 +635,15 @@ def try_doodstream_upload(stream_url: str, api_key: str, proxy_url: str = "", ti
                     proxies=proxies,
                     timeout=15,
                 )
-            return {"success": True, "filecode": filecode}
+
+            verify = verify_doodstream_file(api_key, filecode, proxy_url)
+            if verify["success"]:
+                print(f"[doodstream] Remote upload verified! Filecode: {filecode}")
+                return {"success": True, "filecode": filecode}
+            return {
+                "success": False,
+                "error": "Upload API accepted but file never appeared on account (m3u8/HLS often fails)",
+            }
         else:
             return {"success": False, "error": data.get("msg", "Unknown API error")}
     except Exception as e:
@@ -717,8 +775,8 @@ def run_jibi_bot(page_url: str, api_key: str = "", download: bool = False):
                 break
             print(f"[jibi] Clone failed: {clone_res.get('error')}, trying next dood server...")
 
-    # Step 2b: Iterate remaining servers for direct stream extraction
-    if not result["direct_stream_url"]:
+    # Step 2b: Iterate remaining servers for direct stream extraction + upload
+    if not result["filecode"]:
         # Prioritize servers known for direct video / fast processing
         def server_priority(s):
             url = s["embed_url"].lower()
@@ -733,59 +791,71 @@ def run_jibi_bot(page_url: str, api_key: str = "", download: bool = False):
         sorted_servers = sorted(servers, key=server_priority)
 
         for s in sorted_servers:
-            if result["filecode"] and is_doodstream_embed(s["embed_url"]):
+            if result["filecode"]:
+                break
+            if is_doodstream_embed(s["embed_url"]):
                 continue  # already tried clone in phase 1
 
             embed_url = s["embed_url"]
             print(f"\n[jibi] Testing server '{s['name']}': {embed_url[:90]}")
 
+            stream_url = None
+
             # Quick yt-dlp check on embed URL
             yt_res = try_yt_dlp_extract(embed_url, proxy_url)
             if yt_res["success"] and is_video_url(yt_res["stream_url"]):
                 stream_url = yt_res["stream_url"]
-                if download:
-                    dl_ok = download_locally(stream_url, proxy_url, referer=embed_url)
-                    if dl_ok:
-                        result["success"] = True
-                        result["selected_server"] = s
-                        result["direct_stream_url"] = stream_url
-                        print(f"[jibi] Download succeeded from server '{s['name']}'!")
-                        break
-                else:
+                print(f"[jibi] Stream extracted via yt-dlp: {stream_url[:100]}")
+
+            if not stream_url:
+                stream_url = resolve_stream_from_embed(embed_url, proxy_url, referer=page_url)
+                if stream_url:
+                    print(f"[jibi] Stream extracted via Playwright: {stream_url[:100]}")
+
+            if not stream_url:
+                continue
+
+            if download:
+                dl_ok = download_locally(stream_url, proxy_url, referer=embed_url)
+                if dl_ok:
                     result["success"] = True
                     result["selected_server"] = s
                     result["direct_stream_url"] = stream_url
-                    print(f"[jibi] Stream extracted via yt-dlp: {stream_url[:100]}")
+                    print(f"[jibi] Download succeeded from server '{s['name']}'!")
                     break
+                print(f"[jibi] Download failed for server '{s['name']}', trying next server...")
+                continue
 
-            # Playwright popup-safe network interception
-            stream_found = resolve_stream_from_embed(embed_url, proxy_url, referer=page_url)
-            if stream_found:
-                if download:
-                    dl_ok = download_locally(stream_found, proxy_url, referer=embed_url)
-                    if dl_ok:
-                        result["success"] = True
-                        result["selected_server"] = s
-                        result["direct_stream_url"] = stream_found
-                        print(f"[jibi] Download succeeded from server '{s['name']}'!")
-                        break
-                    else:
-                        print(f"[jibi] Download failed for server '{s['name']}', trying next server...")
-                        continue
-                else:
-                    result["success"] = True
-                    result["selected_server"] = s
-                    result["direct_stream_url"] = stream_found
-                    print(f"[jibi] Stream extracted via Playwright: {stream_found[:100]}")
-                    break
+            if not api_key:
+                result["success"] = True
+                result["selected_server"] = s
+                result["direct_stream_url"] = stream_url
+                break
 
-    # Step 3: Handle Upload if not already done in 2a
-    if result["success"] and result["direct_stream_url"] and api_key and not result["filecode"]:
-        up_res = try_doodstream_upload(result["direct_stream_url"], api_key, proxy_url, title=movie_title)
-        if up_res["success"]:
-            result["filecode"] = up_res["filecode"]
-        else:
-            result["errors"].append(f"Upload failed: {up_res.get('error')}")
+            if not is_remote_uploadable(stream_url):
+                print(f"[jibi] Skipping m3u8/HLS stream for remote upload, trying next server...")
+                result["errors"].append(f"Server '{s['name']}': m3u8 not supported for DoodStream upload")
+                continue
+
+            up_res = try_doodstream_upload(stream_url, api_key, proxy_url, title=movie_title)
+            if up_res["success"]:
+                result["success"] = True
+                result["selected_server"] = s
+                result["direct_stream_url"] = stream_url
+                result["filecode"] = up_res["filecode"]
+                print(f"[jibi] Upload verified from server '{s['name']}'!")
+                break
+
+            err = up_res.get("error", "Upload failed")
+            print(f"[jibi] Upload failed for server '{s['name']}': {err}")
+            result["errors"].append(f"Server '{s['name']}': {err}")
+
+    # Final status
+    if result["filecode"]:
+        result["success"] = True
+    elif not result["success"]:
+        if not result["errors"]:
+            result["errors"].append("No working server found for upload")
 
     # Step 4: Save to processed DB after successful NEW upload
     if result["success"] and result["filecode"] and not result.get("skipped_duplicate"):
@@ -808,7 +878,7 @@ def _save_result(result: dict):
     # Standardized upload_result.json for GitHub Actions & downstream integrations
     fc = result.get("filecode")
     upload_res = {
-        "status": "success" if result.get("success") else "error",
+        "status": "success" if result.get("success") and result.get("filecode") else "error",
         "page_url": result.get("page_url"),
         "video_url": result.get("direct_stream_url"),
         "filecode": fc,
@@ -840,7 +910,7 @@ def main():
         sys.exit(1)
 
     res = run_jibi_bot(args.url, api_key=args.api_key, download=args.download)
-    sys.exit(0 if res["success"] else 1)
+    sys.exit(0 if res.get("success") and (res.get("filecode") or args.download) else 1)
 
 
 if __name__ == "__main__":
