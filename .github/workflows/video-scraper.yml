@@ -4,12 +4,16 @@ on:
   workflow_dispatch:
     inputs:
       source:
-        description: 'Source type (cimafu, tv10, vidsrc, or topcinemaa)'
+        description: 'Source type (cimafu, jibi, tmdb, tv10, vidsrc, or topcinemaa)'
         required: false
         type: string
         default: 'cimafu'
       page_url:
-        description: 'URL of the page to scrape (for tv10 or topcinemaa source)'
+        description: 'URL of the page to scrape (for cimafu/jibi/tmdb source)'
+        required: false
+        type: string
+      movie_titles:
+        description: 'Movie titles for TMDB search (comma separated, for tmdb source)'
         required: false
         type: string
       tmdb_id:
@@ -55,9 +59,12 @@ jobs:
       - name: Restore processed movies cache
         uses: actions/cache@v4
         with:
-          path: processed_movies.json
-          key: processed-movies-${{ github.repository }}
+          path: |
+            processed_movies.json
+            tmdb_movies.json
+          key: movies-cache-${{ github.repository }}
           restore-keys: |
+            movies-cache-
             processed-movies-
 
       - name: Run scraper
@@ -65,17 +72,26 @@ jobs:
           SOURCE: ${{ inputs.source }}
           PAGE_URL: ${{ inputs.page_url }}
           TMDB_ID: ${{ inputs.tmdb_id }}
+          MOVIE_TITLES: ${{ inputs.movie_titles }}
+          TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
           DOODSTREAM_API_KEY: ${{ inputs.api_key }}
           EARNVIDS_API_KEY: ${{ inputs.api_key }}
           SERVER_PREFERENCE: ${{ inputs.server_preference }}
           PROXY_URL: ${{ secrets.PROXY_URL }}
           HEADLESS: "false"
         run: |
-          if [ -z "${{ inputs.page_url }}" ]; then
-            echo "ERROR: page_url is required for cimafu/jibi source"
-            exit 1
-          fi
-          if [ "${{ inputs.source }}" = "cimafu" ] || [ "${{ inputs.source }}" = "jibi" ]; then
+          if [ "${{ inputs.source }}" = "tmdb" ]; then
+            echo "Running TMDB Bot..."
+            if [ -z "${{ inputs.page_url }}" ] && [ -z "${{ inputs.movie_titles }}" ]; then
+              echo "ERROR: page_url or movie_titles required for tmdb source"
+              exit 1
+            fi
+            python tmdb_bot.py
+          elif [ "${{ inputs.source }}" = "cimafu" ] || [ "${{ inputs.source }}" = "jibi" ]; then
+            if [ -z "${{ inputs.page_url }}" ]; then
+              echo "ERROR: page_url is required for cimafu/jibi source"
+              exit 1
+            fi
             echo "Running Jibi Bot for Cimafu..."
             xvfb-run --auto-servernum python jibi_bot.py "${{ inputs.page_url }}" --api-key "${{ inputs.api_key }}"
           else
@@ -90,6 +106,8 @@ jobs:
           path: |
             upload_result.json
             processed_movies.json
+            tmdb_movies.json
+            tmdb_search_result.json
           retention-days: 30
       
       - name: Display result
