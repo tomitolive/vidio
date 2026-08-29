@@ -78,6 +78,8 @@ def is_video_url(url: str, content_type: str = "") -> bool:
 
 def clean_url(url: str) -> str:
     url = url.strip()
+    # Strip duplicate protocols (e.g. https://https:// -> https://)
+    url = re.sub(r"^(https?:/*)+", "https://", url, flags=re.IGNORECASE)
     if url.startswith("://"):
         url = "https" + url
     elif not url.startswith("http://") and not url.startswith("https://"):
@@ -91,6 +93,7 @@ def extract_servers_from_page(page_url: str, proxy_url: str) -> list[dict]:
     """
     Parses the main HTML page looking for <ul class="server_list"> or iframe elements.
     Returns list of dicts: [{"name": "سيرفر 1", "embed_url": "..."}, ...]
+    Attempts proxy rotation if initial proxy fails.
     """
     headers = {
         "User-Agent": (
@@ -100,14 +103,25 @@ def extract_servers_from_page(page_url: str, proxy_url: str) -> list[dict]:
         )
     }
 
+    page_url = clean_url(page_url)
     print(f"[jibi] Scraping servers from: {page_url}")
-    proxies = get_requests_proxies(proxy_url)
 
-    try:
-        resp = requests.get(page_url, headers=headers, proxies=proxies, timeout=20)
-        resp.raise_for_status()
-    except Exception as e:
-        print(f"[jibi] Initial HTTP request error: {e}")
+    # Try requested proxy first, then fallback to random proxies if needed
+    proxies_to_try = [proxy_url] + random.sample(PROXIES_LIST, k=min(3, len(PROXIES_LIST)))
+    resp = None
+
+    for p_url in proxies_to_try:
+        proxies = get_requests_proxies(p_url)
+        try:
+            resp = requests.get(page_url, headers=headers, proxies=proxies, timeout=15)
+            resp.raise_for_status()
+            break
+        except Exception as e:
+            print(f"[jibi] HTTP request error with proxy {p_url.split('@')[-1] if '@' in p_url else p_url}: {e}")
+            continue
+
+    if not resp or resp.status_code != 200:
+        print(f"[jibi] Failed to fetch page content from {page_url}")
         return []
 
     soup = BeautifulSoup(resp.text, "html.parser")
