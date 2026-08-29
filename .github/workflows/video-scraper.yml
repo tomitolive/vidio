@@ -4,10 +4,10 @@ on:
   workflow_dispatch:
     inputs:
       source:
-        description: 'Source type (tv10, vidsrc, or topcinemaa)'
+        description: 'Source type (cimafu, tv10, vidsrc, or topcinemaa)'
         required: false
         type: string
-        default: 'tv10'
+        default: 'cimafu'
       page_url:
         description: 'URL of the page to scrape (for tv10 or topcinemaa source)'
         required: false
@@ -62,7 +62,12 @@ jobs:
           PROXY_URL: ${{ secrets.PROXY_URL }}
           HEADLESS: "false"
         run: |
-          xvfb-run --auto-servernum python scrape_upload.py
+          if [ "${{ inputs.source }}" = "cimafu" ] || [ "${{ inputs.source }}" = "jibi" ]; then
+            echo "Running Jibi Bot for Cimafu..."
+            xvfb-run --auto-servernum python jibi_bot.py "${{ inputs.page_url }}" --api-key "${{ inputs.api_key }}"
+          else
+            xvfb-run --auto-servernum python scrape_upload.py
+          fi
       
       - name: Upload result as artifact
         if: success()
