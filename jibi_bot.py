@@ -417,10 +417,26 @@ def extract_servers_with_playwright(page_url: str, proxy_url: str) -> list[dict]
         page = context.new_page()
 
         try:
-            page.goto(page_url, wait_until="domcontentloaded", timeout=30000)
-            time.sleep(3)  # Wait for JavaScript to load
+            page.goto(page_url, wait_until="networkidle", timeout=45000)
+            time.sleep(5)  # Wait for JavaScript to load
+
+            # Try to interact with page to load servers
+            try:
+                # Try clicking on server links or watch buttons
+                page.click('.serversWatchSide a, .watch-btn, .play-button', timeout=5000)
+                time.sleep(3)
+            except:
+                pass
+
+            # Wait for server elements to appear
+            try:
+                page.wait_for_selector('.serversWatchSide a, iframe, .server_list li', timeout=10000)
+                time.sleep(2)
+            except:
+                pass
 
             html = page.content()
+            
             soup = BeautifulSoup(html, "html.parser")
 
             # Parse <ul class="server_list">
@@ -435,6 +451,20 @@ def extract_servers_with_playwright(page_url: str, proxy_url: str) -> list[dict]
 
                     if embed_url:
                         server_name = li.text.strip() or f"Server {len(servers)+1}"
+                        servers.append({
+                            "name": server_name,
+                            "embed_url": clean_url(embed_url)
+                        })
+
+            # Parse Cima4u specific server structure (.serversWatchSide a)
+            if not servers:
+                server_links = soup.select(".serversWatchSide a")
+                for link in server_links:
+                    href = link.get("href")
+                    data_link = link.get("data-link")
+                    if href or data_link:
+                        embed_url = data_link or href
+                        server_name = link.text.strip() or f"Server {len(servers)+1}"
                         servers.append({
                             "name": server_name,
                             "embed_url": clean_url(embed_url)
