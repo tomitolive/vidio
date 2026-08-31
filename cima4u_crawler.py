@@ -56,6 +56,9 @@ def extract_movie_links_from_page(html: str) -> List[str]:
         if link and link.get("href"):
             url = clean_url(link["href"])
             if url:
+                # Add /watch/ to the URL if not present
+                if not url.endswith("/watch/"):
+                    url = url.rstrip("/") + "/watch/"
                 movie_links.append(url)
     
     return movie_links
