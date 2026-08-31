@@ -86,27 +86,45 @@ jobs:
             exit 1
           fi
           
-          if [ "${{ inputs.all_categories }}" = "true" ]; then
+          # Set defaults for scheduled runs (no inputs)
+          ALL_CATEGORIES="${{ inputs.all_categories }}"
+          if [ -z "$ALL_CATEGORIES" ]; then
+            ALL_CATEGORIES="true"
+          fi
+          
+          MAX_PAGES="${{ inputs.max_pages }}"
+          if [ -z "$MAX_PAGES" ]; then
+            MAX_PAGES="5"
+          fi
+          
+          MAX_MOVIES="${{ inputs.max_movies }}"
+          if [ -z "$MAX_MOVIES" ]; then
+            MAX_MOVIES="10"
+          fi
+          
+          CATEGORY_URL="${{ inputs.category_url }}"
+          
+          if [ "$ALL_CATEGORIES" = "true" ] || [ -z "$CATEGORY_URL" ]; then
             echo "Processing all predefined categories"
             xvfb-run --auto-servernum python cima4u_crawler.py \
               --all-categories \
               --api-key "$API_KEY" \
-              --max-pages "${{ inputs.max_pages }}" \
-              --max-movies "${{ inputs.max_movies }}"
-          elif [ -n "${{ inputs.category_url }}" ]; then
-            echo "Processing category: ${{ inputs.category_url }}"
+              --max-pages "$MAX_PAGES" \
+              --max-movies "$MAX_MOVIES"
+          elif [ -n "$CATEGORY_URL" ]; then
+            echo "Processing category: $CATEGORY_URL"
             xvfb-run --auto-servernum python cima4u_crawler.py \
-              --category "${{ inputs.category_url }}" \
+              --category "$CATEGORY_URL" \
               --api-key "$API_KEY" \
-              --max-pages "${{ inputs.max_pages }}" \
-              --max-movies "${{ inputs.max_movies }}"
+              --max-pages "$MAX_PAGES" \
+              --max-movies "$MAX_MOVIES"
           else
             echo "No category specified, processing all predefined categories"
             xvfb-run --auto-servernum python cima4u_crawler.py \
               --all-categories \
               --api-key "$API_KEY" \
-              --max-pages "${{ inputs.max_pages }}" \
-              --max-movies "${{ inputs.max_movies }}"
+              --max-pages "$MAX_PAGES" \
+              --max-movies "$MAX_MOVIES"
           fi
 
       - name: Upload crawler results
