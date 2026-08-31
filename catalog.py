@@ -158,6 +158,10 @@ def extract_cima4u_info(url: str) -> tuple[str | None, str | None]:
     Returns: ("hippos-revenge", "2025") or ("mutiny", "2026")
     """
     try:
+        # Decode URL if it's percent-encoded
+        from urllib.parse import unquote
+        url = unquote(url)
+        
         # Extract slug (movie name) from URL
         # Pattern 1: .../slug-year-.../watch/
         slug_match = re.search(r'/([a-z0-9-]+)-(\d{4})-', url)
@@ -175,10 +179,11 @@ def extract_cima4u_info(url: str) -> tuple[str | None, str | None]:
             print(f"[cima4u] Extracted slug: {slug}, year: {year}")
             return slug, year
         
-        # Pattern 3: just slug before year anywhere in URL
-        fallback_match = re.search(r'/([a-z0-9-]+)-(\d{4})', url)
+        # Pattern 3: Handle Arabic text before slug (e.g., "مشاهدة-فيلم-mutiny-2026")
+        # Match any lowercase letters followed by dash and year
+        fallback_match = re.search(r'/.*?([a-z0-9-]+)-(\d{4})', url)
         if fallback_match:
-            slug = fallback_match.group(1)
+            slug = fallback_match.group(1).lstrip('-')  # Remove leading dashes
             year = fallback_match.group(2)
             print(f"[cima4u] Extracted slug (fallback): {slug}, year: {year}")
             return slug, year
