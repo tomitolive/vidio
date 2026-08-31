@@ -149,6 +149,89 @@ def find_tmdb_id_by_title(title: str) -> int | None:
     return None
 
 
+def extract_cima4u_info(url: str) -> tuple[str | None, str | None]:
+    """Extract slug and year from Cima4u URL.
+    
+    Example:
+    https://cimafu.cam/مشاهدة-فيلم-وتحميل-hippos-revenge-2025-مترجم-مباشر/watch/
+    Returns: ("hippos-revenge", "2025")
+    """
+    try:
+        # Extract slug (movie name) from URL
+        # Pattern: .../slug-year-.../watch/
+        slug_match = re.search(r'/([a-z0-9-]+)-(\d{4})-', url)
+        if slug_match:
+            slug = slug_match.group(1)
+            year = slug_match.group(2)
+            print(f"[cima4u] Extracted slug: {slug}, year: {year}")
+            return slug, year
+        
+        # Alternative pattern: just slug before year
+        alt_match = re.search(r'/([a-z0-9-]+)-(\d{4})', url)
+        if alt_match:
+            slug = alt_match.group(1)
+            year = alt_match.group(2)
+            print(f"[cima4u] Extracted slug: {slug}, year: {year}")
+            return slug, year
+        
+        print(f"[cima4u] Could not extract slug/year from URL: {url}")
+        return None, None
+        
+    except Exception as e:
+        print(f"[cima4u] Error extracting info: {e}")
+        return None, None
+
+
+def search_tmdb_by_slug(slug: str, year: str) -> int | None:
+    """Search TMDB API for movie ID by slug and year.
+    
+    Args:
+        slug: Movie slug (e.g., "hippos-revenge")
+        year: Release year (e.g., "2025")
+    
+    Returns:
+        TMDB ID if found, None otherwise
+    """
+    api_key = os.environ.get("TMDB_API_KEY")
+    if not api_key:
+        print("[tmdb] TMDB_API_KEY not found, skipping API search")
+        return None
+    
+    if not slug:
+        return None
+    
+    try:
+        # Convert slug to search query (replace hyphens with spaces)
+        query = slug.replace("-", " ")
+        
+        # Search TMDB
+        url = "https://api.themoviedb.org/3/search/movie"
+        params = {
+            "api_key": api_key,
+            "query": query,
+            "language": "en-US"
+        }
+        if year:
+            params["year"] = year
+        
+        response = requests.get(url, params=params, timeout=10)
+        data = response.json()
+        
+        if data.get("results"):
+            # Return first result's ID
+            first_result = data["results"][0]
+            tmdb_id = first_result.get("id")
+            print(f"[tmdb] Found TMDB ID: {tmdb_id} for '{query}' ({year})")
+            return tmdb_id
+        
+        print(f"[tmdb] No results found for '{query}' ({year})")
+        return None
+        
+    except Exception as e:
+        print(f"[tmdb] Error searching TMDB API: {e}")
+        return None
+
+
 def search_tmdb_api(title: str, year: str = "") -> int | None:
     """Search TMDB API for movie ID by title and year."""
     api_key = os.environ.get("TMDB_API_KEY")

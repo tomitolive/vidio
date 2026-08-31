@@ -18,7 +18,7 @@ from urllib.parse import urlparse, urljoin, quote
 import requests
 from bs4 import BeautifulSoup
 
-from catalog import get_entry_by_page, update_doodstream_in_catalog, find_tmdb_id_by_title, import_from_doodstream_account, save_to_supabase, search_tmdb_api
+from catalog import get_entry_by_page, update_doodstream_in_catalog, find_tmdb_id_by_title, import_from_doodstream_account, save_to_supabase, search_tmdb_api, extract_cima4u_info, search_tmdb_by_slug
 
 # ─── 1. Proxies Configuration ───────────────────────────────────────────────
 
@@ -864,10 +864,16 @@ def run_jibi_bot(page_url: str, api_key: str = "", download: bool = False, tmdb_
 
     # Step 4: Save to processed DB + catalog after successful upload
     if result["success"] and result["filecode"]:
-        # Try to find tmdb_id: manual override > by title (catalog) > TMDB API > by page URL
+        # Try to find tmdb_id: manual override > by title (catalog) > Cima4u slug search > TMDB API > by page URL
         resolved_tmdb_id = tmdb_id
         if not resolved_tmdb_id:
             resolved_tmdb_id = find_tmdb_id_by_title(movie_title)
+        if not resolved_tmdb_id:
+            # Try Cima4u slug-based search if URL is from Cima4u
+            if "cimafu.cam" in page_url.lower():
+                slug, year = extract_cima4u_info(page_url)
+                if slug and year:
+                    resolved_tmdb_id = search_tmdb_by_slug(slug, year)
         if not resolved_tmdb_id:
             resolved_tmdb_id = search_tmdb_api(movie_title)
         if not resolved_tmdb_id:
