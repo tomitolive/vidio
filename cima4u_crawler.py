@@ -180,7 +180,8 @@ def process_category(
         
         print(f"[crawler] Page {current_page}: Found {len(movie_links)} movies")
         
-        # Process each movie
+        # Process each movie (only one successful upload per page)
+        page_success = False
         for movie_url in movie_links:
             if max_movies and total_movies_processed >= max_movies:
                 break
@@ -211,10 +212,14 @@ def process_category(
                     stats["movies_processed"] += 1
                     total_movies_processed += 1
                     success_found = True
+                    page_success = True
                     print(f"[crawler] ✓ Success: filecode={result.get('filecode')}, tmdb_id={result.get('tmdb_id')}")
                     
                     if stop_on_first_success:
                         print(f"[crawler] First successful upload completed, stopping...")
+                        break
+                    else:
+                        print(f"[crawler] One video uploaded for this page, moving to next page...")
                         break
                 else:
                     stats["errors"].append(f"Failed: {movie_url}")

@@ -24,10 +24,10 @@ on:
         type: number
         default: 10
       stop_on_first_success:
-        description: 'Stop after first successful upload'
+        description: 'Stop after first successful upload (set true to stop entirely, false to upload one video per page)'
         required: false
         type: boolean
-        default: true
+        default: false
       all_categories:
         description: 'Process all predefined categories'
         required: false
@@ -109,7 +109,7 @@ jobs:
           
           STOP_ON_FIRST_SUCCESS="${{ inputs.stop_on_first_success }}"
           if [ -z "$STOP_ON_FIRST_SUCCESS" ]; then
-            STOP_ON_FIRST_SUCCESS="true"
+            STOP_ON_FIRST_SUCCESS="false"
           fi
           
           STOP_FLAG=""
