@@ -152,13 +152,14 @@ def find_tmdb_id_by_title(title: str) -> int | None:
 def extract_cima4u_info(url: str) -> tuple[str | None, str | None]:
     """Extract slug and year from Cima4u URL.
     
-    Example:
+    Examples:
     https://cimafu.cam/مشاهدة-فيلم-وتحميل-hippos-revenge-2025-مترجم-مباشر/watch/
-    Returns: ("hippos-revenge", "2025")
+    https://cimafu.cam/مشاهدة-مشاهدة-فيلم-وتحميل-mutiny-2026-مترجم/
+    Returns: ("hippos-revenge", "2025") or ("mutiny", "2026")
     """
     try:
         # Extract slug (movie name) from URL
-        # Pattern: .../slug-year-.../watch/
+        # Pattern 1: .../slug-year-.../watch/
         slug_match = re.search(r'/([a-z0-9-]+)-(\d{4})-', url)
         if slug_match:
             slug = slug_match.group(1)
@@ -166,12 +167,20 @@ def extract_cima4u_info(url: str) -> tuple[str | None, str | None]:
             print(f"[cima4u] Extracted slug: {slug}, year: {year}")
             return slug, year
         
-        # Alternative pattern: just slug before year
-        alt_match = re.search(r'/([a-z0-9-]+)-(\d{4})', url)
+        # Pattern 2: .../slug-year/ (without /watch/ at end)
+        alt_match = re.search(r'/([a-z0-9-]+)-(\d{4})/?$', url)
         if alt_match:
             slug = alt_match.group(1)
             year = alt_match.group(2)
             print(f"[cima4u] Extracted slug: {slug}, year: {year}")
+            return slug, year
+        
+        # Pattern 3: just slug before year anywhere in URL
+        fallback_match = re.search(r'/([a-z0-9-]+)-(\d{4})', url)
+        if fallback_match:
+            slug = fallback_match.group(1)
+            year = fallback_match.group(2)
+            print(f"[cima4u] Extracted slug (fallback): {slug}, year: {year}")
             return slug, year
         
         print(f"[cima4u] Could not extract slug/year from URL: {url}")

@@ -300,7 +300,15 @@ def extract_servers_from_page(page_url: str, proxy_url: str) -> list[dict]:
     Parses the main HTML page looking for <ul class="server_list"> or iframe elements.
     Returns list of dicts: [{"name": "سيرفر 1", "embed_url": "..."}, ...]
     Attempts proxy rotation if initial proxy fails.
+    For Cima4u URLs, uses Playwright for better JavaScript rendering.
     """
+    page_url = clean_url(page_url)
+    print(f"[jibi] Scraping servers from: {page_url}")
+
+    # Use Playwright for Cima4u URLs (they likely need JavaScript)
+    if "cimafu.cam" in page_url.lower():
+        return extract_servers_with_playwright(page_url, proxy_url)
+
     headers = {
         "User-Agent": (
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
@@ -308,9 +316,6 @@ def extract_servers_from_page(page_url: str, proxy_url: str) -> list[dict]:
             "Chrome/124.0.0.0 Safari/537.36"
         )
     }
-
-    page_url = clean_url(page_url)
-    print(f"[jibi] Scraping servers from: {page_url}")
 
     # Try requested proxy first, then fallback to random proxies if needed
     proxies_to_try = [proxy_url] + random.sample(PROXIES_LIST, k=min(3, len(PROXIES_LIST)))
@@ -370,6 +375,95 @@ def extract_servers_from_page(page_url: str, proxy_url: str) -> list[dict]:
             unique_servers.append(s)
 
     print(f"[jibi] Total servers found: {len(unique_servers)}")
+    for i, s in enumerate(unique_servers, 1):
+        print(f"  [{i}] {s['name']} -> {s['embed_url']}")
+
+    return unique_servers
+
+
+def extract_servers_with_playwright(page_url: str, proxy_url: str) -> list[dict]:
+    """Extract servers using Playwright for pages that need JavaScript rendering."""
+    from playwright.sync_api import sync_playwright
+
+    print(f"[jibi-playwright] Using Playwright for: {page_url}")
+    servers = []
+
+    with sync_playwright() as p:
+        launch_kwargs = {
+            "headless": True,
+            "args": [
+                "--disable-blink-features=AutomationControlled",
+                "--no-sandbox",
+                "--disable-setuid-sandbox",
+                "--disable-dev-shm-usage",
+                "--disable-gpu",
+                "--window-size=1920,1080",
+            ],
+        }
+
+        pw_proxy = parse_playwright_proxy(proxy_url)
+        if pw_proxy:
+            launch_kwargs["proxy"] = pw_proxy
+
+        browser = p.chromium.launch(**launch_kwargs)
+        context = browser.new_context(
+            viewport={"width": 1920, "height": 1080},
+            user_agent=(
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                "AppleWebKit/537.36 (KHTML, like Gecko) "
+                "Chrome/124.0.0.0 Safari/537.36"
+            ),
+        )
+        page = context.new_page()
+
+        try:
+            page.goto(page_url, wait_until="domcontentloaded", timeout=30000)
+            time.sleep(3)  # Wait for JavaScript to load
+
+            html = page.content()
+            soup = BeautifulSoup(html, "html.parser")
+
+            # Parse <ul class="server_list">
+            server_ul = soup.find("ul", class_="server_list")
+            if server_ul:
+                for li in server_ul.find_all("li"):
+                    embed_url = li.get("data-server") or li.get("data-link")
+                    if not embed_url:
+                        iframe = li.find("iframe")
+                        if iframe and iframe.get("src"):
+                            embed_url = iframe["src"]
+
+                    if embed_url:
+                        server_name = li.text.strip() or f"Server {len(servers)+1}"
+                        servers.append({
+                            "name": server_name,
+                            "embed_url": clean_url(embed_url)
+                        })
+
+            # Fallback: Parse top-level iframes
+            if not servers:
+                for iframe in soup.find_all("iframe"):
+                    src = iframe.get("src")
+                    if src and src.strip() and src != "about:blank":
+                        servers.append({
+                            "name": f"Iframe {len(servers)+1}",
+                            "embed_url": clean_url(src)
+                        })
+
+        except Exception as e:
+            print(f"[jibi-playwright] Error: {e}")
+        finally:
+            browser.close()
+
+    # Deduplicate by embed_url
+    seen = set()
+    unique_servers = []
+    for s in servers:
+        if s["embed_url"] not in seen:
+            seen.add(s["embed_url"])
+            unique_servers.append(s)
+
+    print(f"[jibi-playwright] Total servers found: {len(unique_servers)}")
     for i, s in enumerate(unique_servers, 1):
         print(f"  [{i}] {s['name']} -> {s['embed_url']}")
 
