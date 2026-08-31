@@ -62,10 +62,11 @@ jobs:
           TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
         run: |
           echo "Running Jibi Bot..."
-          if [ -n "${{ inputs.tmdb_id }}" ]; then
+          if [ -n "${{ inputs.tmdb_id }}" ] && [[ "${{ inputs.tmdb_id }}" =~ ^[0-9]+$ ]]; then
+            echo "Using provided tmdb_id: ${{ inputs.tmdb_id }}"
             xvfb-run --auto-servernum python jibi_bot.py "${{ inputs.page_url }}" --api-key "${{ inputs.api_key }}" --tmdb-id "${{ inputs.tmdb_id }}"
           else
-            echo "No tmdb_id provided, bot will try to find it automatically..."
+            echo "No valid tmdb_id provided, bot will try to find it automatically..."
             xvfb-run --auto-servernum python jibi_bot.py "${{ inputs.page_url }}" --api-key "${{ inputs.api_key }}"
           fi
 
