@@ -127,7 +127,8 @@ def process_category(
     category_url: str,
     api_key: str,
     max_pages: int = None,
-    max_movies: int = None
+    max_movies: int = None,
+    stop_on_first_success: bool = False
 ) -> Dict:
     """Process a category page and extract/process movies."""
     category_url = clean_url(category_url)
@@ -148,6 +149,7 @@ def process_category(
     
     current_page = last_page + 1
     total_movies_processed = 0
+    success_found = False
     
     while True:
         if max_pages and stats["pages_processed"] >= max_pages:
@@ -156,6 +158,10 @@ def process_category(
         
         if max_movies and total_movies_processed >= max_movies:
             print(f"[crawler] Reached max movies limit: {max_movies}")
+            break
+        
+        if stop_on_first_success and success_found:
+            print(f"[crawler] Stopping after first successful upload")
             break
         
         # Load page
@@ -179,6 +185,10 @@ def process_category(
             if max_movies and total_movies_processed >= max_movies:
                 break
             
+            if stop_on_first_success and success_found:
+                print(f"[crawler] Stopping after first successful upload")
+                break
+            
             # Check if already processed
             if movie_url in processed_db["processed_urls"]:
                 print(f"[crawler] Skipping already processed: {movie_url[:60]}...")
@@ -200,7 +210,12 @@ def process_category(
                     }
                     stats["movies_processed"] += 1
                     total_movies_processed += 1
+                    success_found = True
                     print(f"[crawler] ✓ Success: filecode={result.get('filecode')}, tmdb_id={result.get('tmdb_id')}")
+                    
+                    if stop_on_first_success:
+                        print(f"[crawler] First successful upload completed, stopping...")
+                        break
                 else:
                     stats["errors"].append(f"Failed: {movie_url}")
                     print(f"[crawler] ✗ Failed: {result.get('errors', [])}")
@@ -244,6 +259,7 @@ def main():
     parser.add_argument("--max-pages", type=int, help="Maximum pages to process")
     parser.add_argument("--max-movies", type=int, help="Maximum movies to process")
     parser.add_argument("--all-categories", action="store_true", help="Process all predefined categories")
+    parser.add_argument("--stop-on-first-success", action="store_true", help="Stop after first successful upload")
     
     args = parser.parse_args()
     
@@ -258,6 +274,7 @@ def main():
     print(f"[crawler] Starting crawler with {len(categories)} categories")
     print(f"[crawler] Max pages: {args.max_pages or 'unlimited'}")
     print(f"[crawler] Max movies: {args.max_movies or 'unlimited'}")
+    print(f"[crawler] Stop on first success: {args.stop_on_first_success}")
     
     all_stats = []
     
@@ -270,7 +287,8 @@ def main():
             category,
             args.api_key,
             max_pages=args.max_pages,
-            max_movies=args.max_movies
+            max_movies=args.max_movies,
+            stop_on_first_success=args.stop_on_first_success
         )
         all_stats.append(stats)
         
