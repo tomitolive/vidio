@@ -112,6 +112,11 @@ jobs:
             STOP_ON_FIRST_SUCCESS="true"
           fi
           
+          STOP_FLAG=""
+          if [ "$STOP_ON_FIRST_SUCCESS" = "true" ]; then
+            STOP_FLAG="--stop-on-first-success"
+          fi
+          
           CATEGORY_URL="${{ inputs.category_url }}"
           
           if [ "$ALL_CATEGORIES" = "true" ] || [ -z "$CATEGORY_URL" ]; then
@@ -121,7 +126,7 @@ jobs:
               --api-key "$API_KEY" \
               --max-pages "$MAX_PAGES" \
               --max-movies "$MAX_MOVIES" \
-              --stop-on-first-success $STOP_ON_FIRST_SUCCESS
+              $STOP_FLAG
           elif [ -n "$CATEGORY_URL" ]; then
             echo "Processing category: $CATEGORY_URL"
             xvfb-run --auto-servernum python cima4u_crawler.py \
@@ -129,7 +134,7 @@ jobs:
               --api-key "$API_KEY" \
               --max-pages "$MAX_PAGES" \
               --max-movies "$MAX_MOVIES" \
-              --stop-on-first-success $STOP_ON_FIRST_SUCCESS
+              $STOP_FLAG
           else
             echo "No category specified, processing all predefined categories"
             xvfb-run --auto-servernum python cima4u_crawler.py \
@@ -137,7 +142,7 @@ jobs:
               --api-key "$API_KEY" \
               --max-pages "$MAX_PAGES" \
               --max-movies "$MAX_MOVIES" \
-              --stop-on-first-success $STOP_ON_FIRST_SUCCESS
+              $STOP_FLAG
           fi
 
       - name: Upload crawler results
