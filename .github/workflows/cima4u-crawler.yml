@@ -1,6 +1,8 @@
 name: Cima4u Category Crawler
 
 on:
+  schedule:
+    - cron: '0 * * * *'  # Run every hour
   workflow_dispatch:
     inputs:
       category_url:
