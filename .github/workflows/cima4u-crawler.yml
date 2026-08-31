@@ -10,8 +10,8 @@ on:
         required: false
         type: string
       api_key:
-        description: 'DoodStream API Key'
-        required: true
+        description: 'DoodStream API Key (optional for scheduled runs, uses secret if not provided)'
+        required: false
         type: string
       max_pages:
         description: 'Maximum pages to process per category'
@@ -69,32 +69,42 @@ jobs:
 
       - name: Run Cima4u Crawler
         env:
-          DOODSTREAM_API_KEY: ${{ inputs.api_key }}
+          DOODSTREAM_API_KEY: ${{ inputs.api_key || secrets.DOODSTREAM_API_KEY }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
           TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
         run: |
           echo "Running Cima4u Crawler..."
           
+          API_KEY="${{ inputs.api_key }}"
+          if [ -z "$API_KEY" ]; then
+            API_KEY="${{ secrets.DOODSTREAM_API_KEY }}"
+          fi
+          
+          if [ -z "$API_KEY" ]; then
+            echo "Error: No API key provided"
+            exit 1
+          fi
+          
           if [ "${{ inputs.all_categories }}" = "true" ]; then
             echo "Processing all predefined categories"
             xvfb-run --auto-servernum python cima4u_crawler.py \
               --all-categories \
-              --api-key "${{ inputs.api_key }}" \
+              --api-key "$API_KEY" \
               --max-pages "${{ inputs.max_pages }}" \
               --max-movies "${{ inputs.max_movies }}"
           elif [ -n "${{ inputs.category_url }}" ]; then
             echo "Processing category: ${{ inputs.category_url }}"
             xvfb-run --auto-servernum python cima4u_crawler.py \
               --category "${{ inputs.category_url }}" \
-              --api-key "${{ inputs.api_key }}" \
+              --api-key "$API_KEY" \
               --max-pages "${{ inputs.max_pages }}" \
               --max-movies "${{ inputs.max_movies }}"
           else
             echo "No category specified, processing all predefined categories"
             xvfb-run --auto-servernum python cima4u_crawler.py \
               --all-categories \
-              --api-key "${{ inputs.api_key }}" \
+              --api-key "$API_KEY" \
               --max-pages "${{ inputs.max_pages }}" \
               --max-movies "${{ inputs.max_movies }}"
           fi
