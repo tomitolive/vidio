@@ -24,7 +24,7 @@ CATEGORIES = [
     "https://cimafu.cam/category/افلام-اجنبي/",
     "https://cimafu.cam/category/افلام-اسيوي/",
 ]
-PROXY_URL = "http://ohzgotst:CTutN5Yfu9RH3bnQmyrKeQDaCi4D3tyaCALwRw5d7ph8@31.59.20.176:6754"
+PROXY_URL = "http://zydsd0hlbcew:rcog4ketsimppec@216.26.240.253:3129"
 
 
 def load_processed_movies() -> Dict:

@@ -23,16 +23,16 @@ from catalog import get_entry_by_page, update_doodstream_in_catalog, find_tmdb_i
 # ─── 1. Proxies Configuration ───────────────────────────────────────────────
 
 PROXIES_LIST = [
-    "http://ohzgotst:ea339u0rwqy8@31.59.20.176:6754",
-    "http://ohzgotst:ea339u0rwqy8@45.38.107.97:6014",
-    "http://ohzgotst:ea339u0rwqy8@198.105.121.200:6462",
-    "http://ohzgotst:ea339u0rwqy8@64.137.96.74:6641",
-    "http://ohzgotst:ea339u0rwqy8@198.23.243.226:6361",
-    "http://ohzgotst:ea339u0rwqy8@38.154.185.97:6370",
-    "http://ohzgotst:ea339u0rwqy8@84.247.60.125:6095",
-    "http://ohzgotst:ea339u0rwqy8@142.111.67.146:5611",
-    "http://ohzgotst:ea339u0rwqy8@191.96.254.138:6185",
-    "http://ohzgotst:ea339u0rwqy8@31.58.9.4:6077",
+    "http://zydsd0hlbcew:rcog4ketsimppec@216.26.240.253:3129",
+    "http://zydsd0hlbcew:rcog4ketsimppec@216.26.240.253:3129",
+    "http://zydsd0hlbcew:rcog4ketsimppec@216.26.240.253:3129",
+    "http://zydsd0hlbcew:rcog4ketsimppec@216.26.240.253:3129",
+    "http://zydsd0hlbcew:rcog4ketsimppec@216.26.240.253:3129",
+    "http://zydsd0hlbcew:rcog4ketsimppec@216.26.240.253:3129",
+    "http://zydsd0hlbcew:rcog4ketsimppec@216.26.240.253:3129",
+    "http://zydsd0hlbcew:rcog4ketsimppec@216.26.240.253:3129",
+    "http://zydsd0hlbcew:rcog4ketsimppec@216.26.240.253:3129",
+    "http://zydsd0hlbcew:rcog4ketsimppec@216.26.240.253:3129",
 ]
 
 
