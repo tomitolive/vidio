@@ -1064,7 +1064,7 @@ def run_jibi_bot(page_url: str, api_key: str = "", download: bool = False, tmdb_
             year = year_match.group() if year_match else ""
             resolved_tmdb_id = search_tmdb_api(cleaned_title, year, media_type, season, episode)
         if not resolved_tmdb_id:
-            resolved_tmdb_id = (get_entry_by_page(page_url) or {}).get("tmdb_id")
+            resolved_tmdb_id = (get_entry_by_page(page_url, media_type) or {}).get("tmdb_id")
         
         catalog_entry = update_doodstream_in_catalog(
             filecode=result["filecode"],
@@ -1073,6 +1073,9 @@ def run_jibi_bot(page_url: str, api_key: str = "", download: bool = False, tmdb_
             embed_url=(result.get("selected_server") or {}).get("embed_url", ""),
             source_filecode=result.get("source_filecode", ""),
             tmdb_id=resolved_tmdb_id,
+            media_type=media_type,
+            season=season,
+            episode=episode,
         )
         result["doodstream_url"] = catalog_entry.get("doodstream_url")
         result["playmogo_url"] = catalog_entry.get("playmogo_url")
@@ -1112,7 +1115,8 @@ def _save_result(result: dict):
 
     # Standardized upload_result.json for GitHub Actions & downstream integrations
     fc = result.get("filecode")
-    catalog_entry = get_entry_by_page(result.get("page_url", "")) or {}
+    media_type = result.get("media_type", "movie")
+    catalog_entry = get_entry_by_page(result.get("page_url", ""), media_type) or {}
     upload_res = {
         "status": "success" if result.get("success") and result.get("filecode") else "error",
         "page_url": result.get("page_url"),
@@ -1126,6 +1130,9 @@ def _save_result(result: dict):
         "servers_tried": len(result.get("servers_found", [])),
         "skipped_duplicate": result.get("skipped_duplicate", False),
         "errors": result.get("errors", []),
+        "media_type": media_type,
+        "season": result.get("season"),
+        "episode": result.get("episode"),
     }
     with open("upload_result.json", "w", encoding="utf-8") as f:
         json.dump(upload_res, f, indent=2, ensure_ascii=False)

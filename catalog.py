@@ -44,10 +44,12 @@ def load_catalog() -> dict:
                 data = json.load(f)
                 if "movies" not in data:
                     data["movies"] = {}
+                if "tv_episodes" not in data:
+                    data["tv_episodes"] = {}
                 return data
         except (json.JSONDecodeError, OSError):
             pass
-    return {"movies": {}, "last_updated": None}
+    return {"movies": {}, "tv_episodes": {}, "last_updated": None}
 
 
 def save_catalog(catalog: dict):
@@ -56,21 +58,26 @@ def save_catalog(catalog: dict):
         json.dump(catalog, f, indent=2, ensure_ascii=False)
 
 
-def _find_catalog_key(catalog: dict, page_url: str = "", title: str = "") -> str | None:
+def _find_catalog_key(catalog: dict, page_url: str = "", title: str = "", media_type: str = "movie") -> str | None:
     """Find existing entry key by page URL or title."""
-    movies = catalog.get("movies", {})
+    # Search in the appropriate section based on media_type
+    if media_type == "tv":
+        entries = catalog.get("tv_episodes", {})
+    else:
+        entries = catalog.get("movies", {})
+    
     if page_url:
         page_key = normalize_page_key(page_url)
-        if page_key in movies:
+        if page_key in entries:
             return page_key
-        for key, entry in movies.items():
+        for key, entry in entries.items():
             if normalize_page_key(entry.get("page_url", "")) == page_key:
                 return key
     if title:
         title_key = normalize_key(title)
-        if title_key in movies:
+        if title_key in entries:
             return title_key
-        for key, entry in movies.items():
+        for key, entry in entries.items():
             if normalize_key(entry.get("source_title", "") or entry.get("title", "")) == title_key:
                 return key
     return None
@@ -83,19 +90,28 @@ def update_doodstream_in_catalog(
     embed_url: str = "",
     source_filecode: str = "",
     tmdb_id: int | None = None,
+    media_type: str = "movie",
+    season: int | None = None,
+    episode: int | None = None,
+    series_name: str = "",
 ) -> dict:
-    """Add or update DoodStream URLs for a page/movie in the shared catalog."""
+    """Add or update DoodStream URLs for a page/movie/episode in the shared catalog."""
     if not filecode:
         return {}
 
     catalog = load_catalog()
-    movies = catalog.setdefault("movies", {})
+    
+    # Choose the right section based on media_type
+    if media_type == "tv":
+        entries = catalog.setdefault("tv_episodes", {})
+    else:
+        entries = catalog.setdefault("movies", {})
 
-    key = _find_catalog_key(catalog, page_url, title)
+    key = _find_catalog_key(catalog, page_url, title, media_type)
     if not key:
         key = normalize_page_key(page_url) if page_url else normalize_key(title or filecode)
 
-    entry = movies.get(key, {})
+    entry = entries.get(key, {})
     entry.update({
         "success": True,
         "filecode": filecode,
@@ -103,6 +119,7 @@ def update_doodstream_in_catalog(
         "playmogo_url": f"https://playmogo.com/e/{filecode}",
         "doodstream_download_url": f"https://playmogo.com/d/{filecode}",
         "uploaded_at": time.strftime("%Y-%m-%d %H:%M:%S"),
+        "media_type": media_type,
     })
     if page_url:
         entry["page_url"] = page_url
@@ -116,10 +133,18 @@ def update_doodstream_in_catalog(
         entry["source_filecode"] = source_filecode
     if tmdb_id:
         entry["tmdb_id"] = tmdb_id
-        media_type = entry.get("type", "movie")
         entry["vidsrc_url"] = f"https://vidsrc.sbs/embed/{media_type}/{tmdb_id}"
+    
+    # TV episode specific fields
+    if media_type == "tv":
+        if season is not None:
+            entry["season"] = season
+        if episode is not None:
+            entry["episode"] = episode
+        if series_name:
+            entry["series_name"] = series_name
 
-    movies[key] = entry
+    entries[key] = entry
     save_catalog(catalog)
     print(f"[tmdb] Catalog saved to {CATALOG_FILE}")
     print(f"[catalog] Saved DoodStream URL for: {entry.get('title') or page_url or key}")
@@ -198,20 +223,29 @@ def extract_episode_info(title: str) -> dict:
 
 
 def find_tmdb_id_by_title(title: str) -> int | None:
-    """Search for tmdb_id by movie title in the catalog."""
+    """Search for tmdb_id by movie/series title in the catalog."""
     if not title:
         return None
     
     catalog = load_catalog()
-    movies = catalog.get("movies", {})
     title_normalized = normalize_key(title)
     
-    # Direct match
+    # Search in movies first
+    movies = catalog.get("movies", {})
     if title_normalized in movies:
         return movies[title_normalized].get("tmdb_id")
     
-    # Fuzzy match by title/source_title
     for key, entry in movies.items():
+        entry_title = normalize_key(entry.get("title") or entry.get("source_title", ""))
+        if entry_title and entry_title == title_normalized:
+            return entry.get("tmdb_id")
+    
+    # Search in tv_episodes
+    tv_episodes = catalog.get("tv_episodes", {})
+    if title_normalized in tv_episodes:
+        return tv_episodes[title_normalized].get("tmdb_id")
+    
+    for key, entry in tv_episodes.items():
         entry_title = normalize_key(entry.get("title") or entry.get("source_title", ""))
         if entry_title and entry_title == title_normalized:
             return entry.get("tmdb_id")
@@ -465,17 +499,20 @@ def import_from_doodstream_account(api_key: str) -> dict:
     }
 
 
-def get_entry_by_page(page_url: str) -> dict | None:
+def get_entry_by_page(page_url: str, media_type: str = "movie") -> dict | None:
+    """Get catalog entry by page URL."""
     catalog = load_catalog()
-    key = _find_catalog_key(catalog, page_url=page_url)
+    key = _find_catalog_key(catalog, page_url=page_url, media_type=media_type)
     if key:
-        return catalog["movies"][key]
+        if media_type == "tv":
+            return catalog["tv_episodes"].get(key)
+        return catalog["movies"].get(key)
     return None
 
 
-def save_to_supabase(tmdb_id: int, title: str, doodstream_url: str, doodstream_download_url: str, 
-                    media_type: str = "movie", season: int = None, episode: int = None) -> bool:
-    """Save movie or TV episode data to Supabase database."""
+def save_movie_to_supabase(tmdb_id: int, title: str, doodstream_url: str, 
+                           doodstream_download_url: str, year: int = None) -> bool:
+    """Save movie data to Supabase movies table."""
     if not supabase:
         print("[supabase] Not connected, skipping database save")
         return False
@@ -484,34 +521,68 @@ def save_to_supabase(tmdb_id: int, title: str, doodstream_url: str, doodstream_d
         data = {
             "tmdb_id": tmdb_id,
             "title": title,
-            "media_type": media_type,
             "doodstream_url": doodstream_url,
             "doodstream_download_url": doodstream_download_url,
         }
+        if year:
+            data["year"] = year
         
-        if season is not None:
-            data["season_number"] = season
-        if episode is not None:
-            data["episode_number"] = episode
-        
-        # Check if record already exists (by tmdb_id, media_type, season, episode)
-        existing = supabase.table("movies").select("*").eq("tmdb_id", tmdb_id).eq("media_type", media_type).execute()
-        
-        if media_type == "tv" and season is not None and episode is not None:
-            existing = supabase.table("movies").select("*").eq("tmdb_id", tmdb_id).eq("media_type", media_type).eq("season_number", season).eq("episode_number", episode).execute()
+        # Check if record already exists
+        existing = supabase.table("movies").select("*").eq("tmdb_id", tmdb_id).execute()
         
         if existing.data:
-            # Update existing record
-            supabase.table("movies").update(data).eq("tmdb_id", tmdb_id).eq("media_type", media_type).execute()
-            if media_type == "tv" and season is not None and episode is not None:
-                supabase.table("movies").update(data).eq("tmdb_id", tmdb_id).eq("media_type", media_type).eq("season_number", season).eq("episode_number", episode).execute()
-            print(f"[supabase] Updated {media_type}: {title} (tmdb_id: {tmdb_id}, S{season}E{episode if episode else ''})")
+            supabase.table("movies").update(data).eq("tmdb_id", tmdb_id).execute()
+            print(f"[supabase] Updated movie: {title} (tmdb_id: {tmdb_id})")
         else:
-            # Insert new record
             supabase.table("movies").insert(data).execute()
-            print(f"[supabase] Inserted {media_type}: {title} (tmdb_id: {tmdb_id}, S{season}E{episode if episode else ''})")
+            print(f"[supabase] Inserted movie: {title} (tmdb_id: {tmdb_id})")
         
         return True
     except Exception as e:
-        print(f"[supabase] Error saving to database: {e}")
+        print(f"[supabase] Error saving movie: {e}")
         return False
+
+
+def save_episode_to_supabase(tmdb_id: int, series_title: str, season: int, episode: int,
+                             doodstream_url: str, doodstream_download_url: str, 
+                             title: str = None) -> bool:
+    """Save TV episode data to Supabase tv_episodes table."""
+    if not supabase:
+        print("[supabase] Not connected, skipping database save")
+        return False
+    
+    try:
+        data = {
+            "tmdb_id": tmdb_id,
+            "series_title": series_title,
+            "season_number": season,
+            "episode_number": episode,
+            "doodstream_url": doodstream_url,
+            "doodstream_download_url": doodstream_download_url,
+        }
+        if title:
+            data["title"] = title
+        
+        # Check if record already exists (by tmdb_id, season, episode)
+        existing = supabase.table("tv_episodes").select("*").eq("tmdb_id", tmdb_id).eq("season_number", season).eq("episode_number", episode).execute()
+        
+        if existing.data:
+            supabase.table("tv_episodes").update(data).eq("tmdb_id", tmdb_id).eq("season_number", season).eq("episode_number", episode).execute()
+            print(f"[supabase] Updated episode: {series_title} S{season}E{episode}")
+        else:
+            supabase.table("tv_episodes").insert(data).execute()
+            print(f"[supabase] Inserted episode: {series_title} S{season}E{episode}")
+        
+        return True
+    except Exception as e:
+        print(f"[supabase] Error saving episode: {e}")
+        return False
+
+
+def save_to_supabase(tmdb_id: int, title: str, doodstream_url: str, doodstream_download_url: str, 
+                    media_type: str = "movie", season: int = None, episode: int = None) -> bool:
+    """Save movie or TV episode data to Supabase database (backward compatible)."""
+    if media_type == "tv" and season is not None and episode is not None:
+        return save_episode_to_supabase(tmdb_id, title, season, episode, doodstream_url, doodstream_download_url)
+    else:
+        return save_movie_to_supabase(tmdb_id, title, doodstream_url, doodstream_download_url)

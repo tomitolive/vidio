@@ -2,6 +2,7 @@
 """
 Cima4u Category Crawler
 Scrapes movie links from Cima4u category pages and processes them with jibi_bot.
+Supports both movies and TV series episodes.
 """
 
 import os
@@ -9,7 +10,7 @@ import sys
 import json
 import time
 import re
-from typing import List, Dict, Set
+from typing import List, Dict, Set, Tuple
 from urllib.parse import unquote, urljoin
 from bs4 import BeautifulSoup
 from playwright.sync_api import sync_playwright
@@ -27,6 +28,92 @@ CATEGORIES = [
     "https://cimafu.cam/category/مسلسلات-اسيوي/",
 ]
 PROXY_URL = "http://zydsd0hlbcew:rcog4ketsimppec@216.26.240.253:3129"
+
+
+# ─── Episode Detection Functions ──────────────────────────────────────────────
+
+def is_episode_url(url: str) -> bool:
+    """Check if URL points to a TV episode (contains الحلقة or episodes pattern)."""
+    decoded = unquote(url).lower()
+    return "الحلقة" in decoded or "حلقة" in decoded
+
+
+def is_series_url(url: str) -> bool:
+    """Check if URL points to a series page (not an episode directly)."""
+    decoded = unquote(url).lower()
+    # Series pages have مسلسل or انمي but NOT الحلقة
+    has_series = "مسلسل" in decoded or "انمي" in decoded
+    has_episode = "الحلقة" in decoded or "حلقة" in decoded
+    return has_series and not has_episode
+
+
+def extract_episode_from_url(url: str) -> dict:
+    """Extract series name, season, and episode from Cima4u URL.
+    
+    Examples:
+    "مشاهدة-انمي-وتحميل-one-piece-الحلقة-1176-مترجمة"
+    -> {"series_name": "one piece", "season": None, "episode": 1176}
+    
+    "مشاهدة-مسلسل-وتحميل-mushoku-tensei-الموسم-الثالث-10"
+    -> {"series_name": "mushoku tensei", "season": 3, "episode": 10}
+    """
+    decoded = unquote(url)
+    
+    result = {
+        "series_name": None,
+        "season": None,
+        "episode": None,
+        "media_type": "tv"
+    }
+    
+    # Extract episode number
+    ep_match = re.search(r'الحلقة-(\d+)', decoded)
+    if ep_match:
+        result["episode"] = int(ep_match.group(1))
+    
+    # Extract season number from Arabic words
+    season_patterns = {
+        "الموسم-الأول": 1, "الموسم-الاول": 1,
+        "الموسم-الثاني": 2, "الموسم-التاني": 2,
+        "الموسم-الثالث": 3,
+        "الموسم-الرابع": 4,
+        "الموسم-الخامس": 5,
+        "الموسم-السادس": 6,
+        "الموسم-السابع": 7,
+        "الموسم-الثامن": 8,
+        "الموسم-التاسع": 9,
+        "الموسم-العاشر": 10,
+    }
+    
+    for pattern, num in season_patterns.items():
+        if pattern in decoded:
+            result["season"] = num
+            break
+    
+    # Extract season number from digit (e.g., "الموسم-3")
+    if result["season"] is None:
+        season_digit_match = re.search(r'الموسم-(\d+)', decoded)
+        if season_digit_match:
+            result["season"] = int(season_digit_match.group(1))
+    
+    # Extract series name (English text between arrows)
+    # Pattern: مشاهدة-انمي-وتحميل-[SERIES-NAME]-الموسم or الحلقة
+    name_match = re.search(r'وتحميل-(.+?)-(?:الموسم|الحلقة)', decoded)
+    if name_match:
+        result["series_name"] = name_match.group(1).replace("-", " ").strip()
+    else:
+        # Fallback: try to extract from URL slug
+        name_match2 = re.search(r'/([^/]+?)-(?:الموسم|الحلقة)', decoded)
+        if name_match2:
+            result["series_name"] = name_match2.group(1).replace("-", " ").strip()
+    
+    return result
+
+
+def extract_series_name_from_url(url: str) -> str:
+    """Extract series name from episode URL."""
+    info = extract_episode_from_url(url)
+    return info.get("series_name", "")
 
 
 def load_processed_movies() -> Dict:
@@ -47,8 +134,12 @@ def save_processed_movies(data: Dict):
         json.dump(data, f, ensure_ascii=False, indent=2)
 
 
-def extract_movie_links_from_page(html: str) -> List[str]:
-    """Extract movie URLs from category page HTML."""
+def extract_movie_links_from_page(html: str) -> List[Tuple[str, dict]]:
+    """Extract movie/episode URLs from category page HTML.
+    
+    Returns list of tuples: (url, info_dict)
+    info_dict contains: {"type": "movie"|"episode", "series_name", "season", "episode"}
+    """
     soup = BeautifulSoup(html, "html.parser")
     movie_links = []
     
@@ -62,7 +153,21 @@ def extract_movie_links_from_page(html: str) -> List[str]:
                 # Add /watch/ to the URL if not present
                 if not url.endswith("/watch/"):
                     url = url.rstrip("/") + "/watch/"
-                movie_links.append(url)
+                
+                # Detect if this is an episode or movie
+                if is_episode_url(url):
+                    ep_info = extract_episode_from_url(url)
+                    movie_links.append((url, {
+                        "type": "episode",
+                        **ep_info
+                    }))
+                else:
+                    movie_links.append((url, {
+                        "type": "movie",
+                        "series_name": None,
+                        "season": None,
+                        "episode": None
+                    }))
     
     return movie_links
 
@@ -133,7 +238,7 @@ def process_category(
     max_movies: int = None,
     stop_on_first_success: bool = False
 ) -> Dict:
-    """Process a category page and extract/process movies."""
+    """Process a category page and extract/process movies and episodes."""
     category_url = clean_url(category_url)
     processed_db = load_processed_movies()
     
@@ -144,13 +249,16 @@ def process_category(
         "category": category_url,
         "pages_processed": 0,
         "movies_found": 0,
+        "episodes_found": 0,
         "movies_processed": 0,
+        "episodes_processed": 0,
         "movies_skipped": 0,
+        "episodes_skipped": 0,
         "errors": []
     }
     
     current_page = 1  # Always start from page 1
-    total_movies_processed = 0
+    total_processed = 0
     success_found = False
     
     while True:
@@ -158,8 +266,8 @@ def process_category(
             print(f"[crawler] Reached max pages limit: {max_pages}")
             break
         
-        if max_movies and total_movies_processed >= max_movies:
-            print(f"[crawler] Reached max movies limit: {max_movies}")
+        if max_movies and total_processed >= max_movies:
+            print(f"[crawler] Reached max items limit: {max_movies}")
             break
         
         # Load page
@@ -168,25 +276,28 @@ def process_category(
             print(f"[crawler] No HTML loaded for page {current_page}")
             break
         
-        # Extract movie links
-        movie_links = extract_movie_links_from_page(html)
-        stats["movies_found"] += len(movie_links)
+        # Extract movie/episode links with info
+        links_with_info = extract_movie_links_from_page(html)
         
-        if not movie_links:
-            print(f"[crawler] No movies found on page {current_page}")
+        # Count separately
+        movie_count = sum(1 for _, info in links_with_info if info["type"] == "movie")
+        episode_count = sum(1 for _, info in links_with_info if info["type"] == "episode")
+        stats["movies_found"] += movie_count
+        stats["episodes_found"] += episode_count
+        
+        if not links_with_info:
+            print(f"[crawler] No content found on page {current_page}")
             break
         
-        print(f"[crawler] Page {current_page}: Found {len(movie_links)} movies")
+        print(f"[crawler] Page {current_page}: Found {movie_count} movies, {episode_count} episodes")
         
-        # Process each movie on the page.
-        # page_success  = a brand-new upload happened on this page (advance)
-        # page_has_dup  = all content on this page already exists (skip upload, advance)
-        # page_has_fail = at least one genuine failure (e.g. proxy down -> retry later)
+        # Process each item on the page
         page_success = False
         page_has_dup = False
         page_has_fail = False
-        for movie_url in movie_links:
-            if max_movies and total_movies_processed >= max_movies:
+        
+        for url, info in links_with_info:
+            if max_movies and total_processed >= max_movies:
                 break
             
             if stop_on_first_success and success_found:
@@ -194,74 +305,96 @@ def process_category(
                 break
             
             # Check if already processed (by URL)
-            if movie_url in processed_db["processed_urls"]:
-                print(f"[crawler] Skipping already processed: {movie_url[:60]}...")
-                stats["movies_skipped"] += 1
+            if url in processed_db["processed_urls"]:
+                item_type = "Episode" if info["type"] == "episode" else "Movie"
+                print(f"[crawler] Skipping already processed {item_type}: {url[:60]}...")
+                if info["type"] == "episode":
+                    stats["episodes_skipped"] += 1
+                else:
+                    stats["movies_skipped"] += 1
                 continue
             
-            print(f"[crawler] Processing: {movie_url[:60]}...")
+            item_type = "Episode" if info["type"] == "episode" else "Movie"
+            if info["type"] == "episode":
+                print(f"[crawler] Processing {item_type}: {info.get('series_name', '?')} S{info.get('season', '?')}E{info.get('episode', '?')}")
+            else:
+                print(f"[crawler] Processing {item_type}: {url[:60]}...")
             
             try:
-                # Call jibi_bot to process the movie
-                result = run_jibi_bot(movie_url, api_key=api_key)
+                # Call jibi_bot to process the item
+                result = run_jibi_bot(url, api_key=api_key)
                 
-                # Duplicate: movie already uploaded (e.g. same film from another
-                # category). Do NOT count as a new upload and never re-upload.
+                # Duplicate: already uploaded
                 if result.get("skipped_duplicate"):
-                    stats["movies_skipped"] += 1
+                    if info["type"] == "episode":
+                        stats["episodes_skipped"] += 1
+                    else:
+                        stats["movies_skipped"] += 1
                     page_has_dup = True
                     print(f"[crawler] ↻ Duplicate (already uploaded): filecode={result.get('filecode')}")
-                    # Still save to processed_urls to skip faster next time
-                    processed_db["processed_urls"][movie_url] = {
+                    
+                    # Save to processed_urls
+                    processed_db["processed_urls"][url] = {
                         "processed_at": time.strftime("%Y-%m-%d %H:%M:%S"),
                         "filecode": result.get("filecode"),
-                        "tmdb_id": result.get("tmdb_id")
+                        "tmdb_id": result.get("tmdb_id"),
+                        "type": info["type"],
+                        "series_name": info.get("series_name"),
+                        "season": info.get("season"),
+                        "episode": info.get("episode"),
                     }
                     save_processed_movies(processed_db)
                     time.sleep(1)
                     continue
                 
                 if result.get("success"):
-                    stats["movies_processed"] += 1
-                    total_movies_processed += 1
+                    if info["type"] == "episode":
+                        stats["episodes_processed"] += 1
+                    else:
+                        stats["movies_processed"] += 1
+                    total_processed += 1
                     success_found = True
                     page_success = True
+                    
                     print(f"[crawler] ✓ Success: filecode={result.get('filecode')}, tmdb_id={result.get('tmdb_id')}")
                     
                     # Save to processed_urls after successful upload
-                    processed_db["processed_urls"][movie_url] = {
+                    processed_db["processed_urls"][url] = {
                         "processed_at": time.strftime("%Y-%m-%d %H:%M:%S"),
                         "filecode": result.get("filecode"),
-                        "tmdb_id": result.get("tmdb_id")
+                        "tmdb_id": result.get("tmdb_id"),
+                        "type": info["type"],
+                        "series_name": info.get("series_name"),
+                        "season": info.get("season"),
+                        "episode": info.get("episode"),
                     }
                     save_processed_movies(processed_db)
                     
-                    print(f"[crawler] Video uploaded, continuing with next video on this page...")
+                    print(f"[crawler] Video uploaded, continuing...")
                 else:
                     page_has_fail = True
-                    stats["errors"].append(f"Failed: {movie_url}")
+                    stats["errors"].append(f"Failed: {url}")
                     print(f"[crawler] ✗ Failed: {result.get('errors', [])}")
                 
-                # Small delay to avoid overwhelming the server
+                # Small delay
                 time.sleep(2)
                 
             except Exception as e:
                 page_has_fail = True
-                error_msg = f"Error processing {movie_url}: {e}"
+                error_msg = f"Error processing {url}: {e}"
                 stats["errors"].append(error_msg)
                 print(f"[crawler] Error: {error_msg}")
         
-        # A page that only contains already-uploaded (duplicate) content is done —
-        # nothing new to add here, so safely advance to the next page.
+        # Handle page advancement
         if page_success:
             pass
         elif page_has_dup and not page_has_fail:
-            print(f"[crawler] Page {current_page} fully duplicated (all content already uploaded), advancing")
+            print(f"[crawler] Page {current_page} fully duplicated, advancing")
         else:
-            print(f"[crawler] ⚠ No successful upload on page {current_page}, not advancing - will retry this page next run")
+            print(f"[crawler] ⚠ No successful upload on page {current_page}, not advancing")
             break
 
-        # Update last processed page (for tracking, not resumption)
+        # Update last processed page
         processed_db["last_pages"][category_key] = current_page
         stats["pages_processed"] += 1
         
@@ -271,7 +404,7 @@ def process_category(
             break
         
         current_page += 1
-        time.sleep(1)  # Delay between pages
+        time.sleep(1)
     
     # Final save
     save_processed_movies(processed_db)
@@ -287,7 +420,7 @@ def main():
     parser.add_argument("--category", help="Category URL to process")
     parser.add_argument("--api-key", required=True, help="DoodStream API key")
     parser.add_argument("--max-pages", type=int, default=20, help="Maximum pages to process (default: 20)")
-    parser.add_argument("--max-movies", type=int, default=50, help="Maximum movies to process (default: 50)")
+    parser.add_argument("--max-movies", type=int, default=50, help="Maximum movies/episodes to process (default: 50)")
     parser.add_argument("--all-categories", action="store_true", help="Process all predefined categories")
     parser.add_argument("--stop-on-first-success", action="store_true", help="Stop after first successful upload (deprecated)")
     
@@ -305,7 +438,7 @@ def main():
 
     print(f"[crawler] Starting crawler with {len(categories)} categories")
     print(f"[crawler] Max pages: {args.max_pages or 'unlimited'}")
-    print(f"[crawler] Max movies: {args.max_movies or 'unlimited'}")
+    print(f"[crawler] Max items: {args.max_movies or 'unlimited'}")
     print(f"[crawler] Stop on first success: {args.stop_on_first_success}")
     
     all_stats = []
@@ -325,22 +458,23 @@ def main():
         all_stats.append(stats)
         
         print(f"\n[stats] Pages: {stats['pages_processed']}")
-        print(f"[stats] Found: {stats['movies_found']}")
-        print(f"[stats] Processed: {stats['movies_processed']}")
-        print(f"[stats] Skipped: {stats['movies_skipped']}")
+        print(f"[stats] Movies found: {stats['movies_found']}, Processed: {stats['movies_processed']}, Skipped: {stats['movies_skipped']}")
+        print(f"[stats] Episodes found: {stats['episodes_found']}, Processed: {stats['episodes_processed']}, Skipped: {stats['episodes_skipped']}")
         print(f"[stats] Errors: {len(stats['errors'])}")
     
     # Print summary
     print(f"\n{'='*60}")
     print("SUMMARY")
     print(f"{'='*60}")
-    total_processed = sum(s["movies_processed"] for s in all_stats)
-    total_found = sum(s["movies_found"] for s in all_stats)
-    total_skipped = sum(s["movies_skipped"] for s in all_stats)
+    total_movies_found = sum(s["movies_found"] for s in all_stats)
+    total_movies_processed = sum(s["movies_processed"] for s in all_stats)
+    total_movies_skipped = sum(s["movies_skipped"] for s in all_stats)
+    total_episodes_found = sum(s["episodes_found"] for s in all_stats)
+    total_episodes_processed = sum(s["episodes_processed"] for s in all_stats)
+    total_episodes_skipped = sum(s["episodes_skipped"] for s in all_stats)
     
-    print(f"Total movies found: {total_found}")
-    print(f"Total movies processed: {total_processed}")
-    print(f"Total movies skipped: {total_skipped}")
+    print(f"Movies: {total_movies_found} found, {total_movies_processed} processed, {total_movies_skipped} skipped")
+    print(f"Episodes: {total_episodes_found} found, {total_episodes_processed} processed, {total_episodes_skipped} skipped")
 
 
 if __name__ == "__main__":

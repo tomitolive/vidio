@@ -10,7 +10,8 @@
       "source_title": "My Daughter is a Zombie 2025 1080p 1080p WEB-DL",
       "tmdb_id": 1306816,
       "vidsrc_url": "https://vidsrc.sbs/embed/movie/1306816",
-      "uploaded_at": "2026-08-29 23:12:26"
+      "uploaded_at": "2026-08-29 23:12:26",
+      "media_type": "movie"
     },
     "the last sunrise 2026 1080p web-dl egydead com": {
       "success": true,
@@ -20,7 +21,8 @@
       "doodstream_download_url": "https://playmogo.com/d/cv8hdx0qhgse",
       "title": "The Last Sunrise 2026 1080p WEB-DL EgyDead CoM",
       "source_title": "The Last Sunrise 2026 1080p WEB-DL EgyDead CoM",
-      "uploaded_at": "2026-08-29 23:12:26"
+      "uploaded_at": "2026-08-29 23:12:26",
+      "media_type": "movie"
     },
     "they were witches 2025 1080p amzn web": {
       "success": true,
@@ -30,7 +32,8 @@
       "doodstream_download_url": "https://playmogo.com/d/k59qnb2pqzd3",
       "title": "They Were Witches 2025 1080p AMZN WEB",
       "source_title": "They Were Witches 2025 1080p AMZN WEB",
-      "uploaded_at": "2026-08-29 23:12:26"
+      "uploaded_at": "2026-08-29 23:12:26",
+      "media_type": "movie"
     },
     "terror tales poetry and death volume 1 2025 1080p web-dl": {
       "success": true,
@@ -40,7 +43,8 @@
       "doodstream_download_url": "https://playmogo.com/d/zcazs1h7li5p",
       "title": "Terror Tales Poetry and Death Volume 1 2025 1080p WEB-DL",
       "source_title": "Terror Tales Poetry and Death Volume 1 2025 1080p WEB-DL",
-      "uploaded_at": "2026-08-29 23:12:26"
+      "uploaded_at": "2026-08-29 23:12:26",
+      "media_type": "movie"
     },
     "icefall 2025 1080p amzn web-dl": {
       "success": true,
@@ -50,7 +54,8 @@
       "doodstream_download_url": "https://playmogo.com/d/5u7lzfevnis3",
       "title": "Icefall 2025 1080p AMZN WEB-DL",
       "source_title": "Icefall 2025 1080p AMZN WEB-DL",
-      "uploaded_at": "2026-08-29 23:12:26"
+      "uploaded_at": "2026-08-29 23:12:26",
+      "media_type": "movie"
     },
     "video": {
       "success": true,
@@ -60,8 +65,10 @@
       "doodstream_download_url": "https://playmogo.com/d/u81i9btmns13",
       "title": "Video",
       "source_title": "Video",
-      "uploaded_at": "2026-08-29 23:12:26"
+      "uploaded_at": "2026-08-29 23:12:26",
+      "media_type": "movie"
     }
   },
-  "last_updated": "2026-08-29 23:13:52"
+  "tv_episodes": {},
+  "last_updated": "2026-09-01 00:00:00"
 }
