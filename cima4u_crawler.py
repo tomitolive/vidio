@@ -24,6 +24,7 @@ CATEGORIES = [
     "https://cimafu.cam/category/افلام-اجنبي/",
     "https://cimafu.cam/category/افلام-اسيوي/",
 ]
+PROXY_URL = "http://ohzgotst:CTutN5Yfu9RH3bnQmyrKeQDaCi4D3tyaCALwRw5d7ph8@31.59.20.176:6754"
 
 
 def load_processed_movies() -> Dict:
@@ -236,6 +237,10 @@ def process_category(
                 stats["errors"].append(error_msg)
                 print(f"[crawler] Error: {error_msg}")
         
+        if not page_success:
+            print(f"[crawler] ⚠ No successful upload on page {current_page}, not advancing - will retry this page next run")
+            break
+
         # Update last processed page
         processed_db["last_pages"][category_key] = current_page
         stats["pages_processed"] += 1
@@ -276,6 +281,8 @@ def main():
         print("Error: Please provide --category or --all-categories")
         sys.exit(1)
     
+    os.environ.setdefault("PROXY_URL", PROXY_URL)
+
     print(f"[crawler] Starting crawler with {len(categories)} categories")
     print(f"[crawler] Max pages: {args.max_pages or 'unlimited'}")
     print(f"[crawler] Max movies: {args.max_movies or 'unlimited'}")
