@@ -181,8 +181,13 @@ def process_category(
         
         print(f"[crawler] Page {current_page}: Found {len(movie_links)} movies")
         
-        # Process each movie (only one successful upload per page)
+        # Process each movie on the page.
+        # page_success  = a brand-new upload happened on this page (advance)
+        # page_has_dup  = all content on this page already exists (skip upload, advance)
+        # page_has_fail = at least one genuine failure (e.g. proxy down -> retry later)
         page_success = False
+        page_has_dup = False
+        page_has_fail = False
         for movie_url in movie_links:
             if max_movies and total_movies_processed >= max_movies:
                 break
@@ -191,7 +196,7 @@ def process_category(
                 print(f"[crawler] Stopping after first successful upload")
                 break
             
-            # Check if already processed
+            # Check if already processed (by URL)
             if movie_url in processed_db["processed_urls"]:
                 print(f"[crawler] Skipping already processed: {movie_url[:60]}...")
                 stats["movies_skipped"] += 1
@@ -203,13 +208,24 @@ def process_category(
                 # Call jibi_bot to process the movie
                 result = run_jibi_bot(movie_url, api_key=api_key)
                 
+                # Remember the url<->filecode mapping so we skip fast next time
+                processed_db["processed_urls"][movie_url] = {
+                    "processed_at": time.strftime("%Y-%m-%d %H:%M:%S"),
+                    "filecode": result.get("filecode"),
+                    "tmdb_id": result.get("tmdb_id")
+                }
+                save_processed_movies(processed_db)
+                
+                # Duplicate: movie already uploaded (e.g. same film from another
+                # category). Do NOT count as a new upload and never re-upload.
+                if result.get("skipped_duplicate"):
+                    stats["movies_skipped"] += 1
+                    page_has_dup = True
+                    print(f"[crawler] ↻ Duplicate (already uploaded): filecode={result.get('filecode')}")
+                    time.sleep(1)
+                    continue
+                
                 if result.get("success"):
-                    # Mark as processed
-                    processed_db["processed_urls"][movie_url] = {
-                        "processed_at": time.strftime("%Y-%m-%d %H:%M:%S"),
-                        "filecode": result.get("filecode"),
-                        "tmdb_id": result.get("tmdb_id")
-                    }
                     stats["movies_processed"] += 1
                     total_movies_processed += 1
                     success_found = True
@@ -223,21 +239,26 @@ def process_category(
                         print(f"[crawler] One video uploaded for this page, moving to next page...")
                         break
                 else:
+                    page_has_fail = True
                     stats["errors"].append(f"Failed: {movie_url}")
                     print(f"[crawler] ✗ Failed: {result.get('errors', [])}")
-                
-                # Save progress after each movie
-                save_processed_movies(processed_db)
                 
                 # Small delay to avoid overwhelming the server
                 time.sleep(2)
                 
             except Exception as e:
+                page_has_fail = True
                 error_msg = f"Error processing {movie_url}: {e}"
                 stats["errors"].append(error_msg)
                 print(f"[crawler] Error: {error_msg}")
         
-        if not page_success:
+        # A page that only contains already-uploaded (duplicate) content is done —
+        # nothing new to add here, so safely advance to the next page.
+        if page_success:
+            pass
+        elif page_has_dup and not page_has_fail:
+            print(f"[crawler] Page {current_page} fully duplicated (all content already uploaded), advancing")
+        else:
             print(f"[crawler] ⚠ No successful upload on page {current_page}, not advancing - will retry this page next run")
             break
 
