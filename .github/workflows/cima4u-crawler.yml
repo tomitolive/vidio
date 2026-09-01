@@ -2,7 +2,7 @@ name: Cima4u Category Crawler
 
 on:
   schedule:
-    - cron: '0 */3 * * *'  # Run every 3 hours
+    - cron: '0 * * * *'  # Run every hour
   workflow_dispatch:
     inputs:
       category_url:
@@ -17,17 +17,12 @@ on:
         description: 'Maximum pages to process per category'
         required: false
         type: number
-        default: 5
+        default: 20
       max_movies:
         description: 'Maximum movies to process'
         required: false
         type: number
-        default: 10
-      stop_on_first_success:
-        description: 'Stop after first successful upload (set true to stop entirely, false to upload one video per page)'
-        required: false
-        type: boolean
-        default: false
+        default: 50
       all_categories:
         description: 'Process all predefined categories'
         required: false
@@ -100,22 +95,12 @@ jobs:
           
           MAX_PAGES="${{ inputs.max_pages }}"
           if [ -z "$MAX_PAGES" ]; then
-            MAX_PAGES="5"
+            MAX_PAGES="20"
           fi
           
           MAX_MOVIES="${{ inputs.max_movies }}"
           if [ -z "$MAX_MOVIES" ]; then
-            MAX_MOVIES="10"
-          fi
-          
-          STOP_ON_FIRST_SUCCESS="${{ inputs.stop_on_first_success }}"
-          if [ -z "$STOP_ON_FIRST_SUCCESS" ]; then
-            STOP_ON_FIRST_SUCCESS="false"
-          fi
-          
-          STOP_FLAG=""
-          if [ "$STOP_ON_FIRST_SUCCESS" = "true" ]; then
-            STOP_FLAG="--stop-on-first-success"
+            MAX_MOVIES="50"
           fi
           
           CATEGORY_URL="${{ inputs.category_url }}"
@@ -126,24 +111,21 @@ jobs:
               --all-categories \
               --api-key "$API_KEY" \
               --max-pages "$MAX_PAGES" \
-              --max-movies "$MAX_MOVIES" \
-              $STOP_FLAG
+              --max-movies "$MAX_MOVIES"
           elif [ -n "$CATEGORY_URL" ]; then
             echo "Processing category: $CATEGORY_URL"
             xvfb-run --auto-servernum python cima4u_crawler.py \
               --category "$CATEGORY_URL" \
               --api-key "$API_KEY" \
               --max-pages "$MAX_PAGES" \
-              --max-movies "$MAX_MOVIES" \
-              $STOP_FLAG
+              --max-movies "$MAX_MOVIES"
           else
             echo "No category specified, processing all predefined categories"
             xvfb-run --auto-servernum python cima4u_crawler.py \
               --all-categories \
               --api-key "$API_KEY" \
               --max-pages "$MAX_PAGES" \
-              --max-movies "$MAX_MOVIES" \
-              $STOP_FLAG
+              --max-movies "$MAX_MOVIES"
           fi
 
       - name: Upload crawler results

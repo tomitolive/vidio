@@ -127,6 +127,76 @@ def update_doodstream_in_catalog(
     return entry
 
 
+def extract_title_keywords(title: str) -> list[str]:
+    """Extract meaningful keywords from a movie title for fuzzy matching."""
+    if not title:
+        return []
+    # Remove common Arabic/English filler words
+    stopwords = {
+        "مشاهدة", "فيلم", "وتحميل", "مترجم", "مباشر", "watch", "download",
+        "movie", "film", "online", "free", "hd", "full",
+    }
+    # Keep alphanumeric tokens and years
+    tokens = re.findall(r"[a-z0-9\u0600-\u06ff]+", title.lower())
+    keywords = [t for t in tokens if t not in stopwords and len(t) > 2]
+    # Always keep 4-digit years
+    years = re.findall(r"\b((?:19|20)\d{2})\b", title)
+    keywords.extend(years)
+    return list(dict.fromkeys(keywords))  # dedupe, preserve order
+
+
+def extract_episode_info(title: str) -> dict:
+    """Extract season and episode numbers from title.
+    
+    Examples:
+    "One Piece E1176" -> {"season": None, "episode": 1176, "media_type": "tv"}
+    "Mushoku Tensei S03E10" -> {"season": 3, "episode": 10, "media_type": "tv"}
+    "Daha 17 E14" -> {"season": 17, "episode": 14, "media_type": "tv"}
+    "Icefall 2025" -> {"season": None, "episode": None, "media_type": "movie"}
+    
+    Returns:
+        dict with keys: season, episode, media_type, cleaned_title
+    """
+    if not title:
+        return {"season": None, "episode": None, "media_type": "movie", "cleaned_title": ""}
+    
+    # Pattern 1: S##E## (e.g., S03E10)
+    s_e_match = re.search(r'[Ss](\d+)[Ee](\d+)', title)
+    if s_e_match:
+        season = int(s_e_match.group(1))
+        episode = int(s_e_match.group(2))
+        cleaned_title = re.sub(r'[Ss]\d+[Ee]\d+', '', title).strip()
+        return {
+            "season": season,
+            "episode": episode,
+            "media_type": "tv",
+            "cleaned_title": cleaned_title
+        }
+    
+    # Pattern 2: E### (e.g., E1176)
+    e_match = re.search(r'[Ee](\d+)', title)
+    if e_match:
+        episode = int(e_match.group(1))
+        # Check if there's a season number before E (e.g., "17 E14")
+        season_match = re.search(r'(\d+)\s*[Ee]', title)
+        season = int(season_match.group(1)) if season_match else None
+        cleaned_title = re.sub(r'\d*\s*[Ee]\d+', '', title).strip()
+        return {
+            "season": season,
+            "episode": episode,
+            "media_type": "tv",
+            "cleaned_title": cleaned_title
+        }
+    
+    # No episode pattern found, treat as movie
+    return {
+        "season": None,
+        "episode": None,
+        "media_type": "movie",
+        "cleaned_title": title
+    }
+
+
 def find_tmdb_id_by_title(title: str) -> int | None:
     """Search for tmdb_id by movie title in the catalog."""
     if not title:
@@ -246,8 +316,8 @@ def search_tmdb_by_slug(slug: str, year: str) -> int | None:
         return None
 
 
-def search_tmdb_api(title: str, year: str = "") -> int | None:
-    """Search TMDB API for movie ID by title and year."""
+def search_tmdb_api(title: str, year: str = "", media_type: str = "movie", season: int = None, episode: int = None) -> int | None:
+    """Search TMDB API for movie or TV ID by title and year."""
     api_key = os.environ.get("TMDB_API_KEY")
     if not api_key:
         print("[tmdb] TMDB_API_KEY not found, skipping API search")
@@ -267,15 +337,19 @@ def search_tmdb_api(title: str, year: str = "") -> int | None:
         clean_title = re.sub(r'\b(19|20)\d{2}\b', '', title).strip()
         clean_title = re.sub(r'\s+', ' ', clean_title)
         
-        # Search TMDB
-        url = "https://api.themoviedb.org/3/search/movie"
+        # Search TMDB based on media type
+        if media_type == "tv":
+            url = "https://api.themoviedb.org/3/search/tv"
+        else:
+            url = "https://api.themoviedb.org/3/search/movie"
+        
         params = {
             "api_key": api_key,
             "query": clean_title,
             "language": "en-US"
         }
         if year:
-            params["year"] = year
+            params["first_air_date_year" if media_type == "tv" else "year"] = year
         
         response = requests.get(url, params=params, timeout=10)
         data = response.json()
@@ -284,10 +358,12 @@ def search_tmdb_api(title: str, year: str = "") -> int | None:
             # Return first result's ID
             first_result = data["results"][0]
             tmdb_id = first_result.get("id")
-            print(f"[tmdb] Found TMDB ID: {tmdb_id} for '{clean_title}' ({year})")
+            print(f"[tmdb] Found TMDB ID: {tmdb_id} for '{clean_title}' ({media_type}, {year})")
+            if media_type == "tv" and season is not None and episode is not None:
+                print(f"[tmdb] Season: {season}, Episode: {episode}")
             return tmdb_id
         
-        print(f"[tmdb] No results found for '{clean_title}' ({year})")
+        print(f"[tmdb] No results found for '{clean_title}' ({media_type}, {year})")
         return None
         
     except Exception as e:
@@ -397,8 +473,9 @@ def get_entry_by_page(page_url: str) -> dict | None:
     return None
 
 
-def save_to_supabase(tmdb_id: int, title: str, doodstream_url: str, doodstream_download_url: str) -> bool:
-    """Save movie data to Supabase database."""
+def save_to_supabase(tmdb_id: int, title: str, doodstream_url: str, doodstream_download_url: str, 
+                    media_type: str = "movie", season: int = None, episode: int = None) -> bool:
+    """Save movie or TV episode data to Supabase database."""
     if not supabase:
         print("[supabase] Not connected, skipping database save")
         return False
@@ -407,21 +484,32 @@ def save_to_supabase(tmdb_id: int, title: str, doodstream_url: str, doodstream_d
         data = {
             "tmdb_id": tmdb_id,
             "title": title,
+            "media_type": media_type,
             "doodstream_url": doodstream_url,
             "doodstream_download_url": doodstream_download_url,
         }
         
-        # Check if movie already exists
-        existing = supabase.table("movies").select("*").eq("tmdb_id", tmdb_id).execute()
+        if season is not None:
+            data["season_number"] = season
+        if episode is not None:
+            data["episode_number"] = episode
+        
+        # Check if record already exists (by tmdb_id, media_type, season, episode)
+        existing = supabase.table("movies").select("*").eq("tmdb_id", tmdb_id).eq("media_type", media_type).execute()
+        
+        if media_type == "tv" and season is not None and episode is not None:
+            existing = supabase.table("movies").select("*").eq("tmdb_id", tmdb_id).eq("media_type", media_type).eq("season_number", season).eq("episode_number", episode).execute()
         
         if existing.data:
             # Update existing record
-            supabase.table("movies").update(data).eq("tmdb_id", tmdb_id).execute()
-            print(f"[supabase] Updated movie: {title} (tmdb_id: {tmdb_id})")
+            supabase.table("movies").update(data).eq("tmdb_id", tmdb_id).eq("media_type", media_type).execute()
+            if media_type == "tv" and season is not None and episode is not None:
+                supabase.table("movies").update(data).eq("tmdb_id", tmdb_id).eq("media_type", media_type).eq("season_number", season).eq("episode_number", episode).execute()
+            print(f"[supabase] Updated {media_type}: {title} (tmdb_id: {tmdb_id}, S{season}E{episode if episode else ''})")
         else:
             # Insert new record
             supabase.table("movies").insert(data).execute()
-            print(f"[supabase] Inserted movie: {title} (tmdb_id: {tmdb_id})")
+            print(f"[supabase] Inserted {media_type}: {title} (tmdb_id: {tmdb_id}, S{season}E{episode if episode else ''})")
         
         return True
     except Exception as e:

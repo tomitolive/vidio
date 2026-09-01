@@ -23,6 +23,8 @@ PROCESSED_DB_FILE = "processed_cima4u_movies.json"
 CATEGORIES = [
     "https://cimafu.cam/category/افلام-اجنبي/",
     "https://cimafu.cam/category/افلام-اسيوي/",
+    "https://cimafu.cam/category/مسلسلات-اجنبي/",
+    "https://cimafu.cam/category/مسلسلات-اسيوي/",
 ]
 PROXY_URL = "http://zydsd0hlbcew:rcog4ketsimppec@216.26.240.253:3129"
 
@@ -135,9 +137,8 @@ def process_category(
     category_url = clean_url(category_url)
     processed_db = load_processed_movies()
     
-    # Get last processed page for this category
+    # Always start from page 1 to get latest updates
     category_key = category_url.rstrip("/")
-    last_page = processed_db["last_pages"].get(category_key, 0)
     
     stats = {
         "category": category_url,
@@ -148,7 +149,7 @@ def process_category(
         "errors": []
     }
     
-    current_page = last_page + 1
+    current_page = 1  # Always start from page 1
     total_movies_processed = 0
     success_found = False
     
@@ -159,10 +160,6 @@ def process_category(
         
         if max_movies and total_movies_processed >= max_movies:
             print(f"[crawler] Reached max movies limit: {max_movies}")
-            break
-        
-        if stop_on_first_success and success_found:
-            print(f"[crawler] Stopping after first successful upload")
             break
         
         # Load page
@@ -208,20 +205,19 @@ def process_category(
                 # Call jibi_bot to process the movie
                 result = run_jibi_bot(movie_url, api_key=api_key)
                 
-                # Remember the url<->filecode mapping so we skip fast next time
-                processed_db["processed_urls"][movie_url] = {
-                    "processed_at": time.strftime("%Y-%m-%d %H:%M:%S"),
-                    "filecode": result.get("filecode"),
-                    "tmdb_id": result.get("tmdb_id")
-                }
-                save_processed_movies(processed_db)
-                
                 # Duplicate: movie already uploaded (e.g. same film from another
                 # category). Do NOT count as a new upload and never re-upload.
                 if result.get("skipped_duplicate"):
                     stats["movies_skipped"] += 1
                     page_has_dup = True
                     print(f"[crawler] ↻ Duplicate (already uploaded): filecode={result.get('filecode')}")
+                    # Still save to processed_urls to skip faster next time
+                    processed_db["processed_urls"][movie_url] = {
+                        "processed_at": time.strftime("%Y-%m-%d %H:%M:%S"),
+                        "filecode": result.get("filecode"),
+                        "tmdb_id": result.get("tmdb_id")
+                    }
+                    save_processed_movies(processed_db)
                     time.sleep(1)
                     continue
                 
@@ -232,12 +228,15 @@ def process_category(
                     page_success = True
                     print(f"[crawler] ✓ Success: filecode={result.get('filecode')}, tmdb_id={result.get('tmdb_id')}")
                     
-                    if stop_on_first_success:
-                        print(f"[crawler] First successful upload completed, stopping...")
-                        break
-                    else:
-                        print(f"[crawler] One video uploaded for this page, moving to next page...")
-                        break
+                    # Save to processed_urls after successful upload
+                    processed_db["processed_urls"][movie_url] = {
+                        "processed_at": time.strftime("%Y-%m-%d %H:%M:%S"),
+                        "filecode": result.get("filecode"),
+                        "tmdb_id": result.get("tmdb_id")
+                    }
+                    save_processed_movies(processed_db)
+                    
+                    print(f"[crawler] Video uploaded, continuing with next video on this page...")
                 else:
                     page_has_fail = True
                     stats["errors"].append(f"Failed: {movie_url}")
@@ -262,7 +261,7 @@ def process_category(
             print(f"[crawler] ⚠ No successful upload on page {current_page}, not advancing - will retry this page next run")
             break
 
-        # Update last processed page
+        # Update last processed page (for tracking, not resumption)
         processed_db["last_pages"][category_key] = current_page
         stats["pages_processed"] += 1
         
@@ -287,10 +286,10 @@ def main():
     parser = argparse.ArgumentParser(description="Cima4u Category Crawler")
     parser.add_argument("--category", help="Category URL to process")
     parser.add_argument("--api-key", required=True, help="DoodStream API key")
-    parser.add_argument("--max-pages", type=int, help="Maximum pages to process")
-    parser.add_argument("--max-movies", type=int, help="Maximum movies to process")
+    parser.add_argument("--max-pages", type=int, default=20, help="Maximum pages to process (default: 20)")
+    parser.add_argument("--max-movies", type=int, default=50, help="Maximum movies to process (default: 50)")
     parser.add_argument("--all-categories", action="store_true", help="Process all predefined categories")
-    parser.add_argument("--stop-on-first-success", action="store_true", help="Stop after first successful upload")
+    parser.add_argument("--stop-on-first-success", action="store_true", help="Stop after first successful upload (deprecated)")
     
     args = parser.parse_args()
     

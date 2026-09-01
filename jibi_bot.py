@@ -18,28 +18,67 @@ from urllib.parse import urlparse, urljoin, quote
 import requests
 from bs4 import BeautifulSoup
 
-from catalog import get_entry_by_page, update_doodstream_in_catalog, find_tmdb_id_by_title, import_from_doodstream_account, save_to_supabase, search_tmdb_api, extract_cima4u_info, search_tmdb_by_slug
+from catalog import get_entry_by_page, update_doodstream_in_catalog, find_tmdb_id_by_title, import_from_doodstream_account, save_to_supabase, search_tmdb_api, extract_cima4u_info, search_tmdb_by_slug, extract_episode_info
 
 # ─── 1. Proxies Configuration ───────────────────────────────────────────────
 
 PROXIES_LIST = [
     "http://zydsd0hlbcew:rcog4ketsimppec@216.26.240.253:3129",
-    "http://zydsd0hlbcew:rcog4ketsimppec@216.26.240.253:3129",
-    "http://zydsd0hlbcew:rcog4ketsimppec@216.26.240.253:3129",
-    "http://zydsd0hlbcew:rcog4ketsimppec@216.26.240.253:3129",
-    "http://zydsd0hlbcew:rcog4ketsimppec@216.26.240.253:3129",
-    "http://zydsd0hlbcew:rcog4ketsimppec@216.26.240.253:3129",
-    "http://zydsd0hlbcew:rcog4ketsimppec@216.26.240.253:3129",
-    "http://zydsd0hlbcew:rcog4ketsimppec@216.26.240.253:3129",
-    "http://zydsd0hlbcew:rcog4ketsimppec@216.26.240.253:3129",
-    "http://zydsd0hlbcew:rcog4ketsimppec@216.26.240.253:3129",
 ]
+
+# Proxy rotation state
+proxy_index = 0
+failed_proxies = set()
+
+
+def get_next_proxy() -> str:
+    """Return next proxy from rotation list, skipping failed ones."""
+    global proxy_index
+    
+    env_proxy = os.environ.get("PROXY_URL", "").strip()
+    if env_proxy:
+        return env_proxy
+    
+    if not PROXIES_LIST:
+        return ""
+    
+    # Try to find a working proxy
+    attempts = 0
+    max_attempts = len(PROXIES_LIST)
+    
+    while attempts < max_attempts:
+        proxy = PROXIES_LIST[proxy_index % len(PROXIES_LIST)]
+        proxy_index += 1
+        
+        if proxy not in failed_proxies:
+            return proxy
+        
+        attempts += 1
+    
+    # All proxies failed, reset and try again
+    failed_proxies.clear()
+    proxy_index = 0
+    return PROXIES_LIST[0]
+
+
+def mark_proxy_failed(proxy_url: str):
+    """Mark a proxy as failed to skip it in future requests."""
+    if proxy_url:
+        failed_proxies.add(proxy_url)
+        print(f"[proxy] Marked proxy as failed: {proxy_url.split('@')[-1] if '@' in proxy_url else proxy_url}")
+
+
+def reset_failed_proxies():
+    """Reset failed proxies list (call periodically to retry them)."""
+    global failed_proxies
+    if failed_proxies:
+        print(f"[proxy] Resetting {len(failed_proxies)} failed proxies")
+        failed_proxies.clear()
 
 
 def get_random_proxy() -> str:
-    """Return a proxy string from environment or rotated list."""
-    env_proxy = os.environ.get("PROXY_URL", "").strip()
-    return env_proxy if env_proxy else random.choice(PROXIES_LIST)
+    """Return a proxy string from environment or rotated list (legacy function)."""
+    return get_next_proxy()
 
 
 def get_requests_proxies(proxy_url: str):
@@ -246,7 +285,21 @@ def find_existing_upload(
                 print(f"[dedup] Existing filecode: {entry.get('filecode')}")
                 return entry
 
-    # 3. Check DoodStream account by title keywords
+    # 3. Check DoodStream account by filecode (most accurate)
+    if api_key and source_filecode:
+        account_files = list_doodstream_files(api_key, proxy_url)
+        for f in account_files:
+            file_code = f.get("file_code") or f.get("filecode")
+            if file_code == source_filecode:
+                print(f"[dedup] Source filecode already exists in account: {source_filecode}")
+                return {
+                    "filecode": file_code,
+                    "title": f.get("title"),
+                    "source": "account_filecode_match",
+                    "skipped": True,
+                }
+
+    # 4. Check DoodStream account by title keywords (fallback)
     if api_key and movie_title:
         keywords = extract_title_keywords(movie_title)
         if len(keywords) >= 2:
@@ -259,12 +312,12 @@ def find_existing_upload(
                 # Match if most keywords appear in existing file title
                 matches = sum(1 for kw in keywords if kw in file_title)
                 if matches >= max(2, len(keywords) - 1):
-                    print(f"[dedup] Found existing file on account: '{f.get('title')}'")
+                    print(f"[dedup] Found existing file on account by title: '{f.get('title')}'")
                     print(f"[dedup] Existing filecode: {file_code}")
                     return {
                         "filecode": file_code,
                         "title": f.get("title"),
-                        "source": "account_match",
+                        "source": "account_title_match",
                         "skipped": True,
                     }
 
@@ -816,7 +869,7 @@ def download_locally(stream_url: str, proxy_url: str = "", output_dir: str = "."
 
 def run_jibi_bot(page_url: str, api_key: str = "", download: bool = False, tmdb_id: int = None):
     page_url = clean_url(page_url)
-    proxy_url = get_random_proxy()
+    proxy_url = get_next_proxy()
     if proxy_url:
         masked = proxy_url.split("@")[-1] if "@" in proxy_url else proxy_url
         print(f"[jibi] Using proxy: {masked}")
@@ -988,10 +1041,17 @@ def run_jibi_bot(page_url: str, api_key: str = "", download: bool = False, tmdb_
 
     # Step 4: Save to processed DB + catalog after successful upload
     if result["success"] and result["filecode"]:
+        # Extract episode info from title
+        episode_info = extract_episode_info(movie_title)
+        media_type = episode_info.get("media_type", "movie")
+        season = episode_info.get("season")
+        episode = episode_info.get("episode")
+        cleaned_title = episode_info.get("cleaned_title", movie_title)
+        
         # Try to find tmdb_id: manual override > by title (catalog) > Cima4u slug search > TMDB API > by page URL
         resolved_tmdb_id = tmdb_id
         if not resolved_tmdb_id:
-            resolved_tmdb_id = find_tmdb_id_by_title(movie_title)
+            resolved_tmdb_id = find_tmdb_id_by_title(cleaned_title)
         if not resolved_tmdb_id:
             # Try Cima4u slug-based search if URL is from Cima4u
             if "cimafu.cam" in page_url.lower():
@@ -999,14 +1059,17 @@ def run_jibi_bot(page_url: str, api_key: str = "", download: bool = False, tmdb_
                 if slug and year:
                     resolved_tmdb_id = search_tmdb_by_slug(slug, year)
         if not resolved_tmdb_id:
-            resolved_tmdb_id = search_tmdb_api(movie_title)
+            # Use TMDB API with media type info
+            year_match = re.search(r'\b(19|20)\d{2}\b', movie_title)
+            year = year_match.group() if year_match else ""
+            resolved_tmdb_id = search_tmdb_api(cleaned_title, year, media_type, season, episode)
         if not resolved_tmdb_id:
             resolved_tmdb_id = (get_entry_by_page(page_url) or {}).get("tmdb_id")
         
         catalog_entry = update_doodstream_in_catalog(
             filecode=result["filecode"],
             page_url=page_url,
-            title=result.get("movie_title") or movie_title,
+            title=cleaned_title,
             embed_url=(result.get("selected_server") or {}).get("embed_url", ""),
             source_filecode=result.get("source_filecode", ""),
             tmdb_id=resolved_tmdb_id,
@@ -1014,14 +1077,20 @@ def run_jibi_bot(page_url: str, api_key: str = "", download: bool = False, tmdb_
         result["doodstream_url"] = catalog_entry.get("doodstream_url")
         result["playmogo_url"] = catalog_entry.get("playmogo_url")
         result["tmdb_id"] = catalog_entry.get("tmdb_id")
+        result["media_type"] = media_type
+        result["season"] = season
+        result["episode"] = episode
         
         # Save to Supabase if tmdb_id is available
         if resolved_tmdb_id:
             save_to_supabase(
                 tmdb_id=resolved_tmdb_id,
-                title=catalog_entry.get("title") or movie_title,
+                title=cleaned_title,
                 doodstream_url=catalog_entry.get("doodstream_url"),
-                doodstream_download_url=catalog_entry.get("doodstream_download_url")
+                doodstream_download_url=catalog_entry.get("doodstream_download_url"),
+                media_type=media_type,
+                season=season,
+                episode=episode
             )
 
         if not result.get("skipped_duplicate"):
