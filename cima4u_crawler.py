@@ -10,6 +10,7 @@ import sys
 import json
 import time
 import re
+import sqlite3
 from typing import List, Dict, Set, Tuple
 from urllib.parse import unquote, urljoin
 from bs4 import BeautifulSoup
@@ -21,13 +22,104 @@ from jibi_bot import run_jibi_bot, clean_url
 
 # Configuration
 PROCESSED_DB_FILE = "processed_cima4u_movies.json"
-CATEGORIES = [
+TV_DB_FILE = "tv_series.db"
+MOVIE_CATEGORIES = [
     "https://cimafu.cam/category/افلام-اجنبي/",
     "https://cimafu.cam/category/افلام-اسيوي/",
+]
+TV_CATEGORIES = [
     "https://cimafu.cam/category/مسلسلات-اجنبي/",
     "https://cimafu.cam/category/مسلسلات-اسيوي/",
 ]
+CATEGORIES = MOVIE_CATEGORIES + TV_CATEGORIES
 PROXY_URL = "http://zydsd0hlbcew:rcog4ketsimppec@216.26.240.253:3129"
+
+
+# ─── TV Series Database Functions ─────────────────────────────────────────────
+
+def init_tv_database():
+    """Initialize SQLite database for TV series and episodes."""
+    conn = sqlite3.connect(TV_DB_FILE)
+    c = conn.cursor()
+    
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS series (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT UNIQUE NOT NULL,
+            url TEXT,
+            first_seen TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
+    
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS episodes (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            series_id INTEGER NOT NULL,
+            season INTEGER,
+            episode INTEGER,
+            url TEXT UNIQUE NOT NULL,
+            filecode TEXT,
+            tmdb_id TEXT,
+            scraped_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (series_id) REFERENCES series(id)
+        )
+    ''')
+    
+    conn.commit()
+    return conn
+
+
+def save_series_to_db(conn, series_name: str, url: str = None):
+    """Save a series to the database and return its ID."""
+    c = conn.cursor()
+    c.execute(
+        "INSERT OR IGNORE INTO series (name, url) VALUES (?, ?)",
+        (series_name, url)
+    )
+    conn.commit()
+    c.execute("SELECT id FROM series WHERE name = ?", (series_name,))
+    return c.fetchone()[0]
+
+
+def save_episode_to_db(conn, series_id: int, season, episode, url, filecode=None, tmdb_id=None):
+    """Save an episode to the database."""
+    c = conn.cursor()
+    try:
+        c.execute(
+            "INSERT INTO episodes (series_id, season, episode, url, filecode, tmdb_id) VALUES (?, ?, ?, ?, ?, ?)",
+            (series_id, season, episode, url, filecode, tmdb_id)
+        )
+        conn.commit()
+        return True
+    except sqlite3.IntegrityError:
+        return False
+
+
+def get_series_stats(conn):
+    """Get statistics about series in the database."""
+    c = conn.cursor()
+    
+    c.execute("SELECT COUNT(*) FROM series")
+    total_series = c.fetchone()[0]
+    
+    c.execute("SELECT COUNT(*) FROM episodes")
+    total_episodes = c.fetchone()[0]
+    
+    c.execute('''
+        SELECT s.name, COUNT(e.id) as ep_count 
+        FROM series s 
+        LEFT JOIN episodes e ON s.id = e.series_id 
+        GROUP BY s.id 
+        ORDER BY ep_count DESC
+    ''')
+    series_list = c.fetchall()
+    
+    return {
+        "total_series": total_series,
+        "total_episodes": total_episodes,
+        "series_list": series_list
+    }
 
 
 # ─── Episode Detection Functions ──────────────────────────────────────────────
@@ -236,9 +328,14 @@ def process_category(
     api_key: str,
     max_pages: int = None,
     max_movies: int = None,
-    stop_on_first_success: bool = False
+    stop_on_first_success: bool = False,
+    mode: str = "all",
+    tv_conn=None
 ) -> Dict:
-    """Process a category page and extract/process movies and episodes."""
+    """Process a category page and extract/process movies and episodes.
+    
+    mode: "movies" = only movies, "tv" = only TV episodes, "all" = both
+    """
     category_url = clean_url(category_url)
     processed_db = load_processed_movies()
     
@@ -278,6 +375,12 @@ def process_category(
         
         # Extract movie/episode links with info
         links_with_info = extract_movie_links_from_page(html)
+        
+        # Filter based on mode
+        if mode == "movies":
+            links_with_info = [(url, info) for url, info in links_with_info if info["type"] == "movie"]
+        elif mode == "tv":
+            links_with_info = [(url, info) for url, info in links_with_info if info["type"] == "episode"]
         
         # Count separately
         movie_count = sum(1 for _, info in links_with_info if info["type"] == "movie")
@@ -350,6 +453,14 @@ def process_category(
                 if result.get("success"):
                     if info["type"] == "episode":
                         stats["episodes_processed"] += 1
+                        # Save to TV database
+                        if tv_conn and info.get("series_name"):
+                            series_id = save_series_to_db(tv_conn, info["series_name"])
+                            save_episode_to_db(
+                                tv_conn, series_id,
+                                info.get("season"), info.get("episode"),
+                                url, result.get("filecode"), result.get("tmdb_id")
+                            )
                     else:
                         stats["movies_processed"] += 1
                     total_processed += 1
@@ -417,6 +528,8 @@ def main():
     import argparse
     
     parser = argparse.ArgumentParser(description="Cima4u Category Crawler")
+    parser.add_argument("--mode", choices=["movies", "tv", "all"], default="all",
+                        help="Scraping mode: movies = film only, tv = mouselat only, all = both")
     parser.add_argument("--category", help="Category URL to process")
     parser.add_argument("--api-key", required=True, help="DoodStream API key")
     parser.add_argument("--max-pages", type=int, default=20, help="Maximum pages to process (default: 20)")
@@ -426,15 +539,33 @@ def main():
     
     args = parser.parse_args()
     
-    if args.all_categories:
-        categories = CATEGORIES
-    elif args.category:
-        categories = [args.category]
+    # Select categories based on mode
+    if args.mode == "movies":
+        categories = MOVIE_CATEGORIES
+        print(f"[crawler] Mode: MOVIES ONLY")
+    elif args.mode == "tv":
+        categories = TV_CATEGORIES
+        print(f"[crawler] Mode: TV SERIES ONLY")
     else:
-        print("Error: Please provide --category or --all-categories")
-        sys.exit(1)
+        categories = CATEGORIES
+        print(f"[crawler] Mode: ALL (movies + TV)")
+    
+    if args.category:
+        categories = [args.category]
+    elif not args.all_categories:
+        # Use default categories based on mode
+        pass
+    else:
+        # Keep categories based on mode
+        pass
     
     os.environ.setdefault("PROXY_URL", PROXY_URL)
+
+    # Initialize TV database if needed
+    tv_conn = None
+    if args.mode in ("tv", "all"):
+        tv_conn = init_tv_database()
+        print(f"[crawler] TV database initialized: {TV_DB_FILE}")
 
     print(f"[crawler] Starting crawler with {len(categories)} categories")
     print(f"[crawler] Max pages: {args.max_pages or 'unlimited'}")
@@ -453,7 +584,9 @@ def main():
             args.api_key,
             max_pages=args.max_pages,
             max_movies=args.max_movies,
-            stop_on_first_success=args.stop_on_first_success
+            stop_on_first_success=args.stop_on_first_success,
+            mode=args.mode,
+            tv_conn=tv_conn
         )
         all_stats.append(stats)
         
@@ -475,6 +608,20 @@ def main():
     
     print(f"Movies: {total_movies_found} found, {total_movies_processed} processed, {total_movies_skipped} skipped")
     print(f"Episodes: {total_episodes_found} found, {total_episodes_processed} processed, {total_episodes_skipped} skipped")
+    
+    # Print TV database stats
+    if tv_conn:
+        print(f"\n{'='*60}")
+        print("TV SERIES DATABASE")
+        print(f"{'='*60}")
+        tv_stats = get_series_stats(tv_conn)
+        print(f"Total series: {tv_stats['total_series']}")
+        print(f"Total episodes: {tv_stats['total_episodes']}")
+        if tv_stats['series_list']:
+            print(f"\nTop series by episodes:")
+            for name, count in tv_stats['series_list'][:10]:
+                print(f"  {name}: {count} episodes")
+        tv_conn.close()
 
 
 if __name__ == "__main__":

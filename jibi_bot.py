@@ -959,18 +959,39 @@ def run_jibi_bot(page_url: str, api_key: str = "", download: bool = False, tmdb_
 
     # Step 2b: Iterate remaining servers for direct stream extraction + upload
     if not result["filecode"]:
-        # Prioritize servers known for direct video / fast processing
+        # Servers that work with yt-dlp / Playwright
+        SUPPORTED_SERVERS = (
+            "doodstream.com", "dood.", "d0o0d.", "ds2play.", "ds2video.",
+            "playmogo.com", "dood.wf", "dood.so", "dood.cx", "dood.la",
+            "dood.re", "dood.yt", "dood.to", "dood.watch", "dood.pm",
+            "streamtape.com", "streamtape.net", "streamtape.to",
+            "filemoon.sx", "filemoon.to", "filemoon.link",
+            "streamvid.", "streamwish.to", "wishfast.",
+        )
+
+        def is_supported_server(url: str) -> bool:
+            lower = url.lower()
+            return any(host in lower for host in SUPPORTED_SERVERS)
+
         def server_priority(s):
             url = s["embed_url"].lower()
             if is_doodstream_embed(url):
                 return 1
-            if "earnvids" in url or "lulustream" in url or "luluvdo" in url:
+            if "streamtape" in url:
                 return 2
-            if "streamwish" in url or "streamtape" in url or "filemoon" in url:
+            if "filemoon" in url:
                 return 3
+            if "streamwish" in url or "streamvid" in url:
+                return 4
             return 10
 
-        sorted_servers = sorted(servers, key=server_priority)
+        # Filter to only supported servers
+        supported_servers = [s for s in servers if is_supported_server(s["embed_url"])]
+        skipped_count = len(servers) - len(supported_servers)
+        if skipped_count > 0:
+            print(f"[jibi] Skipping {skipped_count} unsupported server(s)")
+
+        sorted_servers = sorted(supported_servers, key=server_priority)
 
         for s in sorted_servers:
             if result["filecode"]:
