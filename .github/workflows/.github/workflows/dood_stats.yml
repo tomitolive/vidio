@@ -1,0 +1,26 @@
+name: Fetch DoodStream Stats
+
+on:
+  workflow_dispatch:
+
+jobs:
+  run-stats:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install Dependencies
+        run: pip install requests
+
+      - name: Run DoodStream Stats Script
+        env:
+          DOODSTREAM_API_KEY: ${{ secrets.DOODSTREAM_API_KEY }}
+        run: python dood_stats.py
+        
