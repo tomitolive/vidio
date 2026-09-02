@@ -1,52 +1,60 @@
-import requests
+import os
 import re
+import requests
 
-# حط الـ API Key ديالك هنا بين الجوج علامات التنصيص
-DOOD_API_KEY = "576580si8p199m63k5gmvx"
+API_KEY = os.environ.get("DOODSTREAM_API_KEY")
 
-def fetch_all_videos():
-    if not DOOD_API_KEY or DOOD_API_KEY == "YOUR_API_KEY_HERE":
-        print("Error: DOOD_API_KEY is missing or not set.")
-        return
+if not API_KEY:
+    print("Error: DOODSTREAM_API_KEY environment variable is missing.")
+    exit(1)
 
-    url = f"https://doodapi.com/api/file/list?key={DOOD_API_KEY}"
-    try:
-        response = requests.get(url).json()
-    except Exception as e:
-        print(f"Error connecting to DoodStream API: {e}")
-        return
+movies_count = 0
+tv_episodes_count = 0
+other_count = 0
+total_files = 0
 
-    if response.get("status") != 200:
-        print(f"API Error: {response.get('msg')}")
-        return
+# RegEx Patterns
+tv_pattern = re.compile(r'(S\d+E\d+|E\d+|\bEpisode\b|\bSeason\b|\bEp\b)', re.IGNORECASE)
+movie_pattern = re.compile(r'(\b19\d{2}\b|\b20\d{2}\b|1080p|720p|4k|Bluray|WEB-DL|AMZN)', re.IGNORECASE)
 
-    files = response.get("result", {}).get("files", [])
+page = 1
+
+while True:
+    url = f"https://doodapi.com/api/file/list?key={API_KEY}&page={page}"
+    response = requests.get(url)
     
-    print("\n" + "="*50)
-    print(f" Total Videos Found: {len(files)}")
-    print("="*50 + "\n")
+    if response.status_code != 200:
+        print(f"Failed to fetch page {page}")
+        break
 
-    movies_count = 0
-    episodes_count = 0
+    data = response.json()
 
-    for idx, f in enumerate(files, 1):
-        title = f.get("title", "Unknown")
-        code = f.get("file_code", "N/A")
-        
-        # التمييز بين المسلسلات والأفلام حسب العنوان
-        if re.search(r'(الحلقة|حلقة|S\d+E\d+|E\d+)', title, re.IGNORECASE):
-            v_type = "TV Series Episode"
-            episodes_count += 1
-        else:
-            v_type = "Movie"
+    if data.get("status") != 200 or not data.get("result", {}).get("files"):
+        break
+
+    files = data["result"]["files"]
+    if not files:
+        break
+
+    for file in files:
+        title = file.get("title", "")
+        total_files += 1
+
+        if tv_pattern.search(title):
+            tv_episodes_count += 1
+        elif movie_pattern.search(title):
             movies_count += 1
+        else:
+            other_count += 1
 
-        print(f"{idx}. [{v_type}] {title}")
-        print(f"   Code: {code}\n")
+    # Check if there are more pages
+    total_pages = data.get("result", {}).get("total_pages", 1)
+    if page >= total_pages:
+        break
 
-    print("="*50)
-    print(f" Summary: {movies_count} Movies | {episodes_count} Episodes")
-    print("="*50)
+    page += 1
 
-if __name__ == "__main__":
-    fetch_all_videos()
+print("==========================================")
+print(f"Total Videos Scanned: {total_files}")
+print(f"Movies: {movies_count} | TV Episodes: {tv_episodes_count} | Other: {other_count}")
+print("==========================================")
