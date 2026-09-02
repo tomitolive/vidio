@@ -132,9 +132,18 @@ def clean_url(url: str) -> str:
 
 DOODSTREAM_HOSTS = (
     "doodstream.com", "dood.", "d0o0d.", "ds2play.", "ds2video.",
-    "playmogo.com", "dood.wf", "dood.so", "dood.cx", "dood.la",
+    "dood.wf", "dood.so", "dood.cx", "dood.la",
     "dood.re", "dood.yt", "dood.to", "dood.watch", "dood.pm",
 )
+
+# Blacklist: servers known to fail or be unsupported
+BLACKLISTED_SERVERS = (
+    "luluvdo.com", "lulustream.com", "earnvids.xyz",
+    "streamwish.fun", "miixdrop.top", "miixdrop.co",
+)
+
+# Session-level: track servers that failed during this run
+_failed_servers_session = set()
 
 
 def is_doodstream_embed(url: str) -> bool:
@@ -959,39 +968,38 @@ def run_jibi_bot(page_url: str, api_key: str = "", download: bool = False, tmdb_
 
     # Step 2b: Iterate remaining servers for direct stream extraction + upload
     if not result["filecode"]:
-        # Servers that work with yt-dlp / Playwright
-        SUPPORTED_SERVERS = (
-            "doodstream.com", "dood.", "d0o0d.", "ds2play.", "ds2video.",
-            "playmogo.com", "dood.wf", "dood.so", "dood.cx", "dood.la",
-            "dood.re", "dood.yt", "dood.to", "dood.watch", "dood.pm",
-            "streamtape.com", "streamtape.net", "streamtape.to",
-            "filemoon.sx", "filemoon.to", "filemoon.link",
-            "streamvid.", "streamwish.to", "wishfast.",
-        )
-
-        def is_supported_server(url: str) -> bool:
+        # Blacklist filter: skip known-bad servers + per-session failures
+        def is_blacklisted(url: str) -> bool:
             lower = url.lower()
-            return any(host in lower for host in SUPPORTED_SERVERS)
+            return any(host in lower for host in BLACKLISTED_SERVERS)
 
         def server_priority(s):
             url = s["embed_url"].lower()
             if is_doodstream_embed(url):
                 return 1
-            if "streamtape" in url:
+            if "mixdrop" in url or "miixdrop" in url:
                 return 2
-            if "filemoon" in url:
+            if "voe" in url:
                 return 3
-            if "streamwish" in url or "streamvid" in url:
+            if "streamtape" in url:
                 return 4
+            if "filemoon" in url:
+                return 5
+            if "streamwish" in url or "streamvid" in url:
+                return 6
             return 10
 
-        # Filter to only supported servers
-        supported_servers = [s for s in servers if is_supported_server(s["embed_url"])]
-        skipped_count = len(servers) - len(supported_servers)
-        if skipped_count > 0:
-            print(f"[jibi] Skipping {skipped_count} unsupported server(s)")
+        # Filter out blacklisted servers + session failures
+        valid_servers = [
+            s for s in servers
+            if not is_blacklisted(s["embed_url"])
+            and s["embed_url"] not in _failed_servers_session
+        ]
+        skipped = len(servers) - len(valid_servers)
+        if skipped > 0:
+            print(f"[jibi] Skipping {skipped} blacklisted/failed server(s)")
 
-        sorted_servers = sorted(supported_servers, key=server_priority)
+        sorted_servers = sorted(valid_servers, key=server_priority)
 
         for s in sorted_servers:
             if result["filecode"]:
@@ -1016,6 +1024,8 @@ def run_jibi_bot(page_url: str, api_key: str = "", download: bool = False, tmdb_
                     print(f"[jibi] Stream extracted via Playwright: {stream_url[:100]}")
 
             if not stream_url:
+                _failed_servers_session.add(embed_url)
+                print(f"[jibi] No stream from server '{s['name']}', marking as failed")
                 continue
 
             if download:
