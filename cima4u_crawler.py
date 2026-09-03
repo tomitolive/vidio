@@ -263,11 +263,39 @@ def extract_movie_links_from_page(html: str) -> List[Tuple[str, dict]]:
     return movie_links
 
 
-def get_category_page_with_playwright(category_url: str, page_num: int = 1) -> str:
-    """Load category page using Playwright (through a live proxy)."""
-    from playwright.sync_api import sync_playwright
-    from jibi_bot import get_next_proxy, get_all_proxies, parse_playwright_proxy
+def get_page_with_flaresolverr(url: str, timeout: int = 45) -> str:
+    """Fetch a page via local FlareSolverr (Cloudflare bypass), returns HTML or ''."""
+    import requests as _req
+    try:
+        resp = _req.post(
+            "http://localhost:8191/v1",
+            json={
+                "cmd": "request.get",
+                "url": url,
+                "maxTimeout": timeout * 1000,
+                "request": {
+                    "headers": {
+                        "User-Agent": (
+                            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                            "AppleWebKit/537.36 (KHTML, like Gecko) "
+                            "Chrome/124.0.0.0 Safari/537.36"
+                        )
+                    }
+                },
+            },
+            timeout=timeout + 10,
+        )
+        data = resp.json()
+        if data.get("status") == "ok" and data.get("solution", {}).get("response"):
+            return data["solution"]["response"]
+        return ""
+    except Exception as e:
+        print(f"[crawler] FlareSolverr error: {str(e)[:120]}")
+        return ""
 
+
+def get_category_page_with_playwright(category_url: str, page_num: int = 1) -> str:
+    """Load category page. Tries FlareSolverr first, then live proxies, then direct."""
     # Add page number to URL if not first page
     if page_num > 1:
         url = f"{category_url.rstrip('/')}/page/{page_num}/"
@@ -276,7 +304,16 @@ def get_category_page_with_playwright(category_url: str, page_num: int = 1) -> s
 
     print(f"[crawler] Loading: {url}")
 
-    # Build ordered list of proxies to try, then direct connection as last resort
+    # 1) Prefer FlareSolverr (Cloudflare bypass, runs locally in the workflow)
+    html = get_page_with_flaresolverr(url)
+    if html:
+        print(f"[crawler] Loaded via FlareSolverr ({len(html)} bytes)")
+        return html
+
+    # 2) Fall back to Playwright through live proxies, then direct connection
+    from playwright.sync_api import sync_playwright
+    from jibi_bot import get_next_proxy, get_all_proxies, parse_playwright_proxy
+
     proxy_attempts = list(get_all_proxies())
     if proxy_attempts:
         get_next_proxy()  # advance rotation past first
