@@ -576,7 +576,7 @@ def extract_servers_with_playwright(page_url: str, proxy_url: str) -> list[dict]
         page = context.new_page()
 
         try:
-            page.goto(page_url, wait_until="networkidle", timeout=45000)
+            page.goto(page_url, wait_until="domcontentloaded", timeout=45000)
             time.sleep(5)  # Wait for JavaScript to load
 
             # Try to interact with page to load servers

@@ -309,7 +309,7 @@ def get_category_page_with_playwright(category_url: str, page_num: int = 1) -> s
         page = context.new_page()
         
         try:
-            page.goto(url, wait_until="networkidle", timeout=30000)
+            page.goto(url, wait_until="domcontentloaded", timeout=30000)
             time.sleep(3)
             html = page.content()
             return html
