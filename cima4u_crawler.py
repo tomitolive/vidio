@@ -32,7 +32,6 @@ TV_CATEGORIES = [
     "https://cimafu.cam/category/مسلسلات-اسيوي/",
 ]
 CATEGORIES = MOVIE_CATEGORIES + TV_CATEGORIES
-PROXY_URL = None
 
 
 # ─── TV Series Database Functions ─────────────────────────────────────────────
@@ -580,8 +579,6 @@ def main():
         # Keep categories based on mode
         pass
     
-    os.environ.setdefault("PROXY_URL", PROXY_URL)
-
     # Initialize TV database if needed
     tv_conn = None
     if args.mode in ("tv", "all"):
