@@ -110,12 +110,13 @@ def load_proxies():
 
 
 def _test_proxy(proxy: str, timeout: int = PROXY_TEST_TIMEOUT) -> bool:
-    """Return True if the proxy can reach a simple endpoint."""
+    """Return True if the proxy can make an HTTPS CONNECT tunnel (what Playwright needs).
+    Tests against an HTTPS endpoint so dead/HTTP-only proxies are excluded."""
     proxies = get_requests_proxies(proxy) if proxy else None
     if not proxies:
         return False
     try:
-        r = requests.get("http://api.iplocate.io/ip", proxies=proxies, timeout=timeout)
+        r = requests.get("https://api.iplocate.io/ip", proxies=proxies, timeout=timeout)
         return r.status_code == 200
     except Exception:
         return False
