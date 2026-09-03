@@ -339,12 +339,14 @@ def extract_title_keywords(title: str) -> list[str]:
 
 
 def list_doodstream_files(api_key: str, proxy_url: str = "") -> list[dict]:
-    """Fetch all files from DoodStream account."""
+    """Fetch all files from DoodStream account.
+    DoodStream API is reliable directly, so we never route it through the
+    (unreliable free) proxy — only cimafu scraping needs the proxy."""
     if not api_key:
         return []
     files = []
     page = 1
-    proxies = get_requests_proxies(proxy_url)
+    proxies = None  # doodapi.com is reliable direct; free proxies cause 502s
     while True:
         try:
             resp = requests.get(
@@ -549,109 +551,133 @@ def extract_servers_from_page(page_url: str, proxy_url: str) -> list[dict]:
     return unique_servers
 
 
-def extract_servers_with_playwright(page_url: str, proxy_url: str) -> list[dict]:
-    """Extract servers using Playwright for pages that need JavaScript rendering."""
+def extract_servers_with_playwright(page_url: str, proxy_url: str = "") -> list[dict]:
+    """Extract servers using Playwright for pages that need JavaScript rendering.
+    Tries the passed proxy, then other live proxies, then direct connection."""
     from playwright.sync_api import sync_playwright
 
     print(f"[jibi-playwright] Using Playwright for: {page_url}")
-    servers = []
+
+    # Ordered proxy candidates: supplied one, other live proxies, then direct (None)
+    proxies_to_try = []
+    if proxy_url:
+        proxies_to_try.append(proxy_url)
+    for p in get_all_proxies():
+        if p not in proxies_to_try and len(proxies_to_try) < 4:
+            proxies_to_try.append(p)
+    proxies_to_try.append(None)  # direct connection as last resort
 
     with sync_playwright() as p:
-        launch_kwargs = {
-            "headless": True,
-            "args": [
-                "--disable-blink-features=AutomationControlled",
-                "--no-sandbox",
-                "--disable-setuid-sandbox",
-                "--disable-dev-shm-usage",
-                "--disable-gpu",
-                "--window-size=1920,1080",
-            ],
-        }
+        for attempt_idx, attempt_proxy in enumerate(proxies_to_try):
+            if attempt_proxy:
+                masked = attempt_proxy.split('@')[-1] if '@' in attempt_proxy else attempt_proxy
+                print(f"[jibi-playwright] Attempt {attempt_idx+1} via proxy {masked}")
+            else:
+                print(f"[jibi-playwright] Attempt {attempt_idx+1} direct (no proxy)")
 
-        pw_proxy = parse_playwright_proxy(proxy_url)
-        if pw_proxy:
-            launch_kwargs["proxy"] = pw_proxy
+            launch_kwargs = {
+                "headless": True,
+                "args": [
+                    "--disable-blink-features=AutomationControlled",
+                    "--no-sandbox",
+                    "--disable-setuid-sandbox",
+                    "--disable-dev-shm-usage",
+                    "--disable-gpu",
+                    "--window-size=1920,1080",
+                ],
+            }
 
-        browser = p.chromium.launch(**launch_kwargs)
-        context = browser.new_context(
-            viewport={"width": 1920, "height": 1080},
-            user_agent=(
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                "AppleWebKit/537.36 (KHTML, like Gecko) "
-                "Chrome/124.0.0.0 Safari/537.36"
-            ),
-        )
-        page = context.new_page()
+            pw_proxy = parse_playwright_proxy(attempt_proxy) if attempt_proxy else None
+            if pw_proxy:
+                launch_kwargs["proxy"] = pw_proxy
 
-        try:
-            page.goto(page_url, wait_until="domcontentloaded", timeout=45000)
-            time.sleep(5)  # Wait for JavaScript to load
-
-            # Try to interact with page to load servers
+            servers = []
             try:
-                # Try clicking on server links or watch buttons
-                page.click('.serversWatchSide a, .watch-btn, .play-button', timeout=5000)
-                time.sleep(3)
-            except:
-                pass
+                browser = p.chromium.launch(**launch_kwargs)
+                context = browser.new_context(
+                    viewport={"width": 1920, "height": 1080},
+                    user_agent=(
+                        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                        "AppleWebKit/537.36 (KHTML, like Gecko) "
+                        "Chrome/124.0.0.0 Safari/537.36"
+                    ),
+                )
+                page = context.new_page()
 
-            # Wait for server elements to appear
-            try:
-                page.wait_for_selector('.serversWatchSide a, iframe, .server_list li', timeout=10000)
-                time.sleep(2)
-            except:
-                pass
+                try:
+                    page.goto(page_url, wait_until="domcontentloaded", timeout=30000)
+                    time.sleep(5)  # Wait for JavaScript to load
 
-            html = page.content()
-            
-            soup = BeautifulSoup(html, "html.parser")
+                    # Try to interact with page to load servers
+                    try:
+                        # Try clicking on server links or watch buttons
+                        page.click('.serversWatchSide a, .watch-btn, .play-button', timeout=5000)
+                        time.sleep(3)
+                    except:
+                        pass
 
-            # Parse <ul class="server_list">
-            server_ul = soup.find("ul", class_="server_list")
-            if server_ul:
-                for li in server_ul.find_all("li"):
-                    embed_url = li.get("data-server") or li.get("data-link")
-                    if not embed_url:
-                        iframe = li.find("iframe")
-                        if iframe and iframe.get("src"):
-                            embed_url = iframe["src"]
+                    # Wait for server elements to appear
+                    try:
+                        page.wait_for_selector('.serversWatchSide a, iframe, .server_list li', timeout=10000)
+                        time.sleep(2)
+                    except:
+                        pass
 
-                    if embed_url:
-                        server_name = li.text.strip() or f"Server {len(servers)+1}"
-                        servers.append({
-                            "name": server_name,
-                            "embed_url": clean_url(embed_url)
-                        })
+                    html = page.content()
 
-            # Parse Cima4u specific server structure (.serversWatchSide a)
-            if not servers:
-                server_links = soup.select(".serversWatchSide a")
-                for link in server_links:
-                    href = link.get("href")
-                    data_link = link.get("data-link")
-                    if href or data_link:
-                        embed_url = data_link or href
-                        server_name = link.text.strip() or f"Server {len(servers)+1}"
-                        servers.append({
-                            "name": server_name,
-                            "embed_url": clean_url(embed_url)
-                        })
+                    soup = BeautifulSoup(html, "html.parser")
 
-            # Fallback: Parse top-level iframes
-            if not servers:
-                for iframe in soup.find_all("iframe"):
-                    src = iframe.get("src")
-                    if src and src.strip() and src != "about:blank":
-                        servers.append({
-                            "name": f"Iframe {len(servers)+1}",
-                            "embed_url": clean_url(src)
-                        })
+                    # Parse <ul class="server_list">
+                    server_ul = soup.find("ul", class_="server_list")
+                    if server_ul:
+                        for li in server_ul.find_all("li"):
+                            embed_url = li.get("data-server") or li.get("data-link")
+                            if not embed_url:
+                                iframe = li.find("iframe")
+                                if iframe and iframe.get("src"):
+                                    embed_url = iframe["src"]
 
-        except Exception as e:
-            print(f"[jibi-playwright] Error: {e}")
-        finally:
-            browser.close()
+                            if embed_url:
+                                server_name = li.text.strip() or f"Server {len(servers)+1}"
+                                servers.append({
+                                    "name": server_name,
+                                    "embed_url": clean_url(embed_url)
+                                })
+
+                    # Parse Cima4u specific server structure (.serversWatchSide a)
+                    if not servers:
+                        server_links = soup.select(".serversWatchSide a")
+                        for link in server_links:
+                            href = link.get("href")
+                            data_link = link.get("data-link")
+                            if href or data_link:
+                                embed_url = data_link or href
+                                server_name = link.text.strip() or f"Server {len(servers)+1}"
+                                servers.append({
+                                    "name": server_name,
+                                    "embed_url": clean_url(embed_url)
+                                })
+
+                    # Fallback: Parse top-level iframes
+                    if not servers:
+                        for iframe in soup.find_all("iframe"):
+                            src = iframe.get("src")
+                            if src and src.strip() and src != "about:blank":
+                                servers.append({
+                                    "name": f"Iframe {len(servers)+1}",
+                                    "embed_url": clean_url(src)
+                                })
+                except Exception as e:
+                    print(f"[jibi-playwright] Error: {str(e)[:140]}")
+                finally:
+                    browser.close()
+            except Exception as e:
+                print(f"[jibi-playwright] Launch failed: {str(e)[:120]}")
+                continue
+
+            # If we got servers on this attempt, stop
+            if servers:
+                break
 
     # Deduplicate by embed_url
     seen = set()
@@ -838,7 +864,7 @@ def verify_doodstream_file(
     if not filecode:
         return {"success": False, "error": "No filecode to verify"}
 
-    proxies = get_requests_proxies(proxy_url)
+    proxies = None  # doodapi.com direct
     deadline = time.time() + max_wait
     print(f"[verify] Checking filecode {filecode} on account...")
 
@@ -887,7 +913,7 @@ def try_doodstream_clone(embed_url: str, api_key: str, proxy_url: str = "") -> d
         return {"success": False, "error": "Could not parse DoodStream filecode"}
     print(f"[doodstream] Triggering direct file clone for filecode: {file_code}")
     try:
-        proxies = get_requests_proxies(proxy_url)
+        proxies = None  # doodapi.com direct
         resp = requests.get(
             f"https://doodapi.com/api/file/clone?key={api_key}&file_code={file_code}",
             proxies=proxies,
@@ -896,7 +922,7 @@ def try_doodstream_clone(embed_url: str, api_key: str, proxy_url: str = "") -> d
         data = resp.json()
         if data.get("status") == 200:
             new_filecode = data.get("result", {}).get("filecode")
-            verify = verify_doodstream_file(api_key, new_filecode, proxy_url, max_wait=20)
+            verify = verify_doodstream_file(api_key, new_filecode, "", max_wait=20)
             if verify["success"]:
                 print(f"[doodstream] Clone verified! Filecode: {new_filecode}")
                 return {"success": True, "filecode": new_filecode}
@@ -915,7 +941,7 @@ def try_doodstream_upload(stream_url: str, api_key: str, proxy_url: str = "", ti
 
     print(f"[doodstream] Triggering remote upload for: {stream_url[:80]}")
     try:
-        proxies = get_requests_proxies(proxy_url)
+        proxies = None  # doodapi.com direct
         resp = requests.get(
             f"https://doodapi.com/api/upload/url?key={api_key}&url={quote(stream_url, safe='')}",
             proxies=proxies,
@@ -933,7 +959,7 @@ def try_doodstream_upload(stream_url: str, api_key: str, proxy_url: str = "", ti
                     timeout=15,
                 )
 
-            verify = verify_doodstream_file(api_key, filecode, proxy_url)
+            verify = verify_doodstream_file(api_key, filecode, "")
             if verify["success"]:
                 print(f"[doodstream] Remote upload verified! Filecode: {filecode}")
                 return {"success": True, "filecode": filecode}
