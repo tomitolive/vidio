@@ -177,6 +177,14 @@ def get_random_proxy() -> str:
     return get_next_proxy()
 
 
+def get_all_proxies() -> list:
+    """Return the full list of loaded working proxies (loading on first use)."""
+    global PROXIES_LOADED
+    if not PROXIES_LOADED:
+        load_proxies()
+    return list(PROXIES_LIST)
+
+
 def get_requests_proxies(proxy_url: str):
     return {"http": proxy_url, "https": proxy_url} if proxy_url else None
 

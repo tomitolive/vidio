@@ -266,58 +266,69 @@ def extract_movie_links_from_page(html: str) -> List[Tuple[str, dict]]:
 def get_category_page_with_playwright(category_url: str, page_num: int = 1) -> str:
     """Load category page using Playwright (through a live proxy)."""
     from playwright.sync_api import sync_playwright
-    from jibi_bot import get_next_proxy, parse_playwright_proxy
-    
+    from jibi_bot import get_next_proxy, get_all_proxies, parse_playwright_proxy
+
     # Add page number to URL if not first page
     if page_num > 1:
         url = f"{category_url.rstrip('/')}/page/{page_num}/"
     else:
         url = category_url
-    
-    # Use a live tested proxy to avoid Cloudflare blocking the datacenter IP
-    proxy_url = get_next_proxy()
-    pw_proxy = parse_playwright_proxy(proxy_url)
-    
+
     print(f"[crawler] Loading: {url}")
-    if proxy_url:
-        print(f"[crawler] Using proxy: {proxy_url.split('@')[-1] if '@' in proxy_url else proxy_url}")
-    
+
+    # Build ordered list of proxies to try, then direct connection as last resort
+    proxy_attempts = list(get_all_proxies())
+    if proxy_attempts:
+        get_next_proxy()  # advance rotation past first
+    proxy_attempts = list(proxy_attempts[:5]) + [None]  # None = direct connection
+
     with sync_playwright() as p:
-        launch_kwargs = {
-            "headless": True,
-            "args": [
-                "--no-sandbox",
-                "--disable-setuid-sandbox",
-                "--disable-dev-shm-usage",
-                "--disable-gpu",
-                "--disable-blink-features=AutomationControlled",
-                "--window-size=1920,1080",
-            ],
-        }
-        if pw_proxy:
-            launch_kwargs["proxy"] = pw_proxy
-        
-        browser = p.chromium.launch(**launch_kwargs)
-        context = browser.new_context(
-            viewport={"width": 1920, "height": 1080},
-            user_agent=(
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                "AppleWebKit/537.36 (KHTML, like Gecko) "
-                "Chrome/124.0.0.0 Safari/537.36"
-            ),
-        )
-        page = context.new_page()
-        
-        try:
-            page.goto(url, wait_until="domcontentloaded", timeout=30000)
-            time.sleep(3)
-            html = page.content()
-            return html
-        except Exception as e:
-            print(f"[crawler] Error loading page: {e}")
-            return ""
-        finally:
-            browser.close()
+        for attempt_idx, proxy_url in enumerate(proxy_attempts):
+            pw_proxy = parse_playwright_proxy(proxy_url) if proxy_url else None
+            if proxy_url:
+                masked = proxy_url.split('@')[-1] if '@' in proxy_url else proxy_url
+                print(f"[crawler] Using proxy [{attempt_idx+1}]: {masked}")
+            else:
+                print(f"[crawler] Trying direct connection (no proxy)...")
+
+            launch_kwargs = {
+                "headless": True,
+                "args": [
+                    "--no-sandbox",
+                    "--disable-setuid-sandbox",
+                    "--disable-dev-shm-usage",
+                    "--disable-gpu",
+                    "--disable-blink-features=AutomationControlled",
+                    "--window-size=1920,1080",
+                ],
+            }
+            if pw_proxy:
+                launch_kwargs["proxy"] = pw_proxy
+
+            try:
+                browser = p.chromium.launch(**launch_kwargs)
+                context = browser.new_context(
+                    viewport={"width": 1920, "height": 1080},
+                    user_agent=(
+                        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                        "AppleWebKit/537.36 (KHTML, like Gecko) "
+                        "Chrome/124.0.0.0 Safari/537.36"
+                    ),
+                )
+                page = context.new_page()
+                try:
+                    page.goto(url, wait_until="domcontentloaded", timeout=30000)
+                    time.sleep(3)
+                    html = page.content()
+                    return html
+                except Exception as e:
+                    print(f"[crawler] Proxy [{attempt_idx+1}] failed: {str(e)[:120]}")
+                finally:
+                    browser.close()
+            except Exception as e:
+                print(f"[crawler] Browser launch failed on attempt {attempt_idx+1}: {str(e)[:120]}")
+
+    return ""
 
 
 def has_next_page(html: str) -> bool:
