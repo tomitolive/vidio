@@ -22,43 +22,138 @@ from catalog import get_entry_by_page, update_doodstream_in_catalog, find_tmdb_i
 
 # ─── 1. Proxies Configuration ───────────────────────────────────────────────
 
-PROXIES_LIST = [
-    "http://zydsd0hlbcew:rcog4ketsimppec@216.26.240.253:3129",
-]
+PROXY_LISTS = {
+    "http": "https://raw.githubusercontent.com/iplocate/free-proxy-list/main/protocols/http.txt",
+    "https": "https://raw.githubusercontent.com/iplocate/free-proxy-list/main/protocols/https.txt",
+    "socks5": "https://raw.githubusercontent.com/iplocate/free-proxy-list/main/protocols/socks5.txt",
+}
+
+# Max proxies to download & test from each list (keep it fast)
+MAX_PROXIES_PER_SOURCE = 60
+PROXY_TEST_TIMEOUT = 3
+PROXY_TEST_WORKERS = 15
+
+PROXIES_LIST = []
+PROXIES_LOADED = False
 
 # Proxy rotation state
 proxy_index = 0
 failed_proxies = set()
 
+# Import inside functions to avoid circular import issues
+import concurrent.futures
+
+
+def _fetch_proxy_list(url: str, timeout: int = 20) -> list:
+    """Download a proxy list from a raw GitHub URL."""
+    try:
+        resp = requests.get(url, timeout=timeout)
+        resp.raise_for_status()
+        proxies = [
+            line.strip()
+            for line in resp.text.splitlines()
+            if line.strip() and ":" in line
+        ]
+        return proxies[:MAX_PROXIES_PER_SOURCE]
+    except Exception as e:
+        print(f"[proxy] Failed to fetch proxy list from {url}: {e}")
+        return []
+
+
+def load_proxies():
+    """Fetch fresh free proxies, test them in parallel, keep only working ones."""
+    global PROXIES_LIST, PROXIES_LOADED, proxy_index
+    if PROXIES_LOADED:
+        return
+
+    all_candidates = []
+    # HTTP first (largest pool, most working), then HTTPS, then SOCKS5
+    for kind in ("http", "https", "socks5"):
+        scheme = "socks5" if kind == "socks5" else "http"
+        for raw in _fetch_proxy_list(PROXY_LISTS[kind]):
+            proxy = raw.strip().lstrip("socks5h://socks4://").strip()
+            if not proxy:
+                continue
+            all_candidates.append(scheme + "://" + proxy)
+
+    # Deduplicate keeping order
+    seen = set()
+    unique = []
+    for p in all_candidates:
+        if p in seen:
+            continue
+        seen.add(p)
+        unique.append(p)
+
+    if not unique:
+        print(f"[proxy] No proxy candidates found, will connect directly")
+        PROXIES_LIST = []
+        PROXIES_LOADED = True
+        proxy_index = 0
+        return
+
+    # Test all candidates in parallel
+    with concurrent.futures.ThreadPoolExecutor(max_workers=PROXY_TEST_WORKERS) as ex:
+        results = list(ex.map(_test_proxy, unique))
+
+    tested = [p for p, ok in zip(unique, results) if ok]
+
+    if tested:
+        PROXIES_LIST = tested
+        print(f"[proxy] Loaded {len(tested)} working proxies")
+    else:
+        PROXIES_LIST = []
+        print(f"[proxy] No working proxies found, will connect directly")
+
+    PROXIES_LOADED = True
+    proxy_index = 0
+
+
+def _test_proxy(proxy: str, timeout: int = PROXY_TEST_TIMEOUT) -> bool:
+    """Return True if the proxy can reach a simple endpoint."""
+    proxies = get_requests_proxies(proxy) if proxy else None
+    if not proxies:
+        return False
+    try:
+        r = requests.get("http://api.iplocate.io/ip", proxies=proxies, timeout=timeout)
+        return r.status_code == 200
+    except Exception:
+        return False
+
 
 def get_next_proxy() -> str:
-    """Return next proxy from rotation list, skipping failed ones."""
-    global proxy_index
-    
+    """Return next working proxy, loading fresh list if not yet loaded.
+    Returns empty string (direct connection) if none available."""
+    global proxy_index, PROXIES_LOADED
+
+    # Load tested proxies on first use
+    if not PROXIES_LOADED:
+        load_proxies()
+
     env_proxy = os.environ.get("PROXY_URL", "").strip()
     if env_proxy:
         return env_proxy
-    
+
     if not PROXIES_LIST:
         return ""
-    
+
     # Try to find a working proxy
     attempts = 0
     max_attempts = len(PROXIES_LIST)
-    
+
     while attempts < max_attempts:
         proxy = PROXIES_LIST[proxy_index % len(PROXIES_LIST)]
         proxy_index += 1
-        
+
         if proxy not in failed_proxies:
             return proxy
-        
+
         attempts += 1
-    
+
     # All proxies failed, reset and try again
     failed_proxies.clear()
     proxy_index = 0
-    return PROXIES_LIST[0]
+    return ""
 
 
 def mark_proxy_failed(proxy_url: str):
@@ -380,7 +475,9 @@ def extract_servers_from_page(page_url: str, proxy_url: str) -> list[dict]:
     }
 
     # Try requested proxy first, then fallback to random proxies if needed
-    proxies_to_try = [proxy_url] + random.sample(PROXIES_LIST, k=min(3, len(PROXIES_LIST)))
+    proxies_to_try = [proxy_url]
+    if PROXIES_LIST:
+        proxies_to_try += random.sample(PROXIES_LIST, k=min(3, len(PROXIES_LIST)))
     resp = None
 
     for p_url in proxies_to_try:

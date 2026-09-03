@@ -32,7 +32,7 @@ TV_CATEGORIES = [
     "https://cimafu.cam/category/مسلسلات-اسيوي/",
 ]
 CATEGORIES = MOVIE_CATEGORIES + TV_CATEGORIES
-PROXY_URL = "http://zydsd0hlbcew:rcog4ketsimppec@216.26.240.253:3129"
+PROXY_URL = None
 
 
 # ─── TV Series Database Functions ─────────────────────────────────────────────
@@ -265,8 +265,9 @@ def extract_movie_links_from_page(html: str) -> List[Tuple[str, dict]]:
 
 
 def get_category_page_with_playwright(category_url: str, page_num: int = 1) -> str:
-    """Load category page using Playwright."""
+    """Load category page using Playwright (through a live proxy)."""
     from playwright.sync_api import sync_playwright
+    from jibi_bot import get_next_proxy, parse_playwright_proxy
     
     # Add page number to URL if not first page
     if page_num > 1:
@@ -274,10 +275,30 @@ def get_category_page_with_playwright(category_url: str, page_num: int = 1) -> s
     else:
         url = category_url
     
+    # Use a live tested proxy to avoid Cloudflare blocking the datacenter IP
+    proxy_url = get_next_proxy()
+    pw_proxy = parse_playwright_proxy(proxy_url)
+    
     print(f"[crawler] Loading: {url}")
+    if proxy_url:
+        print(f"[crawler] Using proxy: {proxy_url.split('@')[-1] if '@' in proxy_url else proxy_url}")
     
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
+        launch_kwargs = {
+            "headless": True,
+            "args": [
+                "--no-sandbox",
+                "--disable-setuid-sandbox",
+                "--disable-dev-shm-usage",
+                "--disable-gpu",
+                "--disable-blink-features=AutomationControlled",
+                "--window-size=1920,1080",
+            ],
+        }
+        if pw_proxy:
+            launch_kwargs["proxy"] = pw_proxy
+        
+        browser = p.chromium.launch(**launch_kwargs)
         context = browser.new_context(
             viewport={"width": 1920, "height": 1080},
             user_agent=(
