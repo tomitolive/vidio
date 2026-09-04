@@ -128,6 +128,24 @@ jobs:
               --max-movies "$MAX_MOVIES"
           fi
 
+      - name: Backfill TV episodes
+        if: always()
+        env:
+          DOODSTREAM_API_KEY: ${{ inputs.api_key || secrets.DOODSTREAM_API_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+          TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
+        run: |
+          API_KEY="${{ inputs.api_key }}"
+          if [ -z "$API_KEY" ]; then
+            API_KEY="${{ secrets.DOODSTREAM_API_KEY }}"
+          fi
+          if [ -z "$API_KEY" ] || [ -z "${{ secrets.SUPABASE_KEY }}" ]; then
+            echo "Skipping backfill (missing API key or Supabase key)"
+            exit 0
+          fi
+          python3 backfill_tv_episodes.py --api-key "$API_KEY"
+
       - name: Upload crawler results
         if: always()
         uses: actions/upload-artifact@v4

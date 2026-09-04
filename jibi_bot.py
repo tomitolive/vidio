@@ -18,7 +18,7 @@ from urllib.parse import urlparse, urljoin, quote
 import requests
 from bs4 import BeautifulSoup
 
-from catalog import get_entry_by_page, update_doodstream_in_catalog, find_tmdb_id_by_title, import_from_doodstream_account, save_to_supabase, search_tmdb_api, extract_cima4u_info, search_tmdb_by_slug, extract_episode_info
+from catalog import get_entry_by_page, update_doodstream_in_catalog, find_tmdb_id_by_title, import_from_doodstream_account, save_to_supabase, search_tmdb_api, extract_cima4u_info, search_tmdb_by_slug, extract_episode_info, find_season_for_episode
 
 # ─── 1. Proxies Configuration ───────────────────────────────────────────────
 
@@ -1210,9 +1210,12 @@ def run_jibi_bot(page_url: str, api_key: str = "", download: bool = False, tmdb_
         season = episode_info.get("season")
         episode = episode_info.get("episode")
         cleaned_title = episode_info.get("cleaned_title", movie_title)
+        tmdb_id_hint = episode_info.get("tmdb_id_hint")
         
-        # Try to find tmdb_id: manual override > by title (catalog) > Cima4u slug search > TMDB API > by page URL
+        # Try to find tmdb_id: manual override > hint from episode info > by title (catalog) > Cima4u slug search > TMDB API > by page URL
         resolved_tmdb_id = tmdb_id
+        if not resolved_tmdb_id:
+            resolved_tmdb_id = tmdb_id_hint
         if not resolved_tmdb_id:
             resolved_tmdb_id = find_tmdb_id_by_title(cleaned_title)
         if not resolved_tmdb_id:
@@ -1228,6 +1231,26 @@ def run_jibi_bot(page_url: str, api_key: str = "", download: bool = False, tmdb_
             resolved_tmdb_id = search_tmdb_api(cleaned_title, year, media_type, season, episode)
         if not resolved_tmdb_id:
             resolved_tmdb_id = (get_entry_by_page(page_url, media_type) or {}).get("tmdb_id")
+        
+        # For TV with global episode numbering (e.g. One Piece E1176), resolve the season on TMDB
+        if media_type == "tv" and resolved_tmdb_id and season is None and episode is not None:
+            resolved_season = find_season_for_episode(resolved_tmdb_id, episode)
+            if resolved_season:
+                season = resolved_season
+                print(f"[jibi] Resolved season for global episode {episode} (tmdb {resolved_tmdb_id}): S{season}")
+        
+        # TV episodes must ALWAYS have a season+episode; otherwise don't save to DB
+        if media_type == "tv":
+            if season is None or episode is None:
+                print(f"[jibi] ⚠ TV episode skipped from DB: missing S/E for tmdb_id={resolved_tmdb_id} title={cleaned_title!r}")
+                result["season"] = season
+                result["episode"] = episode
+                result["media_type"] = media_type
+                result["doodstream_url"] = f"https://doodstream.com/e/{result['filecode']}"
+                result["playmogo_url"] = f"https://playmogo.com/e/{result['filecode']}"
+                result["tmdb_id"] = resolved_tmdb_id
+                _save_result(result)
+                return result
         
         catalog_entry = update_doodstream_in_catalog(
             filecode=result["filecode"],

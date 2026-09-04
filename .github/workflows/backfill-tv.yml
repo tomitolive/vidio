@@ -1,0 +1,64 @@
+name: Backfill TV Episodes
+
+on:
+  workflow_dispatch:
+    inputs:
+      filecode:
+        description: 'Check a single DoodStream filecode (empty = scan the whole account)'
+        required: false
+        type: string
+      only_summary:
+        description: 'Only detect episodes, do not write to Supabase'
+        required: false
+        type: boolean
+        default: false
+      api_key:
+        description: 'DoodStream API Key (optional; uses secret if not provided)'
+        required: false
+        type: string
+
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run TV backfill
+        env:
+          DOODSTREAM_API_KEY: ${{ inputs.api_key || secrets.DOODSTREAM_API_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+          TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
+        run: |
+          API_KEY="${{ inputs.api_key }}"
+          if [ -z "$API_KEY" ]; then
+            API_KEY="${{ secrets.DOODSTREAM_API_KEY }}"
+          fi
+          if [ -z "$API_KEY" ]; then
+            echo "Error: No DoodStream API key available"
+            exit 1
+          fi
+
+          FILECODE="${{ inputs.filecode }}"
+          if [ -n "$FILECODE" ]; then
+            echo "== Checking single filecode: $FILECODE =="
+            ARGS="--filecode $FILECODE"
+            if [ "${{ inputs.only_summary }}" = "true" ]; then
+              ARGS="$ARGS --only-summary"
+            fi
+            python3 backfill_tv_episodes.py --api-key "$API_KEY" $ARGS
+          else
+            python3 backfill_tv_episodes.py --api-key "$API_KEY" \
+              $([ "${{ inputs.only_summary }}" = "true" ] && echo --only-summary)
+          fi

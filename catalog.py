@@ -170,49 +170,155 @@ def extract_title_keywords(title: str) -> list[str]:
     return list(dict.fromkeys(keywords))  # dedupe, preserve order
 
 
+# Known series where a number before "E" (or in the title) is NOT a season number.
+# Format: {series name keyword: (tmdb_id, season_for_eps)}
+#   season=None -> resolved live via TMDB (find_season_for_episode)
+KNOWN_EPISODE_OVERRIDES = {
+    # Turkish drama "Daha" (Torn Apart) — "Daha 17 E14" the 17 is part of the show name,
+    # not a season; TMDB has only season 1.
+    "daha": (317883, 1),
+    # One Piece uses GLOBAL episode numbers inside TMDB's arc-based seasons (e.g. E1176 = S23E1176).
+    "one piece": (37854, None),
+    "mushoku tensei": (94664, None),
+    "its always sunny": (2710, None),
+    "black trick": (322852, 1),
+    "bai ri cheng wang": (326844, 1),
+    "four hands two sonatas": (305644, 1),
+    "four hands, two sonatas": (305644, 1),
+    "alti ustu istanbul": (321928, 1),
+    "until the t-shirt dries": (322570, 1),
+    "until the t shirt dries": (322570, 1),
+    # Arabic "صحوة Awaken 2026" -> Chinese drama "醒来 / Awaken" (S1), NOT tmdb 1254074.
+    "صحوة": (289761, 1),
+    "awaken": (289761, 1),
+}
+
+
+def _known_override(cleaned_title: str):
+    """Return (tmdb_id, season) for known series, else (None, None)."""
+    base_name = normalize_key(cleaned_title)
+    for known, (known_tmdb, known_season) in KNOWN_EPISODE_OVERRIDES.items():
+        if known in base_name:
+            return known_tmdb, known_season
+    return None, None
+
+# Arabic season word -> number
+ARABIC_SEASON_PATTERNS = {
+    "الموسم-الأول": 1, "الموسم-الاول": 1, "الموسم-1": 1,
+    "الموسم-الثاني": 2, "الموسم-التاني": 2, "الموسم-2": 2,
+    "الموسم-الثالث": 3, "الموسم-3": 3,
+    "الموسم-الرابع": 4, "الموسم-4": 4,
+    "الموسم-الخامس": 5, "الموسم-5": 5,
+    "الموسم-السادس": 6, "الموسم-6": 6,
+    "الموسم-السابع": 7, "الموسم-7": 7,
+    "الموسم-الثامن": 8, "الموسم-8": 8,
+    "الموسم-التاسع": 9, "الموسم-9": 9,
+    "الموسم-العاشر": 10, "الموسم-10": 10,
+}
+
+
+def find_season_for_episode(tmdb_id: int, episode: int, api_key: str = "") -> int | None:
+    """Find which TMDB season contains a given global episode number.
+
+    Used for shows like One Piece where episode numbers are global
+    (E1176 lives in the arc-based season 23 as episode 1176).
+    """
+    api_key = api_key or os.environ.get("TMDB_API_KEY")
+    if not api_key:
+        return None
+    try:
+        url = f"https://api.themoviedb.org/3/tv/{tmdb_id}"
+        resp = requests.get(url, params={"api_key": api_key, "language": "en-US"}, timeout=10)
+        data = resp.json()
+        for season in data.get("seasons", []):
+            sn = season.get("season_number")
+            if sn in (0,):
+                continue
+            eps = requests.get(
+                f"https://api.themoviedb.org/3/tv/{tmdb_id}/season/{sn}",
+                params={"api_key": api_key, "language": "en-US"}, timeout=10,
+            ).json()
+            nums = [e.get("episode_number") for e in eps.get("episodes", [])]
+            if nums and min(nums) <= episode <= max(nums):
+                return sn
+    except Exception as e:
+        print(f"[catalog] find_season_for_episode error: {e}")
+    return None
+
+
 def extract_episode_info(title: str) -> dict:
     """Extract season and episode numbers from title.
-    
+
     Examples:
     "One Piece E1176" -> {"season": None, "episode": 1176, "media_type": "tv"}
     "Mushoku Tensei S03E10" -> {"season": 3, "episode": 10, "media_type": "tv"}
     "Daha 17 E14" -> {"season": 17, "episode": 14, "media_type": "tv"}
+    "مشاهدة مسلسل وتحميل صحوة Awaken 2026 الحلقة 14 مترجمة" -> {"season": None, "episode": 14, "media_type": "tv"}
     "Icefall 2025" -> {"season": None, "episode": None, "media_type": "movie"}
-    
+
     Returns:
         dict with keys: season, episode, media_type, cleaned_title
     """
     if not title:
         return {"season": None, "episode": None, "media_type": "movie", "cleaned_title": ""}
-    
+
+    # Pattern 0: Arabic episode markers (الحلقة / حلقة / الموسم)
+    arabic_ep_match = re.search(r'الحلقة[-\s]*(\d+)|حلقة[-\s]*(\d+)', title)
+    if arabic_ep_match:
+        episode = int(arabic_ep_match.group(1) or arabic_ep_match.group(2))
+        season = None
+        for pattern, num in ARABIC_SEASON_PATTERNS.items():
+            if pattern in title:
+                season = num
+                break
+        cleaned_title = re.sub(
+            r'الموسم[-\s]*(?:الأول|الاول|الثاني|التاني|الثالث|الرابع|الخامس|السادس|السابع|الثامن|التاسع|العاشر|\d+)|الحلقة[-\s]*\d+|حلقة[-\s]*\d+|مشاهدة[-\s]*مسلسل[-\s]*وتحميل|مشاهدة[-\s]*مسلسل|مترجمة|مترجم|مباشر',
+            '', title
+        )
+        cleaned_title = re.sub(r'\s+', ' ', cleaned_title).strip(' -')
+        hint_tmdb, hint_season = _known_override(cleaned_title)
+        if hint_tmdb and hint_season is not None:
+            season = hint_season
+        return {
+            "season": season,
+            "episode": episode,
+            "media_type": "tv",
+            "cleaned_title": cleaned_title,
+            "tmdb_id_hint": hint_tmdb,
+        }
+
     # Pattern 1: S##E## (e.g., S03E10)
     s_e_match = re.search(r'[Ss](\d+)[Ee](\d+)', title)
     if s_e_match:
         season = int(s_e_match.group(1))
         episode = int(s_e_match.group(2))
-        cleaned_title = re.sub(r'[Ss]\d+[Ee]\d+', '', title).strip()
+        cleaned_title = re.sub(r'\b[Ss]\d+[Ee]\d+\b', '', title)
+        cleaned_title = re.sub(r'\s+', ' ', cleaned_title).strip()
+        hint_tmdb, hint_season = _known_override(cleaned_title)
         return {
             "season": season,
             "episode": episode,
             "media_type": "tv",
-            "cleaned_title": cleaned_title
+            "cleaned_title": cleaned_title,
+            "tmdb_id_hint": hint_tmdb,
         }
-    
+
     # Pattern 2: E### (e.g., E1176)
     e_match = re.search(r'[Ee](\d+)', title)
     if e_match:
         episode = int(e_match.group(1))
-        # Check if there's a season number before E (e.g., "17 E14")
-        season_match = re.search(r'(\d+)\s*[Ee]', title)
-        season = int(season_match.group(1)) if season_match else None
-        cleaned_title = re.sub(r'\d*\s*[Ee]\d+', '', title).strip()
+        cleaned_title = re.sub(r'\b[Ee]\d+\b', '', title)
+        cleaned_title = re.sub(r'\s+', ' ', cleaned_title).strip()
+
+        hint_tmdb, hint_season = _known_override(cleaned_title)
         return {
-            "season": season,
+            "season": hint_season,
             "episode": episode,
             "media_type": "tv",
-            "cleaned_title": cleaned_title
+            "cleaned_title": cleaned_title,
+            "tmdb_id_hint": hint_tmdb,
         }
-    
+
     # No episode pattern found, treat as movie
     return {
         "season": None,
@@ -523,6 +629,7 @@ def save_movie_to_supabase(tmdb_id: int, title: str, doodstream_url: str,
             "title": title,
             "doodstream_url": doodstream_url,
             "doodstream_download_url": doodstream_download_url,
+            "media_type": "movie",
         }
         if year:
             data["year"] = year
@@ -546,7 +653,11 @@ def save_movie_to_supabase(tmdb_id: int, title: str, doodstream_url: str,
 def save_episode_to_supabase(tmdb_id: int, series_title: str, season: int, episode: int,
                              doodstream_url: str, doodstream_download_url: str, 
                              title: str = None) -> bool:
-    """Save TV episode data to Supabase tv_episodes table."""
+    """Save TV episode data to Supabase.
+
+    The live Supabase 'movies' table stores episodes using
+    media_type='tv' + season_number + episode_number columns.
+    """
     if not supabase:
         print("[supabase] Not connected, skipping database save")
         return False
@@ -554,35 +665,41 @@ def save_episode_to_supabase(tmdb_id: int, series_title: str, season: int, episo
     try:
         data = {
             "tmdb_id": tmdb_id,
-            "series_title": series_title,
-            "season_number": season,
-            "episode_number": episode,
+            "title": title or series_title,
             "doodstream_url": doodstream_url,
             "doodstream_download_url": doodstream_download_url,
+            "media_type": "tv",
+            "season_number": season,
+            "episode_number": episode,
         }
-        if title:
-            data["title"] = title
         
         # Check if record already exists (by tmdb_id, season, episode)
-        existing = supabase.table("tv_episodes").select("*").eq("tmdb_id", tmdb_id).eq("season_number", season).eq("episode_number", episode).execute()
+        existing = supabase.table("movies").select("*").eq("tmdb_id", tmdb_id).eq("media_type", "tv").eq("season_number", season).eq("episode_number", episode).execute()
         
         if existing.data:
-            supabase.table("tv_episodes").update(data).eq("tmdb_id", tmdb_id).eq("season_number", season).eq("episode_number", episode).execute()
+            supabase.table("movies").update(data).eq("tmdb_id", tmdb_id).eq("media_type", "tv").eq("season_number", season).eq("episode_number", episode).execute()
             print(f"[supabase] Updated episode: {series_title} S{season}E{episode}")
         else:
-            supabase.table("tv_episodes").insert(data).execute()
-            print(f"[supabase] Inserted episode: {series_title} S{season}E{episode}")
+            supabase.table("movies").insert(data).execute()
+            print(f"[supabase] Inserted episode into movies (tv): {series_title} S{season}E{episode}")
         
         return True
     except Exception as e:
-        print(f"[supabase] Error saving episode: {e}")
+        msg = str(e)
+        if "Could not find the table" in msg or ("relation" in msg and "does not exist" in msg):
+            print(f"[supabase] ❌ TV table missing! Run create_supabase_table.sql in the Supabase SQL Editor. tmdb_id={tmdb_id} S{season}E{episode}")
+        else:
+            print(f"[supabase] Error saving episode: {e}")
         return False
 
 
 def save_to_supabase(tmdb_id: int, title: str, doodstream_url: str, doodstream_download_url: str, 
                     media_type: str = "movie", season: int = None, episode: int = None) -> bool:
     """Save movie or TV episode data to Supabase database (backward compatible)."""
-    if media_type == "tv" and season is not None and episode is not None:
-        return save_episode_to_supabase(tmdb_id, title, season, episode, doodstream_url, doodstream_download_url)
+    if media_type == "tv":
+        if season is not None and episode is not None:
+            return save_episode_to_supabase(tmdb_id, title, season, episode, doodstream_url, doodstream_download_url)
+        print(f"[supabase] ⚠ TV episode skipped (missing season/episode for tmdb_id={tmdb_id}, title={title!r}); NOT saving as movie")
+        return False
     else:
         return save_movie_to_supabase(tmdb_id, title, doodstream_url, doodstream_download_url)
