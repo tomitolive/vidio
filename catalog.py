@@ -287,11 +287,32 @@ def extract_episode_info(title: str) -> dict:
             "tmdb_id_hint": hint_tmdb,
         }
 
+    # Pattern 1b: glued resolution like "S04E051080p" -> S4 E05
+    alt_s_e_match = re.search(r'[Ss](\d+)[Ee](\d+?)\s*(?:1080p?|720p?|2160p?|4k)(?![0-9])', title, re.IGNORECASE)
+    if alt_s_e_match:
+        season = int(alt_s_e_match.group(1))
+        episode = int(alt_s_e_match.group(2))
+        cleaned_title = re.sub(r'\b[Ss]\d+[Ee]\d+?\s*(?:1080p?|720p?|2160p?|4k)(?![0-9])', '', title, flags=re.IGNORECASE)
+        cleaned_title = re.sub(r'\s+', ' ', cleaned_title).strip()
+        hint_tmdb, hint_season = _known_override(cleaned_title)
+        return {
+            "season": season,
+            "episode": episode,
+            "media_type": "tv",
+            "cleaned_title": cleaned_title,
+            "tmdb_id_hint": hint_tmdb,
+        }
+
     # Pattern 1: S##E## (e.g., S03E10)
     s_e_match = re.search(r'[Ss](\d+)[Ee](\d+)', title)
     if s_e_match:
         season = int(s_e_match.group(1))
         episode = int(s_e_match.group(2))
+        # Guard: glued resolution made the episode absurdly large (e.g. "E051080p")
+        if episode > 2000 and re.search(r'[Ee]\d+(?:1080|720|2160)', title, re.IGNORECASE):
+            alt2 = re.search(r'[Ee](\d+?)(?:1080|720|2160)', title, re.IGNORECASE)
+            if alt2:
+                episode = int(alt2.group(1))
         cleaned_title = re.sub(r'\b[Ss]\d+[Ee]\d+\b', '', title)
         cleaned_title = re.sub(r'\s+', ' ', cleaned_title).strip()
         hint_tmdb, hint_season = _known_override(cleaned_title)
@@ -456,6 +477,28 @@ def search_tmdb_by_slug(slug: str, year: str) -> int | None:
         return None
 
 
+def _clean_search_title(title: str) -> str:
+    """Strip release/quality noise from a title before querying TMDB."""
+    if not title:
+        return ""
+    noisy = re.compile(
+        r'\b(?:'
+        r'1080p|1080|720p|720|480p|2160p|4k|4kuhd|uhd|hdr|bluray|blu-ray|'
+        r'brrip|bdrip|web-dl|webdl|webrip|web|hdtv|hdtvrip|hdrip|dvdrip|'
+        r'x264|x265|hevc|aac|ac3|dts|'
+        r'nf|netflix|prime|amzn|atvp|aapple|hulu|disney|disneyplus|\btv\b|'
+        r'egydead|egybest|eg01|mycima|cima4u|cimafu|movizland|mkvmovies|'
+        r'mkv|mp4|avi|complete|season|series|multi|vosten|subbed|[Ss]\d+[Ee]\d+|[Ee]\d{2,4}|'
+        r'com|wmv'
+        r')\b|\.|,|\(|\)',
+        re.IGNORECASE,
+    )
+    clean = noisy.sub(' ', title)
+    clean = re.sub(r'\b(?:19|20)\d{2}\b', ' ', clean)
+    clean = re.sub(r'\s{2,}', ' ', clean).strip()
+    return clean[:80]
+
+
 def search_tmdb_api(title: str, year: str = "", media_type: str = "movie", season: int = None, episode: int = None) -> int | None:
     """Search TMDB API for movie or TV ID by title and year."""
     api_key = os.environ.get("TMDB_API_KEY")
@@ -473,9 +516,10 @@ def search_tmdb_api(title: str, year: str = "", media_type: str = "movie", seaso
             if year_match:
                 year = year_match.group()
         
-        # Clean title for search
-        clean_title = re.sub(r'\b(19|20)\d{2}\b', '', title).strip()
-        clean_title = re.sub(r'\s+', ' ', clean_title)
+        # Clean title for search (drop quality tags / host names / punctuation)
+        clean_title = _clean_search_title(title)
+        if not clean_title:
+            return None
         
         # Search TMDB based on media type
         if media_type == "tv":
@@ -491,12 +535,24 @@ def search_tmdb_api(title: str, year: str = "", media_type: str = "movie", seaso
         if year:
             params["first_air_date_year" if media_type == "tv" else "year"] = year
         
-        response = requests.get(url, params=params, timeout=10)
-        data = response.json()
+        def _do_search(q: str, y: str):
+            p = dict(params)
+            p["query"] = q
+            if y:
+                p["first_air_date_year" if media_type == "tv" else "year"] = y
+            return requests.get(url, params=p, timeout=10).json()
         
-        if data.get("results"):
+        data = _do_search(clean_title, year)
+        results = data.get("results") or []
+        
+        # Fallback: shorten until a likely word boundary if nothing found
+        if not results and clean_title != title:
+            data = _do_search(title[:60], year)
+            results = data.get("results") or []
+        
+        if results:
             # Return first result's ID
-            first_result = data["results"][0]
+            first_result = results[0]
             tmdb_id = first_result.get("id")
             print(f"[tmdb] Found TMDB ID: {tmdb_id} for '{clean_title}' ({media_type}, {year})")
             if media_type == "tv" and season is not None and episode is not None:
