@@ -920,41 +920,122 @@ def _fetch_page_html(url: str) -> str:
 
 
 def _process_cards(cards: list[dict], seen: dict, stats: dict, save_to_db: bool):
-    """Process a list of cards: resolve TMDB, save to DB if new. Returns count of new items."""
+    """Process a list of cards: resolve TMDB, upload to Doodstream via jibi_bot, save to DB."""
     new_count = 0
+    
+    # Needs API key from environment for jibi_bot
+    api_key = os.environ.get("DOODSTREAM_API_KEY", "")
+
     for card in cards:
         url_key = card["url"]
+        
+        # Check if URL was seen in local state
         if url_key in seen:
             stats["skipped"] += 1
             continue
 
+        # Fast Supabase duplications pre-check before wasting time on jibi_bot
+        if supabase:
+            try:
+                card["type"] = "episode" if card["is_episode"] else "movie"
+                if already_in_supabase(url_key, card):
+                    print(f"[homepage] ↻ Already in Supabase, skipping: {card['title']}")
+                    seen[url_key] = time.strftime("%Y-%m-%d %H:%M:%S")
+                    stats["skipped"] += 1
+                    continue
+            except Exception as e:
+                pass
+
         seen[url_key] = time.strftime("%Y-%m-%d %H:%M:%S")
         new_count += 1
-
-        tmdb_id = None
+        
+        item_type = "Episode" if card["is_episode"] else "Movie"
+        print(f"[homepage] ⏳ Processing {item_type}: {card['title']}")
+        
         try:
+            # 1. RUN JIBI_BOT TO UPLOAD TO DOODSTREAM
+            result = run_jibi_bot(url_key, api_key=api_key)
+            
+            if result.get("skipped_duplicate"):
+                stats["skipped"] += 1
+                print(f"[homepage] ↻ Duplicate (already uploaded): filecode={result.get('filecode')}")
+                continue
+                
+            if not result.get("success"):
+                stats["errors"].append(f"Upload failed: {url_key}")
+                print(f"[homepage] ✗ Failed: {result.get('errors', [])}")
+                continue
+                
+            filecode = result.get("filecode")
+            tmdb_id = result.get("tmdb_id")
+            
             if card["is_episode"]:
-                name = card.get("series_name") or ""
-                if name:
-                    hint_tmdb, _ = _known_override(name)
-                    tmdb_id = hint_tmdb or search_tmdb_api(name, "", "tv")
                 stats["new_episodes"] += 1
-                print(f"[homepage] 📺 New episode: {card['title'][:70]} (tmdb={tmdb_id})")
             else:
-                slug, year = extract_cima4u_info(url_key)
-                if slug:
-                    tmdb_id = search_tmdb_by_slug(slug, year or "")
                 stats["new_movies"] += 1
-                print(f"[homepage] 🎬 New movie  : {card['title'][:70]} (tmdb={tmdb_id})")
+                
+            print(f"[homepage] ✓ Success: filecode={filecode}, tmdb={tmdb_id}")
 
-            if save_to_db:
-                ok = save_card_to_supabase(card, tmdb_id)
-                if ok:
-                    stats["saved"] += 1
+            # 2. SAVE TO SUPABASE (Fallback to dummy ID if TMDB fails)
+            if save_to_db and filecode:
+                doodstream_url = f"https://doodstream.com/e/{filecode}"
+                download_url = f"https://playmogo.com/d/{filecode}"
+                
+                if card["is_episode"]:
+                    import zlib
+                    s_title = card.get("series_name") or card["title"]
+                    tid = tmdb_id or (9000000 + (zlib.crc32(s_title.encode()) % 1000000))
+                    season = card.get("season") or 1
+                    episode = card.get("episode") or 1
+                    
+                    data = {
+                        "tmdb_id": tid,
+                        "series_title": s_title,
+                        "season_number": season,
+                        "episode_number": episode,
+                        "title": card["title"],
+                        "filecode": filecode,
+                        "doodstream_url": doodstream_url,
+                        "doodstream_download_url": download_url
+                    }
+                    try:
+                        existing = supabase.table("tv_episodes").select("id").eq("tmdb_id", tid).eq("season_number", season).eq("episode_number", episode).execute()
+                        if not existing.data:
+                            supabase.table("tv_episodes").insert(data).execute()
+                            print(f"[homepage] ✅ TV saved to DB: {s_title} S{season}E{episode}")
+                        else:
+                            supabase.table("tv_episodes").update(data).eq("tmdb_id", tid).eq("season_number", season).eq("episode_number", episode).execute()
+                            print(f"[homepage] 🔄 TV updated in DB: {s_title} S{season}E{episode}")
+                        stats["saved"] += 1
+                    except Exception as e:
+                        print(f"[homepage] ✗ TV DB error: {e}")
+                else:
+                    import zlib
+                    tid = tmdb_id or (8000000 + (zlib.crc32(card["title"].encode()) % 1000000))
+                    data = {
+                        "tmdb_id": tid,
+                        "title": card["title"],
+                        "doodstream_url": doodstream_url,
+                        "doodstream_download_url": download_url,
+                        "media_type": "movie"
+                    }
+                    try:
+                        existing = supabase.table("movies").select("id").eq("tmdb_id", tid).execute()
+                        if not existing.data:
+                            supabase.table("movies").insert(data).execute()
+                            print(f"[homepage] ✅ Movie saved to DB: {card['title']}")
+                        else:
+                            supabase.table("movies").update(data).eq("tmdb_id", tid).execute()
+                            print(f"[homepage] 🔄 Movie updated in DB: {card['title']}")
+                        stats["saved"] += 1
+                    except Exception as e:
+                        print(f"[homepage] ✗ Movie DB error: {e}")
 
         except Exception as e:
             print(f"[homepage] Error: {url_key[:60]}: {e}")
             stats["errors"].append(str(e))
+            
+        time.sleep(2)
 
     return new_count
 
