@@ -20,6 +20,16 @@ import requests
 # Import jibi_bot functions
 from jibi_bot import run_jibi_bot, clean_url
 
+# Import catalog/supabase helpers for placement + duplicate pre-check
+from catalog import (
+    supabase,
+    find_in_supabase,
+    search_tmdb_api,
+    search_tmdb_by_slug,
+    extract_cima4u_info,
+    _known_override,
+)
+
 # Configuration
 PROCESSED_DB_FILE = "processed_cima4u_movies.json"
 TV_DB_FILE = "tv_series.db"
@@ -205,6 +215,43 @@ def extract_series_name_from_url(url: str) -> str:
     """Extract series name from episode URL."""
     info = extract_episode_from_url(url)
     return info.get("series_name", "")
+
+
+# ─── Supabase Duplicate Pre-check ─────────────────────────────────────────────
+
+def resolve_episode_tmdb_precheck(info: dict) -> tuple:
+    """Resolve (tmdb_id, season, episode) for a crawler episode item.
+
+    Uses catalog overrides first (fast, no API call), then TMDB search.
+    """
+    name = info.get("series_name") or ""
+    if not name:
+        return None, info.get("season"), info.get("episode")
+    hint_tmdb, hint_season = _known_override(name)
+    if hint_tmdb:
+        season = hint_season if hint_season is not None else info.get("season")
+        return hint_tmdb, season, info.get("episode")
+    tmdb_id = search_tmdb_api(name, "", "tv", info.get("season"), info.get("episode"))
+    return tmdb_id, info.get("season"), info.get("episode")
+
+
+def resolve_movie_tmdb_precheck(url: str) -> int | None:
+    """Resolve tmdb_id for a movie item from the Cima4u URL, or None."""
+    slug, year = extract_cima4u_info(url)
+    if slug and year:
+        return search_tmdb_by_slug(slug, year)
+    return None
+
+
+def already_in_supabase(url: str, info: dict) -> bool:
+    """Return True if this movie/episode is already saved in Supabase."""
+    if supabase is None:
+        return False
+    if info["type"] == "episode":
+        ptmdb, psea, pep = resolve_episode_tmdb_precheck(info)
+        return bool(ptmdb) and find_in_supabase(ptmdb, "tv", psea, pep)
+    ptmdb = resolve_movie_tmdb_precheck(url)
+    return bool(ptmdb) and find_in_supabase(ptmdb, "movie")
 
 
 def load_processed_movies() -> Dict:
@@ -484,6 +531,35 @@ def process_category(
                 else:
                     stats["movies_skipped"] += 1
                 continue
+
+            # Supabase pre-check: skip re-uploading content already in the DB.
+            # This stops duplicate clones even when the local cache is lost.
+            if supabase is not None:
+                try:
+                    dup = already_in_supabase(url, info)
+                except Exception as e:
+                    dup = False
+                    print(f"[crawler] Supabase pre-check error ({str(e)[:80]}), continuing")
+                if dup:
+                    label = f"S{info.get('season')}E{info.get('episode')}" if info["type"] == "episode" else "movie"
+                    print(f"[crawler] ↻ Already in Supabase, skipping upload ({label}): {url[:55]}...")
+                    if info["type"] == "episode":
+                        stats["episodes_skipped"] += 1
+                    else:
+                        stats["movies_skipped"] += 1
+                    page_has_dup = True
+                    processed_db["processed_urls"][url] = {
+                        "processed_at": time.strftime("%Y-%m-%d %H:%M:%S"),
+                        "filecode": None,
+                        "tmdb_id": None,
+                        "type": info["type"],
+                        "series_name": info.get("series_name"),
+                        "season": info.get("season"),
+                        "episode": info.get("episode"),
+                        "reason": "already_in_supabase",
+                    }
+                    save_processed_movies(processed_db)
+                    continue
             
             item_type = "Episode" if info["type"] == "episode" else "Movie"
             if info["type"] == "episode":
@@ -536,6 +612,8 @@ def process_category(
                     page_success = True
                     
                     print(f"[crawler] ✓ Success: filecode={result.get('filecode')}, tmdb_id={result.get('tmdb_id')}")
+                    placement = "tv_episodes" if result.get("media_type") == "tv" else "movies"
+                    print(f"[crawler] → saved to {placement} (tmdb_id={result.get('tmdb_id')}, filecode={result.get('filecode')})")
                     
                     # Save to processed_urls after successful upload
                     processed_db["processed_urls"][url] = {
@@ -690,5 +768,345 @@ def main():
         tv_conn.close()
 
 
+
+# ─── Homepage Scraper (no video upload) ───────────────────────────────────────
+
+HOMEPAGE_STATE_FILE = "homepage_scraper_state.json"
+
+
+def load_homepage_state() -> dict:
+    """Load the state of previously scraped homepage URLs."""
+    try:
+        if os.path.exists(HOMEPAGE_STATE_FILE):
+            with open(HOMEPAGE_STATE_FILE, encoding="utf-8") as f:
+                return json.load(f)
+    except (json.JSONDecodeError, OSError):
+        pass
+    return {"seen_urls": {}, "last_updated": None}
+
+
+def save_homepage_state(state: dict):
+    """Save the homepage scraper state."""
+    state["last_updated"] = time.strftime("%Y-%m-%d %H:%M:%S")
+    with open(HOMEPAGE_STATE_FILE, "w", encoding="utf-8") as f:
+        json.dump(state, f, ensure_ascii=False, indent=2)
+
+
+def extract_card_title(block) -> str:
+    """Extract the clean display title from a MovieBlock <li> element."""
+    box = block.find("div", class_="BoxTitle")
+    if not box:
+        return ""
+    # Get only the direct text nodes (not children tags like BoxTitleInfo)
+    text_nodes = []
+    for node in box.children:
+        if isinstance(node, str):
+            text_nodes.append(node.strip())
+    full = " ".join(t for t in text_nodes if t)
+    full = re.sub(r"\s{2,}", " ", full).strip()
+    return full
+
+
+def extract_homepage_cards(html: str) -> list[dict]:
+    """Parse all movie/episode cards from the homepage HTML."""
+    soup = BeautifulSoup(html, "html.parser")
+    cards = []
+    for block in soup.find_all("li", class_="MovieBlock"):
+        link = block.find("a")
+        if not link or not link.get("href"):
+            continue
+        raw_href = link["href"]
+        url = raw_href.rstrip("/") + "/"
+        title = extract_card_title(block)
+        if not title:
+            bt = block.find("div", class_="BoxTitle")
+            title = bt.get_text(" ", strip=True) if bt else ""
+        # Detect type from the RAW (encoded) href before normalization
+        is_ep = is_episode_url(raw_href)
+        ep_info = extract_episode_from_url(raw_href) if is_ep else {}
+        cards.append({
+            "url": url,
+            "title": title,
+            "is_episode": is_ep,
+            "series_name": ep_info.get("series_name"),
+            "season": ep_info.get("season"),
+            "episode": ep_info.get("episode"),
+        })
+    return cards
+
+
+def save_card_to_supabase(card: dict, tmdb_id: int | None) -> bool:
+    """Save a discovered card (title only, no filecode) to Supabase."""
+    if not supabase:
+        return False
+
+    if card["is_episode"]:
+        import zlib
+        s_title = card.get("series_name") or card["title"]
+        tid = tmdb_id or (9000000 + (zlib.crc32(s_title.encode()) % 1000000))
+        season = card.get("season") or 1
+        episode = card.get("episode") or 1
+        data = {
+            "tmdb_id": tid,
+            "series_title": s_title,
+            "season_number": season,
+            "episode_number": episode,
+            "title": card["title"],
+        }
+        try:
+            existing = (
+                supabase.table("tv_episodes")
+                .select("id")
+                .eq("tmdb_id", tid)
+                .eq("season_number", season)
+                .eq("episode_number", episode)
+                .execute()
+            )
+            if not existing.data:
+                supabase.table("tv_episodes").insert(data).execute()
+                print(f"[homepage] ✅ TV saved: {s_title} S{season}E{episode}")
+            else:
+                print(f"[homepage]    already in DB: {s_title} S{season}E{episode}")
+            return True
+        except Exception as e:
+            print(f"[homepage] ✗ TV insert error: {e}")
+            return False
+    else:
+        import zlib
+        tid = tmdb_id or (8000000 + (zlib.crc32(card["title"].encode()) % 1000000))
+        data = {
+            "tmdb_id": tid,
+            "title": card["title"],
+            "media_type": "movie",
+        }
+        try:
+            existing = supabase.table("movies").select("id").eq("tmdb_id", tid).execute()
+            if not existing.data:
+                supabase.table("movies").insert(data).execute()
+                print(f"[homepage] ✅ Movie saved: {card['title']}")
+            else:
+                print(f"[homepage]    already in DB: {card['title']}")
+            return True
+        except Exception as e:
+            print(f"[homepage] ✗ Movie insert error: {e}")
+            return False
+
+
+def get_max_page(html: str) -> int:
+    """Extract the max page number from the pagination block."""
+    soup = BeautifulSoup(html, "html.parser")
+    pages = soup.select("ul.page-numbers a.page-numbers")
+    nums = []
+    for a in pages:
+        try:
+            nums.append(int(a.get_text(strip=True)))
+        except ValueError:
+            pass
+    return max(nums) if nums else 1
+
+
+def _fetch_page_html(url: str) -> str:
+    """Fetch a page via FlareSolverr first, then direct requests."""
+    html = get_page_with_flaresolverr(url)
+    if html:
+        return html
+    try:
+        import requests as _r
+        resp = _r.get(url, timeout=20, headers={"User-Agent": "Mozilla/5.0"})
+        return resp.text
+    except Exception as e:
+        print(f"[homepage] Fetch failed: {e}")
+        return ""
+
+
+def _process_cards(cards: list[dict], seen: dict, stats: dict, save_to_db: bool):
+    """Process a list of cards: resolve TMDB, save to DB if new. Returns count of new items."""
+    new_count = 0
+    for card in cards:
+        url_key = card["url"]
+        if url_key in seen:
+            stats["skipped"] += 1
+            continue
+
+        seen[url_key] = time.strftime("%Y-%m-%d %H:%M:%S")
+        new_count += 1
+
+        tmdb_id = None
+        try:
+            if card["is_episode"]:
+                name = card.get("series_name") or ""
+                if name:
+                    hint_tmdb, _ = _known_override(name)
+                    tmdb_id = hint_tmdb or search_tmdb_api(name, "", "tv")
+                stats["new_episodes"] += 1
+                print(f"[homepage] 📺 New episode: {card['title'][:70]} (tmdb={tmdb_id})")
+            else:
+                slug, year = extract_cima4u_info(url_key)
+                if slug:
+                    tmdb_id = search_tmdb_by_slug(slug, year or "")
+                stats["new_movies"] += 1
+                print(f"[homepage] 🎬 New movie  : {card['title'][:70]} (tmdb={tmdb_id})")
+
+            if save_to_db:
+                ok = save_card_to_supabase(card, tmdb_id)
+                if ok:
+                    stats["saved"] += 1
+
+        except Exception as e:
+            print(f"[homepage] Error: {url_key[:60]}: {e}")
+            stats["errors"].append(str(e))
+
+    return new_count
+
+
+def scrape_homepage(
+    homepage_url: str = "https://cimafu.cam",
+    check_new_pages: int = 3,
+    save_to_db: bool = True,
+) -> dict:
+    """
+    Scrape cimafu.cam homepage in two phases:
+
+    Phase 1 — CHECK NEW (pages 1..check_new_pages):
+        Quickly scan the first few pages for newly added content.
+        Any new card gets saved to DB. Already-seen cards are skipped.
+
+    Phase 2 — CONTINUE (from last_page onward):
+        Resume from the last page we reached in a previous run,
+        and keep going through ALL remaining pages until the end.
+        This ensures we eventually scrape the entire site.
+
+    State is saved to homepage_scraper_state.json between runs.
+    """
+    state = load_homepage_state()
+    seen = state.setdefault("seen_urls", {})
+    last_page = state.get("last_page", 0)  # 0 = never ran before
+
+    stats = {
+        "pages_checked": 0,
+        "new_movies": 0,
+        "new_episodes": 0,
+        "skipped": 0,
+        "saved": 0,
+        "errors": [],
+    }
+
+    max_page = None  # will be detected from pagination
+
+    # ── Phase 1: Check pages 1-3 for new content ──────────────────────────
+    print(f"\n{'='*60}")
+    print(f"PHASE 1: Checking pages 1-{check_new_pages} for new content")
+    print(f"{'='*60}")
+
+    for page_num in range(1, check_new_pages + 1):
+        url = homepage_url if page_num == 1 else f"{homepage_url.rstrip('/')}/page/{page_num}/"
+        print(f"\n[homepage] ─── Page {page_num} ─── ({url})")
+
+        html = _fetch_page_html(url)
+        if not html:
+            stats["errors"].append(f"Page {page_num} fetch failed")
+            break
+
+        # Detect max page from pagination on first page
+        if max_page is None:
+            max_page = get_max_page(html)
+            print(f"[homepage] Total pages on site: {max_page}")
+
+        cards = extract_homepage_cards(html)
+        if not cards:
+            print(f"[homepage] No cards on page {page_num}, stopping phase 1.")
+            break
+
+        stats["pages_checked"] += 1
+        new_count = _process_cards(cards, seen, stats, save_to_db)
+
+        if new_count > 0:
+            print(f"[homepage] ✓ {new_count} new item(s) on page {page_num}")
+        else:
+            print(f"[homepage] No new items on page {page_num}")
+
+        save_homepage_state(state)
+        time.sleep(0.5)
+
+    # ── Phase 2: Continue from last_page ──────────────────────────────────
+    resume_page = last_page + 1 if last_page > 0 else check_new_pages + 1
+    if max_page is None:
+        max_page = 336  # fallback
+
+    # Don't re-check pages we already did in phase 1
+    if resume_page <= check_new_pages:
+        resume_page = check_new_pages + 1
+
+    print(f"\n{'='*60}")
+    print(f"PHASE 2: Continuing from page {resume_page} (last_page was {last_page})")
+    print(f"{'='*60}")
+
+    page_num = resume_page
+    while page_num <= max_page:
+        url = f"{homepage_url.rstrip('/')}/page/{page_num}/"
+        print(f"\n[homepage] ─── Page {page_num}/{max_page} ─── ({url})")
+
+        html = _fetch_page_html(url)
+        if not html:
+            stats["errors"].append(f"Page {page_num} fetch failed")
+            # Save progress so far
+            state["last_page"] = page_num - 1
+            save_homepage_state(state)
+            break
+
+        cards = extract_homepage_cards(html)
+        if not cards:
+            print(f"[homepage] No cards on page {page_num}, reached the end.")
+            state["last_page"] = page_num
+            save_homepage_state(state)
+            break
+
+        stats["pages_checked"] += 1
+        new_count = _process_cards(cards, seen, stats, save_to_db)
+        print(f"[homepage] Page {page_num}: {new_count} new, {len(cards) - new_count} skipped")
+
+        # Save progress after each page
+        state["last_page"] = page_num
+        save_homepage_state(state)
+
+        page_num += 1
+        time.sleep(0.5)
+
+    # ── Summary ───────────────────────────────────────────────────────────
+    save_homepage_state(state)
+
+    print(f"\n{'='*60}")
+    print(f"HOMEPAGE SCRAPE SUMMARY")
+    print(f"{'='*60}")
+    print(f"Pages checked     : {stats['pages_checked']}")
+    print(f"New movies        : {stats['new_movies']}")
+    print(f"New TV episodes   : {stats['new_episodes']}")
+    print(f"Skipped (seen)    : {stats['skipped']}")
+    print(f"Saved to DB       : {stats['saved']}")
+    print(f"Errors            : {len(stats['errors'])}")
+    print(f"Last page reached : {state.get('last_page', 0)}")
+    print(f"Total URLs seen   : {len(seen)}")
+    print(f"{'='*60}")
+    return stats
+
+
 if __name__ == "__main__":
-    main()
+    import sys as _sys
+    if "--homepage" in _sys.argv:
+        # Homepage scraper mode:
+        #   python3 cima4u_crawler.py --homepage [--pages 3] [--dry-run]
+        import argparse as _ap
+        _p = _ap.ArgumentParser()
+        _p.add_argument("--homepage", action="store_true")
+        _p.add_argument("--pages", type=int, default=3,
+                        help="Number of pages to check for new content (default 3)")
+        _p.add_argument("--dry-run", action="store_true",
+                        help="Don't save to DB")
+        _args, _ = _p.parse_known_args()
+        scrape_homepage(
+            check_new_pages=_args.pages,
+            save_to_db=not _args.dry_run,
+        )
+    else:
+        main()
+

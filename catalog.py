@@ -687,8 +687,6 @@ def save_movie_to_supabase(tmdb_id: int, title: str, doodstream_url: str,
             "doodstream_download_url": doodstream_download_url,
             "media_type": "movie",
         }
-        if year:
-            data["year"] = year
         
         # Check if record already exists
         existing = supabase.table("movies").select("*").eq("tmdb_id", tmdb_id).execute()
@@ -706,18 +704,61 @@ def save_movie_to_supabase(tmdb_id: int, title: str, doodstream_url: str,
         return False
 
 
+def _extract_filecode_from_url(url: str) -> str:
+    """Extract a DoodStream filecode from an embed/download URL."""
+    url = url or ""
+    m = re.search(r"/(?:e|d|embed)/([a-zA-Z0-9]+)", url)
+    return m.group(1) if m else ""
+
+
 def save_episode_to_supabase(tmdb_id: int, series_title: str, season: int, episode: int,
                              doodstream_url: str, doodstream_download_url: str, 
                              title: str = None) -> bool:
-    """Save TV episode data to Supabase.
+    """Save TV episode data into the dedicated `tv_episodes` table.
 
-    The live Supabase 'movies' table stores episodes using
-    media_type='tv' + season_number + episode_number columns.
+    If the table hasn't been created yet (create_tv_episodes_table.sql),
+    falls back to the legacy `movies` table (media_type='tv') so nothing is lost.
     """
     if not supabase:
         print("[supabase] Not connected, skipping database save")
         return False
-    
+
+    filecode = _extract_filecode_from_url(doodstream_url)
+    data = {
+        "tmdb_id": tmdb_id,
+        "series_title": series_title,
+        "season_number": season,
+        "episode_number": episode,
+        "title": title or series_title,
+        "filecode": filecode,
+        "doodstream_url": doodstream_url,
+        "doodstream_download_url": doodstream_download_url,
+        "playmogo_url": f"https://playmogo.com/e/{filecode}" if filecode else None,
+        "vidsrc_url": f"https://vidsrc.sbs/embed/tv/{tmdb_id}",
+    }
+
+    # Preferred: dedicated tv_episodes table
+    try:
+        existing = supabase.table("tv_episodes").select("id").eq("tmdb_id", tmdb_id).eq("season_number", season).eq("episode_number", episode).execute()
+        if existing.data:
+            supabase.table("tv_episodes").update(data).eq("tmdb_id", tmdb_id).eq("season_number", season).eq("episode_number", episode).execute()
+            print(f"[supabase] Updated tv_episodes: {series_title} S{season}E{episode}")
+        else:
+            supabase.table("tv_episodes").insert(data).execute()
+            print(f"[supabase] Inserted tv_episodes: {series_title} S{season}E{episode}")
+        return True
+    except Exception as e:
+        msg = str(e)
+        if "Could not find the table" in msg or ("relation" in msg and "does not exist" in msg):
+            return _save_episode_legacy(tmdb_id, series_title, season, episode, doodstream_url, doodstream_download_url, title)
+        print(f"[supabase] Error saving episode: {e}")
+        return False
+
+
+def _save_episode_legacy(tmdb_id: int, series_title: str, season: int, episode: int,
+                         doodstream_url: str, doodstream_download_url: str,
+                         title: str = None) -> bool:
+    """Legacy fallback: store the episode in `movies` with media_type='tv'."""
     try:
         data = {
             "tmdb_id": tmdb_id,
@@ -728,25 +769,63 @@ def save_episode_to_supabase(tmdb_id: int, series_title: str, season: int, episo
             "season_number": season,
             "episode_number": episode,
         }
-        
-        # Check if record already exists (by tmdb_id, season, episode)
         existing = supabase.table("movies").select("*").eq("tmdb_id", tmdb_id).eq("media_type", "tv").eq("season_number", season).eq("episode_number", episode).execute()
-        
         if existing.data:
             supabase.table("movies").update(data).eq("tmdb_id", tmdb_id).eq("media_type", "tv").eq("season_number", season).eq("episode_number", episode).execute()
-            print(f"[supabase] Updated episode: {series_title} S{season}E{episode}")
+            print(f"[supabase] Updated episode (movies fallback): {series_title} S{season}E{episode}")
         else:
             supabase.table("movies").insert(data).execute()
-            print(f"[supabase] Inserted episode into movies (tv): {series_title} S{season}E{episode}")
-        
+            print(f"[supabase] Inserted episode into movies (tv fallback): {series_title} S{season}E{episode}")
+        print("[supabase] ⚠ Run create_tv_episodes_table.sql in the SQL Editor to use the dedicated tv_episodes table")
         return True
     except Exception as e:
-        msg = str(e)
-        if "Could not find the table" in msg or ("relation" in msg and "does not exist" in msg):
-            print(f"[supabase] ❌ TV table missing! Run create_supabase_table.sql in the Supabase SQL Editor. tmdb_id={tmdb_id} S{season}E{episode}")
-        else:
-            print(f"[supabase] Error saving episode: {e}")
+        print(f"[supabase] Error saving episode (legacy): {e}")
         return False
+
+
+def find_in_supabase(tmdb_id: int, media_type: str = "movie", season: int = None, episode: int = None) -> bool:
+    """Return True if the content already exists in Supabase.
+
+    Movies are checked in `movies` (media_type='movie') by tmdb_id.
+    Episodes are checked in `tv_episodes` (or the legacy `movies` tv rows)
+    by (tmdb_id, season, episode). Used by the crawler to skip re-uploads.
+    """
+    if not supabase or not tmdb_id:
+        return False
+
+    def _query(table: str, extra: dict) -> bool:
+        q = supabase.table(table).select("id").eq("tmdb_id", tmdb_id)
+        for k, v in (extra or {}).items():
+            q = q.eq(k, v)
+        return bool(q.execute().data)
+
+    try:
+        if media_type == "tv":
+            extra = {}
+            if season is not None:
+                extra["season_number"] = season
+            if episode is not None:
+                extra["episode_number"] = episode
+            if _query("tv_episodes", extra):
+                return True
+        else:
+            if _query("movies", {"media_type": "movie"}):
+                return True
+    except Exception:
+        pass
+
+    # Legacy fallback: episodes stored in the movies table with media_type='tv'
+    try:
+        if media_type == "tv":
+            extra = {"media_type": "tv"}
+            if season is not None:
+                extra["season_number"] = season
+            if episode is not None:
+                extra["episode_number"] = episode
+            return _query("movies", extra)
+    except Exception:
+        pass
+    return False
 
 
 def save_to_supabase(tmdb_id: int, title: str, doodstream_url: str, doodstream_download_url: str, 
