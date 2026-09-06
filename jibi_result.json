@@ -1,16 +1,12 @@
 {
-  "status": "error",
   "page_url": "https://cimafu.cam/%d9%85%d8%b4%d8%a7%d9%87%d8%af%d8%a9-%d9%81%d9%8a%d9%84%d9%85-%d9%88%d8%aa%d8%ad%d9%85%d9%8a%d9%84-frontline-2025-%d9%85%d8%aa%d8%b1%d8%ac%d9%85-%d9%85%d8%a8%d8%a7%d8%b4%d8%b1/",
-  "video_url": null,
-  "tmdb_id": null,
-  "filecode": null,
-  "doodstream_url": null,
-  "playmogo_url": null,
-  "vidsrc_url": null,
+  "success": false,
   "selected_server": null,
-  "servers_tried": 0,
-  "skipped_duplicate": false,
+  "direct_stream_url": null,
+  "filecode": null,
+  "servers_found": [],
   "errors": [
     "No servers or direct streams detected."
-  ]
+  ],
+  "skipped_duplicate": false
 }

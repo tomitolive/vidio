@@ -1,0 +1,4357 @@
+[supabase] Connected to Supabase
+[sync] Connected to Supabase
+[sync] Fetched page 1/12 (100 files)
+[sync] Fetched page 2/12 (100 files)
+[sync] Fetched page 3/12 (100 files)
+[sync] Fetched page 4/12 (100 files)
+[sync] Fetched page 5/12 (100 files)
+[sync] Fetched page 6/12 (100 files)
+[sync] Fetched page 7/12 (100 files)
+[sync] Fetched page 8/12 (100 files)
+[sync] Fetched page 9/12 (100 files)
+[sync] Fetched page 10/12 (100 files)
+[sync] Fetched page 11/12 (100 files)
+[sync] Fetched page 12/12 (22 files)
+[sync] Total videos: 1122
+
+[sync] 'Lockout 2012 UNRATED 1080p BluRay EgyDead CoM' (dyow8ja8840m)
+[tmdb] No results found for 'Lockout UNRATED' (movie, 2012)
+[sync]   -> movie tmdb=None
+
+[sync] 'The Invite 2026 1080p WEB-DL EgyDead CoM' (4u34qwpnashe)
+[tmdb] Found TMDB ID: 950028 for 'The Invite' (movie, 2026)
+[sync]   -> movie tmdb=950028
+
+[sync] 'Desire 2026 1080p WEB-DL EgyDead CoM' (zv7rhp33hmg1)
+[tmdb] Found TMDB ID: 1668364 for 'Desire' (movie, 2026)
+[sync]   -> movie tmdb=1668364
+
+[sync] 'To The Max 2026 1080p WEB-DL EgyDead CoM' (ykvqho5kgre3)
+[tmdb] Found TMDB ID: 1588838 for 'To The Max' (movie, 2026)
+[sync]   -> movie tmdb=1588838
+
+[sync] 'Disclosure Day 2026 1080p WEB-DL EgyDead CoM' (xxgcey60k15e)
+[tmdb] Found TMDB ID: 1275779 for 'Disclosure Day' (movie, 2026)
+[sync]   -> movie tmdb=1275779
+
+[sync] 'the secret woman 2026 1080p web' (5d6030rc3g1g)
+[tmdb] Found TMDB ID: 1631807 for 'the secret woman' (movie, 2026)
+[sync]   -> movie tmdb=1631807
+
+[sync] 'The Crying Game 1992 REMASTERED 1080p BluRay EgyDead CoM' (ggr8av0cta6t)
+[tmdb] No results found for 'The Crying Game REMASTERED' (movie, 1992)
+[sync]   -> movie tmdb=None
+
+[sync] 'Crybaby Bridge 2026 1080p WEB-DL EgyDead CoM' (sxjhngix7smz)
+[tmdb] Found TMDB ID: 1431247 for 'Crybaby Bridge' (movie, 2026)
+[sync]   -> movie tmdb=1431247
+
+[sync] 'Miracles From Heaven 2016 1080p BluRay EgyDead CoM' (ginu3vko4u4a)
+[tmdb] Found TMDB ID: 339984 for 'Miracles From Heaven' (movie, 2016)
+[sync]   -> movie tmdb=339984
+
+[sync] 'Wrath of Man 2021 1080p BluRay EgyDead CoM' (qk89rtl8ucy8)
+[tmdb] Found TMDB ID: 637649 for 'Wrath of Man' (movie, 2021)
+[sync]   -> movie tmdb=637649
+
+[sync] 'Ghostbusters 2016 EXTENDED 1080p BluRay EgyDead CoM' (z4agdb43comf)
+[tmdb] No results found for 'Ghostbusters EXTENDED' (movie, 2016)
+[sync]   -> movie tmdb=None
+
+[sync] 'The Panic in Needle Park 1971 1080p BluRay EgyDead CoM' (kb2uj9dwwknz)
+[tmdb] Found TMDB ID: 27554 for 'The Panic in Needle Park' (movie, 1971)
+[sync]   -> movie tmdb=27554
+
+[sync] 'Spider Man No Way Home 2021 EXTENDED 1080p WEB-DL EgyDead CoM' (v70ko2lu1qvb)
+[tmdb] No results found for 'Spider Man No Way Home EXTENDED' (movie, 2021)
+[sync]   -> movie tmdb=None
+
+[sync] 'Bombshell 2019 1080p BluRay EgyDead CoM' (8o787j3vw2ci)
+[tmdb] Found TMDB ID: 525661 for 'Bombshell' (movie, 2019)
+[sync]   -> movie tmdb=525661
+
+[sync] 'The Amazing Spider Man 2012 1080p BluRay EgyDead CoM' (4py0l5u3nsgz)
+[tmdb] Found TMDB ID: 1930 for 'The Amazing Spider Man' (movie, 2012)
+[sync]   -> movie tmdb=1930
+
+[sync] 'Cheaper by the Dozen 2022 1080p WEB-DL EgyDead CoM' (os2kh396pwlh)
+[tmdb] Found TMDB ID: 691683 for 'Cheaper by the Dozen' (movie, 2022)
+[sync]   -> movie tmdb=691683
+
+[sync] 'The Sheriffs of Savage Wells 2026 1080p WEB-DL EgyDead CoM' (pzff4btvo8fk)
+[tmdb] Found TMDB ID: 1614075 for 'The Sheriffs of Savage Wells' (movie, 2026)
+[sync]   -> movie tmdb=1614075
+
+[sync] 'Cheaper By the Dozen 2003 1080p WEB-DL EgyDead CoM' (mo9y40upoc9l)
+[tmdb] Found TMDB ID: 11007 for 'Cheaper By the Dozen' (movie, 2003)
+[sync]   -> movie tmdb=11007
+
+[sync] 'Corrida Dos Bichos 2026 1080p WEB-DL EgyDead CoM' (ei46ckvjsjro)
+[tmdb] Found TMDB ID: 1263532 for 'Corrida Dos Bichos' (movie, 2026)
+[sync]   -> movie tmdb=1263532
+
+[sync] 'Lockout 2012 UNRATED 1080p BluRay EgyDead CoM' (9ayi0fiwoke5)
+[tmdb] No results found for 'Lockout UNRATED' (movie, 2012)
+[sync]   -> movie tmdb=None
+
+[sync] 'The Vanishing 1988 REMASTERED 1080p BluRay EgyDead CoM' (dl78p2jviem4)
+[tmdb] No results found for 'The Vanishing REMASTERED' (movie, 1988)
+[sync]   -> movie tmdb=None
+
+[sync] 'Hunter Killer 2018 1080p BluRay EgyDead CoM' (0qcm3yn8kb3u)
+[tmdb] Found TMDB ID: 399402 for 'Hunter Killer' (movie, 2018)
+[sync]   -> movie tmdb=399402
+
+[sync] 'To The Max 2026 1080p WEB-DL EgyDead CoM' (ubd7wyisft6v)
+[tmdb] Found TMDB ID: 1588838 for 'To The Max' (movie, 2026)
+[sync]   -> movie tmdb=1588838
+
+[sync] 'Summers Last Resort 2026 720p WEB-DL EgyDead CoM' (2x1bnzslnb2h)
+[tmdb] Found TMDB ID: 1617191 for 'Summers Last Resort' (movie, 2026)
+[sync]   -> movie tmdb=1617191
+
+[sync] 'Here The Whole Time 2026 1080p WEB-DL EgyDead CoM' (qsk90wnqm4hh)
+[tmdb] Found TMDB ID: 1418582 for 'Here The Whole Time' (movie, 2026)
+[sync]   -> movie tmdb=1418582
+
+[sync] 'Here The Whole Time 2026 1080p WEB-DL EgyDead CoM' (alhn3ff53v58)
+[tmdb] Found TMDB ID: 1418582 for 'Here The Whole Time' (movie, 2026)
+[sync]   -> movie tmdb=1418582
+
+[sync] 'Here The Whole Time 2026 1080p WEB-DL EgyDead CoM' (w05caraq8ru6)
+[tmdb] Found TMDB ID: 1418582 for 'Here The Whole Time' (movie, 2026)
+[sync]   -> movie tmdb=1418582
+
+[sync] 'I Want Your Sex 2026 1080p AMZN WEB-DL' (jkbam5h031xc)
+[tmdb] Found TMDB ID: 1288059 for 'I Want Your Sex' (movie, 2026)
+[sync]   -> movie tmdb=1288059
+
+[sync] 'Wrath of Man 2021 1080p BluRay EgyDead CoM' (6cdzcs6bk9tk)
+[tmdb] Found TMDB ID: 637649 for 'Wrath of Man' (movie, 2021)
+[sync]   -> movie tmdb=637649
+
+[sync] 'the secret woman 2026 1080p web' (gqa5139wvvha)
+[tmdb] Found TMDB ID: 1631807 for 'the secret woman' (movie, 2026)
+[sync]   -> movie tmdb=1631807
+
+[sync] 'She Rides Shotgun 2025 1080p BluRay' (n5yvqagz7rkg)
+[tmdb] Found TMDB ID: 1196573 for 'She Rides Shotgun' (movie, 2025)
+[sync]   -> movie tmdb=1196573
+
+[sync] 'She Rides Shotgun 2025 1080p BluRay' (u2qfezmyqsmw)
+[tmdb] Found TMDB ID: 1196573 for 'She Rides Shotgun' (movie, 2025)
+[sync]   -> movie tmdb=1196573
+
+[sync] 'She Rides Shotgun 2025 1080p BluRay' (toivwosh2s2p)
+[tmdb] Found TMDB ID: 1196573 for 'She Rides Shotgun' (movie, 2025)
+[sync]   -> movie tmdb=1196573
+
+[sync] 'She Rides Shotgun 2025 1080p BluRay' (4n4te60moh1n)
+[tmdb] Found TMDB ID: 1196573 for 'She Rides Shotgun' (movie, 2025)
+[sync]   -> movie tmdb=1196573
+
+[sync] 'The Mongoose 2026 1080p SCREENER WEB-DL' (jp8s2xd5ipwb)
+[tmdb] No results found for 'The Mongoose SCREENER' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'Hereditary 2018 1080p BluRay EgyDead CoM' (h9xit3tj0nwo)
+[tmdb] Found TMDB ID: 493922 for 'Hereditary' (movie, 2018)
+[sync]   -> movie tmdb=493922
+
+[sync] 'Evil Dead 2013 EXTENDED 1080p BluRay EgyDead CoM' (j3iu9e9wvtfn)
+[tmdb] No results found for 'Evil Dead EXTENDED' (movie, 2013)
+[sync]   -> movie tmdb=None
+
+[sync] 'Spider Man Far from Home 2019 1080p BluRay EgyDead CoM' (omoti7poubi9)
+[tmdb] Found TMDB ID: 429617 for 'Spider Man Far from Home' (movie, 2019)
+[sync]   -> movie tmdb=429617
+
+[sync] 'Spider Man Homecoming 2017 1080p BluRay EgyDead CoM' (6h8c6ogct8iy)
+[tmdb] Found TMDB ID: 315635 for 'Spider Man Homecoming' (movie, 2017)
+[sync]   -> movie tmdb=315635
+
+[sync] 'The Amazing Spider Man 2012 1080p BluRay EgyDead CoM' (mqt00v0hr15o)
+[tmdb] Found TMDB ID: 1930 for 'The Amazing Spider Man' (movie, 2012)
+[sync]   -> movie tmdb=1930
+
+[sync] 'Corrida Dos Bichos 2026 1080p WEB-DL EgyDead CoM' (1dwhlgvyuba3)
+[tmdb] Found TMDB ID: 1263532 for 'Corrida Dos Bichos' (movie, 2026)
+[sync]   -> movie tmdb=1263532
+
+[sync] 'Anyone But You 2023 1080p BluRay EgyDead CoM' (wac3512z5bg6)
+[tmdb] Found TMDB ID: 1072790 for 'Anyone But You' (movie, 2023)
+[sync]   -> movie tmdb=1072790
+
+[sync] 'Lockbox 2026 1080p WEB-DL EgyDead CoM' (0304s3dsl05c)
+[tmdb] Found TMDB ID: 1500890 for 'Lockbox' (movie, 2026)
+[sync]   -> movie tmdb=1500890
+
+[sync] 'Kill Trip 2026 1080p WEB-DL EgyDead CoM' (06rdmstchve3)
+[tmdb] Found TMDB ID: 1473505 for 'Kill Trip' (movie, 2026)
+[sync]   -> movie tmdb=1473505
+
+[sync] 'Descendants Wicked Wonderland 2026 1080p WEB-DL EgyDead CoM' (tqzrbwnz74ls)
+[tmdb] Found TMDB ID: 1318621 for 'Descendants Wicked Wonderland' (movie, 2026)
+[sync]   -> movie tmdb=1318621
+
+[sync] 'The Invite 2026 1080p WEB-DL EgyDead CoM' (oiyxvs2a1t15)
+[tmdb] Found TMDB ID: 950028 for 'The Invite' (movie, 2026)
+[sync]   -> movie tmdb=950028
+
+[sync] 'Young Washington 2026 1080p WEB-DL EgyDead CoM' (no5mukv89gbc)
+[tmdb] Found TMDB ID: 1308767 for 'Young Washington' (movie, 2026)
+[sync]   -> movie tmdb=1308767
+
+[sync] 'War Wolves 2009 1080p WEB-DL EgyDead CoM' (t1cvf2mpo6mk)
+[tmdb] Found TMDB ID: 28686 for 'War Wolves' (movie, 2009)
+[sync]   -> movie tmdb=28686
+
+[sync] 'Dont Say Good Luck 2026 1080p WEB-DL EgyDead CoM' (tdrhmvvtqeuz)
+[tmdb] Found TMDB ID: 1504358 for 'Dont Say Good Luck' (movie, 2026)
+[sync]   -> movie tmdb=1504358
+
+[sync] 'Superhero Movie 2008 EXTENDED 1080p BluRay EgyDead CoM' (t4vrfl369wx7)
+[tmdb] No results found for 'Superhero Movie EXTENDED' (movie, 2008)
+[sync]   -> movie tmdb=None
+
+[sync] 'He ll Never Find Me 2026 1080p WEB EgyDead CoM' (wen6yfg1x7nb)
+[tmdb] Found TMDB ID: 1735229 for 'He ll Never Find Me' (movie, 2026)
+[sync]   -> movie tmdb=1735229
+
+[sync] 'I Want Your Sex 2026 1080p AMZN WEB-DL' (uky9i1snj35d)
+[tmdb] Found TMDB ID: 1288059 for 'I Want Your Sex' (movie, 2026)
+[sync]   -> movie tmdb=1288059
+
+[sync] 'She Rides Shotgun 2025 1080p BluRay' (jn9o1icnox7b)
+[tmdb] Found TMDB ID: 1196573 for 'She Rides Shotgun' (movie, 2025)
+[sync]   -> movie tmdb=1196573
+
+[sync] 'She Rides Shotgun 2025 1080p BluRay' (mcj2t011i31s)
+[tmdb] Found TMDB ID: 1196573 for 'She Rides Shotgun' (movie, 2025)
+[sync]   -> movie tmdb=1196573
+
+[sync] 'She Rides Shotgun 2025 1080p BluRay' (kk24veevicu6)
+[tmdb] Found TMDB ID: 1196573 for 'She Rides Shotgun' (movie, 2025)
+[sync]   -> movie tmdb=1196573
+
+[sync] 'She Rides Shotgun 2025 1080p BluRay' (bhm9wybgbn2h)
+[tmdb] Found TMDB ID: 1196573 for 'She Rides Shotgun' (movie, 2025)
+[sync]   -> movie tmdb=1196573
+
+[sync] 'The Mongoose 2026 1080p SCREENER WEB-DL' (uzq7rdxlnst7)
+[tmdb] No results found for 'The Mongoose SCREENER' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'Just Play Dead 2026 1080p AMZN WEB-DL' (gse6wh4kb3bc)
+[tmdb] Found TMDB ID: 1480574 for 'Just Play Dead' (movie, 2026)
+[sync]   -> movie tmdb=1480574
+
+[sync] 'Confinement 2026 1080p AMZN WEB-DL' (dt1v5siltwv9)
+[tmdb] Found TMDB ID: 1742458 for 'Confinement' (movie, 2026)
+[sync]   -> movie tmdb=1742458
+
+[sync] 'Rose Of Nevada 2025 1080p BluRay' (b32tzc97xtnk)
+[tmdb] Found TMDB ID: 1399525 for 'Rose Of Nevada' (movie, 2025)
+[sync]   -> movie tmdb=1399525
+
+[sync] 'Summers Last Resort 2026 720p WEB-DL EgyDead CoM' (24303kbxc6lf)
+[tmdb] Found TMDB ID: 1617191 for 'Summers Last Resort' (movie, 2026)
+[sync]   -> movie tmdb=1617191
+
+[sync] 'Miracles From Heaven 2016 1080p BluRay EgyDead CoM' (e1abpys213q7)
+[tmdb] Found TMDB ID: 339984 for 'Miracles From Heaven' (movie, 2016)
+[sync]   -> movie tmdb=339984
+
+[sync] 'Hereditary 2018 1080p BluRay EgyDead CoM' (2ih2u7rm226u)
+[tmdb] Found TMDB ID: 493922 for 'Hereditary' (movie, 2018)
+[sync]   -> movie tmdb=493922
+
+[sync] 'Evil Dead 2013 EXTENDED 1080p BluRay EgyDead CoM' (jg2vrw280qsv)
+[tmdb] No results found for 'Evil Dead EXTENDED' (movie, 2013)
+[sync]   -> movie tmdb=None
+
+[sync] 'Spider Man Homecoming 2017 1080p BluRay EgyDead CoM' (a8hqeyjbkz5n)
+[tmdb] Found TMDB ID: 315635 for 'Spider Man Homecoming' (movie, 2017)
+[sync]   -> movie tmdb=315635
+
+[sync] 'Corrida Dos Bichos 2026 1080p WEB-DL EgyDead CoM' (dfvk699usg79)
+[tmdb] Found TMDB ID: 1263532 for 'Corrida Dos Bichos' (movie, 2026)
+[sync]   -> movie tmdb=1263532
+
+[sync] 'Nando Between Two Worlds A Sintonia Film 2026 1080p WEB-DL EgyDead CoM' (qhic2e4lc8fc)
+[tmdb] Found TMDB ID: 1487864 for 'Nando Between Two Worlds A Sintonia Film' (movie, 2026)
+[sync]   -> movie tmdb=1487864
+
+[sync] 'My Best Friend His Girlfriend And Me 2026 1080p WEB-DL EgyDead CoM' (igmjsz04zjuf)
+[tmdb] Found TMDB ID: 1589248 for 'My Best Friend His Girlfriend And Me' (movie, 2026)
+[sync]   -> movie tmdb=1589248
+
+[sync] 'The Whisper Man 2026 1080p NF WEB-DL' (xfxeb0vqvw7q)
+[tmdb] Found TMDB ID: 860508 for 'The Whisper Man' (movie, 2026)
+[sync]   -> movie tmdb=860508
+
+[sync] 'The Whisper Man 2026 1080p NF WEB-DL' (cn89dg103un3)
+[tmdb] Found TMDB ID: 860508 for 'The Whisper Man' (movie, 2026)
+[sync]   -> movie tmdb=860508
+
+[sync] 'The Whisper Man 2026 1080p NF WEB-DL' (jeu23u7r0ebz)
+[tmdb] Found TMDB ID: 860508 for 'The Whisper Man' (movie, 2026)
+[sync]   -> movie tmdb=860508
+
+[sync] 'The Whisper Man 2026 1080p NF WEB-DL' (ph404ymbt2g4)
+[tmdb] Found TMDB ID: 860508 for 'The Whisper Man' (movie, 2026)
+[sync]   -> movie tmdb=860508
+
+[sync] 'The Mongoose 2026 1080p SCREENER WEB-DL' (m1ezwwja5hy1)
+[tmdb] No results found for 'The Mongoose SCREENER' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'Kill Trip 2026 1080p WEB-DL EgyDead CoM' (k50moo4oh4mq)
+[tmdb] Found TMDB ID: 1473505 for 'Kill Trip' (movie, 2026)
+[sync]   -> movie tmdb=1473505
+
+[sync] 'The Panic in Needle Park 1971 1080p BluRay EgyDead CoM' (12ehb66gbh64)
+[tmdb] Found TMDB ID: 27554 for 'The Panic in Needle Park' (movie, 1971)
+[sync]   -> movie tmdb=27554
+
+[sync] 'Cheaper By the Dozen 2003 1080p WEB-DL EgyDead CoM' (xdauovjoibbg)
+[tmdb] Found TMDB ID: 11007 for 'Cheaper By the Dozen' (movie, 2003)
+[sync]   -> movie tmdb=11007
+
+[sync] 'Ghostbusters 2016 EXTENDED 1080p BluRay EgyDead CoM' (y8avwcpsrno4)
+[tmdb] No results found for 'Ghostbusters EXTENDED' (movie, 2016)
+[sync]   -> movie tmdb=None
+
+[sync] 'The Devils Mouth 2026 1080p WEB-DL EgyDead CoM' (je0e0ee6t26d)
+[tmdb] Found TMDB ID: 1481343 for 'The Devils Mouth' (movie, 2026)
+[sync]   -> movie tmdb=1481343
+
+[sync] 'The Chronicles of Riddick 2004 DC 1080p BluRay EgyDead CoM' (4irct16e027g)
+[tmdb] No results found for 'The Chronicles of Riddick DC' (movie, 2004)
+[sync]   -> movie tmdb=None
+
+[sync] 'The Outer Threat 2026 1080p WEB DL EgyDead CoM' (i4twlmyjj9bx)
+[tmdb] No results found for 'The Outer Threat DL' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'The Outer Threat 2026 1080p WEB DL EgyDead CoM' (hxf8zjfjhmfb)
+[tmdb] No results found for 'The Outer Threat DL' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'The Outer Threat 2026 1080p WEB DL EgyDead CoM' (ef15a6lwut6o)
+[tmdb] No results found for 'The Outer Threat DL' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'Spider Man No Way Home 2021 EXTENDED 1080p WEB-DL EgyDead CoM' (s2p85u7kd4ap)
+[tmdb] No results found for 'Spider Man No Way Home EXTENDED' (movie, 2021)
+[sync]   -> movie tmdb=None
+
+[sync] 'Spider Man Far from Home 2019 1080p BluRay EgyDead CoM' (eb2nchfdj1d8)
+[tmdb] Found TMDB ID: 429617 for 'Spider Man Far from Home' (movie, 2019)
+[sync]   -> movie tmdb=429617
+
+[sync] 'Spider Man Homecoming 2017 1080p BluRay EgyDead CoM' (c61x4c0p96ts)
+[tmdb] Found TMDB ID: 315635 for 'Spider Man Homecoming' (movie, 2017)
+[sync]   -> movie tmdb=315635
+
+[sync] 'Corrida Dos Bichos 2026 1080p WEB-DL EgyDead CoM' (fjpx1m5cgshx)
+[tmdb] Found TMDB ID: 1263532 for 'Corrida Dos Bichos' (movie, 2026)
+[sync]   -> movie tmdb=1263532
+
+[sync] 'The Longest Yard 2005 1080p BluRay EgyDead CoM' (v9umxy0nec0p)
+[tmdb] Found TMDB ID: 9291 for 'The Longest Yard' (movie, 2005)
+[sync]   -> movie tmdb=9291
+
+[sync] 'Young Washington 2026 1080p WEB-DL EgyDead CoM' (xeoo32x0s5o7)
+[tmdb] Found TMDB ID: 1308767 for 'Young Washington' (movie, 2026)
+[sync]   -> movie tmdb=1308767
+
+[sync] 'War Wolves 2009 1080p WEB-DL EgyDead CoM' (hygf0dqblok7)
+[tmdb] Found TMDB ID: 28686 for 'War Wolves' (movie, 2009)
+[sync]   -> movie tmdb=28686
+
+[sync] 'Superhero Movie 2008 EXTENDED 1080p BluRay EgyDead CoM' (mhrqg3xbnq7l)
+[tmdb] No results found for 'Superhero Movie EXTENDED' (movie, 2008)
+[sync]   -> movie tmdb=None
+
+[sync] 'Ace Ventura Jr Pet Detective 2009 1080p WEB-DL EgyDead CoM' (brw8w96kihhj)
+[tmdb] Found TMDB ID: 15338 for 'Ace Ventura Jr Pet Detective' (movie, 2009)
+[sync]   -> movie tmdb=15338
+
+[sync] 'The Wrong Girls 2026 1080p AMZN WEB-DL' (pn6grvutcii7)
+[tmdb] Found TMDB ID: 1226699 for 'The Wrong Girls' (movie, 2026)
+[sync]   -> movie tmdb=1226699
+
+[sync] 'She Rides Shotgun 2025 1080p BluRay' (kffeq8etdk8z)
+[tmdb] Found TMDB ID: 1196573 for 'She Rides Shotgun' (movie, 2025)
+[sync]   -> movie tmdb=1196573
+
+[sync] 'She Rides Shotgun 2025 1080p BluRay' (eh10khlo1tqt)
+[tmdb] Found TMDB ID: 1196573 for 'She Rides Shotgun' (movie, 2025)
+[sync]   -> movie tmdb=1196573
+
+[sync] 'She Rides Shotgun 2025 1080p BluRay' (2d1ugila8nmi)
+[tmdb] Found TMDB ID: 1196573 for 'She Rides Shotgun' (movie, 2025)
+[sync]   -> movie tmdb=1196573
+
+[sync] 'She Rides Shotgun 2025 1080p BluRay' (5lyhs3thajvu)
+[tmdb] Found TMDB ID: 1196573 for 'She Rides Shotgun' (movie, 2025)
+[sync]   -> movie tmdb=1196573
+
+[sync] 'She Rides Shotgun 2025 1080p BluRay' (5ez3kbudb24e)
+[tmdb] Found TMDB ID: 1196573 for 'She Rides Shotgun' (movie, 2025)
+[sync]   -> movie tmdb=1196573
+
+[sync] 'She Rides Shotgun 2025 1080p BluRay' (3foc0ev3h86h)
+[tmdb] Found TMDB ID: 1196573 for 'She Rides Shotgun' (movie, 2025)
+[sync]   -> movie tmdb=1196573
+
+[sync] 'She Rides Shotgun 2025 1080p BluRay' (uk46afk8zt0k)
+[tmdb] Found TMDB ID: 1196573 for 'She Rides Shotgun' (movie, 2025)
+[sync]   -> movie tmdb=1196573
+
+[sync] 'She Rides Shotgun 2025 1080p BluRay' (i25zn173t4o5)
+[tmdb] Found TMDB ID: 1196573 for 'She Rides Shotgun' (movie, 2025)
+[sync]   -> movie tmdb=1196573
+
+[sync] 'Just Play Dead 2026 1080p AMZN WEB-DL' (nnpcem8ypy0c)
+[tmdb] Found TMDB ID: 1480574 for 'Just Play Dead' (movie, 2026)
+[sync]   -> movie tmdb=1480574
+
+[sync] 'Confinement 2026 1080p AMZN WEB-DL' (yhygb3ijrlx6)
+[tmdb] Found TMDB ID: 1742458 for 'Confinement' (movie, 2026)
+[sync]   -> movie tmdb=1742458
+
+[sync] 'Splash City 2026 1080p AMZN WEB-DL' (wvvx7gd3b529)
+[tmdb] Found TMDB ID: 1248230 for 'Splash City' (movie, 2026)
+[sync]   -> movie tmdb=1248230
+
+[sync] 'Splash City 2026 1080p AMZN WEB-DL' (8uz8wwfnvzql)
+[tmdb] Found TMDB ID: 1248230 for 'Splash City' (movie, 2026)
+[sync]   -> movie tmdb=1248230
+
+[sync] 'Splash City 2026 1080p AMZN WEB-DL' (mjx0cm1bowtj)
+[tmdb] Found TMDB ID: 1248230 for 'Splash City' (movie, 2026)
+[sync]   -> movie tmdb=1248230
+
+[sync] 'Splash City 2026 1080p AMZN WEB-DL' (pl9k0akqkqaj)
+[tmdb] Found TMDB ID: 1248230 for 'Splash City' (movie, 2026)
+[sync]   -> movie tmdb=1248230
+
+[sync] 'Rose Of Nevada 2025 1080p BluRay' (bxx982rqyubi)
+[tmdb] Found TMDB ID: 1399525 for 'Rose Of Nevada' (movie, 2025)
+[sync]   -> movie tmdb=1399525
+
+[sync] 'Rose Of Nevada 2025 1080p BluRay' (yd4gdo83o9ui)
+[tmdb] Found TMDB ID: 1399525 for 'Rose Of Nevada' (movie, 2025)
+[sync]   -> movie tmdb=1399525
+
+[sync] 'Rose Of Nevada 2025 1080p BluRay' (7ij0zdoswq1q)
+[tmdb] Found TMDB ID: 1399525 for 'Rose Of Nevada' (movie, 2025)
+[sync]   -> movie tmdb=1399525
+
+[sync] 'Rose Of Nevada 2025 1080p BluRay' (rhn6nv5rqm0w)
+[tmdb] Found TMDB ID: 1399525 for 'Rose Of Nevada' (movie, 2025)
+[sync]   -> movie tmdb=1399525
+
+[sync] 'Evil Dead Burn 2026 1080p HDCAM EgyDead CoM' (z85bsq4aeb2u)
+[tmdb] No results found for 'Evil Dead Burn HDCAM' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'The Crying Game 1992 REMASTERED 1080p BluRay EgyDead CoM' (sgaaj226szz6)
+[tmdb] No results found for 'The Crying Game REMASTERED' (movie, 1992)
+[sync]   -> movie tmdb=None
+
+[sync] 'Kill Trip 2026 1080p WEB-DL EgyDead CoM' (pzm4qm7e4fr8)
+[tmdb] Found TMDB ID: 1473505 for 'Kill Trip' (movie, 2026)
+[sync]   -> movie tmdb=1473505
+
+[sync] 'Descendants Wicked Wonderland 2026 1080p WEB-DL EgyDead CoM' (gccym8lklkyv)
+[tmdb] Found TMDB ID: 1318621 for 'Descendants Wicked Wonderland' (movie, 2026)
+[sync]   -> movie tmdb=1318621
+
+[sync] 'Bombshell 2019 1080p BluRay EgyDead CoM' (tdqjtxi7fimj)
+[tmdb] Found TMDB ID: 525661 for 'Bombshell' (movie, 2019)
+[sync]   -> movie tmdb=525661
+
+[sync] 'Cheaper by the Dozen 2022 1080p WEB-DL EgyDead CoM' (nrealr3g8xqy)
+[tmdb] Found TMDB ID: 691683 for 'Cheaper by the Dozen' (movie, 2022)
+[sync]   -> movie tmdb=691683
+
+[sync] 'Desire 2026 1080p WEB-DL EgyDead CoM' (u3xyb9zz2t7d)
+[tmdb] Found TMDB ID: 1668364 for 'Desire' (movie, 2026)
+[sync]   -> movie tmdb=1668364
+
+[sync] 'Ghostbusters 2016 EXTENDED 1080p BluRay EgyDead CoM' (56ead8nl38tb)
+[tmdb] No results found for 'Ghostbusters EXTENDED' (movie, 2016)
+[sync]   -> movie tmdb=None
+
+[sync] '3096 Days 2013 1080p BluRay EgyDead CoM' (5klfzirsq9bo)
+[tmdb] Found TMDB ID: 166666 for '3096 Days' (movie, 2013)
+[sync]   -> movie tmdb=166666
+
+[sync] 'Ghostbusters 2 1989 REMASTERED 1080p BluRay EgyDead CoM' (v0daj7jlnsgo)
+[tmdb] No results found for 'Ghostbusters 2 REMASTERED' (movie, 1989)
+[sync]   -> movie tmdb=None
+
+[sync] 'The Devils Mouth 2026 1080p WEB-DL EgyDead CoM' (y5imc29ltk98)
+[tmdb] Found TMDB ID: 1481343 for 'The Devils Mouth' (movie, 2026)
+[sync]   -> movie tmdb=1481343
+
+[sync] 'The Amazing Spider Man 2 2014 1080p BluRay EgyDead CoM' (kaowbgh4jr1b)
+[tmdb] Found TMDB ID: 102382 for 'The Amazing Spider Man 2' (movie, 2014)
+[sync]   -> movie tmdb=102382
+
+[sync] 'The Sheriffs of Savage Wells 2026 1080p WEB-DL EgyDead CoM' (q4cgwhdwt4if)
+[tmdb] Found TMDB ID: 1614075 for 'The Sheriffs of Savage Wells' (movie, 2026)
+[sync]   -> movie tmdb=1614075
+
+[sync] 'Descendants Wicked Wonderland 2026 1080p WEB-DL EgyDead CoM' (zbg336uu62wh)
+[tmdb] Found TMDB ID: 1318621 for 'Descendants Wicked Wonderland' (movie, 2026)
+[sync]   -> movie tmdb=1318621
+
+[sync] 'Corrida Dos Bichos 2026 1080p WEB-DL EgyDead CoM' (329v9x8um95e)
+[tmdb] Found TMDB ID: 1263532 for 'Corrida Dos Bichos' (movie, 2026)
+[sync]   -> movie tmdb=1263532
+
+[sync] 'Lockbox 2026 1080p WEB-DL EgyDead CoM' (cj32ciqitybj)
+[tmdb] Found TMDB ID: 1500890 for 'Lockbox' (movie, 2026)
+[sync]   -> movie tmdb=1500890
+
+[sync] 'Lockout 2012 UNRATED 1080p BluRay EgyDead CoM' (5ymdbjfs3ocg)
+[tmdb] No results found for 'Lockout UNRATED' (movie, 2012)
+[sync]   -> movie tmdb=None
+
+[sync] 'The Longest Yard 2005 1080p BluRay EgyDead CoM' (r7l9vsfii4nd)
+[tmdb] Found TMDB ID: 9291 for 'The Longest Yard' (movie, 2005)
+[sync]   -> movie tmdb=9291
+
+[sync] 'The Invite 2026 1080p WEB-DL EgyDead CoM' (a72ubt1scd47)
+[tmdb] Found TMDB ID: 950028 for 'The Invite' (movie, 2026)
+[sync]   -> movie tmdb=950028
+
+[sync] 'Hunter Killer 2018 1080p BluRay EgyDead CoM' (5qsjrvbx8x1n)
+[tmdb] Found TMDB ID: 399402 for 'Hunter Killer' (movie, 2018)
+[sync]   -> movie tmdb=399402
+
+[sync] 'Disclosure Day 2026 1080p WEB-DL EgyDead CoM' (rhyk8oex0dxo)
+[tmdb] Found TMDB ID: 1275779 for 'Disclosure Day' (movie, 2026)
+[sync]   -> movie tmdb=1275779
+
+[sync] 'Dont Say Good Luck 2026 1080p WEB-DL EgyDead CoM' (t0c375n0jgp6)
+[tmdb] Found TMDB ID: 1504358 for 'Dont Say Good Luck' (movie, 2026)
+[sync]   -> movie tmdb=1504358
+
+[sync] 'Pinocchio Unstrung 2026 1080p BluRay EgyDead CoM' (2ns8qr0bli89)
+[tmdb] Found TMDB ID: 1232569 for 'Pinocchio Unstrung' (movie, 2026)
+[sync]   -> movie tmdb=1232569
+
+[sync] 'The Wrong Girls 2026 1080p AMZN WEB-DL' (fd0y3fwo6n74)
+[tmdb] Found TMDB ID: 1226699 for 'The Wrong Girls' (movie, 2026)
+[sync]   -> movie tmdb=1226699
+
+[sync] 'Spider Island 2026 1080p WEB-DL' (27bm3a52rmgj)
+[tmdb] Found TMDB ID: 1462861 for 'Spider Island' (movie, 2026)
+[sync]   -> movie tmdb=1462861
+
+[sync] 'I Want Your Sex 2026 1080p AMZN WEB-DL' (l0fkyzqcd3y1)
+[tmdb] Found TMDB ID: 1288059 for 'I Want Your Sex' (movie, 2026)
+[sync]   -> movie tmdb=1288059
+
+[sync] 'Grand Theft Auto VI An Extended Look 2026 1080p NF WEB-DL' (2b3n9q004tud)
+[tmdb] Found TMDB ID: 1744462 for 'Grand Theft Auto VI An Extended Look' (movie, 2026)
+[sync]   -> movie tmdb=1744462
+
+[sync] 'the secret woman 2026 1080p web' (1tjvh8xtzg0x)
+[tmdb] Found TMDB ID: 1631807 for 'the secret woman' (movie, 2026)
+[sync]   -> movie tmdb=1631807
+
+[sync] 'the secret woman 2026 1080p web' (f8uri25wmijt)
+[tmdb] Found TMDB ID: 1631807 for 'the secret woman' (movie, 2026)
+[sync]   -> movie tmdb=1631807
+
+[sync] 'the secret woman 2026 1080p web' (9sn6c9erfq6z)
+[tmdb] Found TMDB ID: 1631807 for 'the secret woman' (movie, 2026)
+[sync]   -> movie tmdb=1631807
+
+[sync] 'The Crying Game 1992 REMASTERED 1080p BluRay EgyDead CoM' (w3m91mlxraa9)
+[tmdb] No results found for 'The Crying Game REMASTERED' (movie, 1992)
+[sync]   -> movie tmdb=None
+
+[sync] 'the secret woman 2026 1080p web' (bwinvigv8xus)
+[tmdb] Found TMDB ID: 1631807 for 'the secret woman' (movie, 2026)
+[sync]   -> movie tmdb=1631807
+
+[sync] 'Turning Point Generation 9 11 2026 1080p NF WEB-DL' (34utjy2f3wx1)
+[tmdb] Found TMDB ID: 1752159 for 'Turning Point Generation 9 11' (movie, 2026)
+[sync]   -> movie tmdb=1752159
+
+[sync] 'She Rides Shotgun 2025 1080p BluRay' (wfqo7fyhpdup)
+[tmdb] Found TMDB ID: 1196573 for 'She Rides Shotgun' (movie, 2025)
+[sync]   -> movie tmdb=1196573
+
+[sync] 'She Rides Shotgun 2025 1080p BluRay' (6lemr1s7huav)
+[tmdb] Found TMDB ID: 1196573 for 'She Rides Shotgun' (movie, 2025)
+[sync]   -> movie tmdb=1196573
+
+[sync] 'She Rides Shotgun 2025 1080p BluRay' (ta62k3ooytsy)
+[tmdb] Found TMDB ID: 1196573 for 'She Rides Shotgun' (movie, 2025)
+[sync]   -> movie tmdb=1196573
+
+[sync] 'She Rides Shotgun 2025 1080p BluRay' (9l5y2qtx3iah)
+[tmdb] Found TMDB ID: 1196573 for 'She Rides Shotgun' (movie, 2025)
+[sync]   -> movie tmdb=1196573
+
+[sync] 'The Mongoose 2026 1080p SCREENER WEB-DL' (ogu5d6o1u62h)
+[tmdb] No results found for 'The Mongoose SCREENER' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'Confinement 2026 1080p AMZN WEB-DL' (e7xpsyox1g75)
+[tmdb] Found TMDB ID: 1742458 for 'Confinement' (movie, 2026)
+[sync]   -> movie tmdb=1742458
+
+[sync] 'Splash City 2026 1080p AMZN WEB-DL' (1vaqpyscugq0)
+[tmdb] Found TMDB ID: 1248230 for 'Splash City' (movie, 2026)
+[sync]   -> movie tmdb=1248230
+
+[sync] 'Splash City 2026 1080p AMZN WEB-DL' (alhuo8hhbqr3)
+[tmdb] Found TMDB ID: 1248230 for 'Splash City' (movie, 2026)
+[sync]   -> movie tmdb=1248230
+
+[sync] 'Splash City 2026 1080p AMZN WEB-DL' (f7c6j8lozr1t)
+[tmdb] Found TMDB ID: 1248230 for 'Splash City' (movie, 2026)
+[sync]   -> movie tmdb=1248230
+
+[sync] 'Labyrinth 1986 REMASTERED 1080p BluRay EgyDead CoM' (s6q9ao4o3vwj)
+[tmdb] No results found for 'Labyrinth REMASTERED' (movie, 1986)
+[sync]   -> movie tmdb=None
+
+[sync] 'Splash City 2026 1080p AMZN WEB-DL' (yij4254kwstt)
+[tmdb] Found TMDB ID: 1248230 for 'Splash City' (movie, 2026)
+[sync]   -> movie tmdb=1248230
+
+[sync] 'Cheaper by the Dozen 2022 1080p WEB-DL EgyDead CoM' (auwu0uy3tyn0)
+[tmdb] Found TMDB ID: 691683 for 'Cheaper by the Dozen' (movie, 2022)
+[sync]   -> movie tmdb=691683
+
+[sync] 'Cheaper by the Dozen 2 2005 1080p BluRay EgyDead CoM' (08na90pjdafp)
+[tmdb] Found TMDB ID: 9641 for 'Cheaper by the Dozen 2' (movie, 2005)
+[sync]   -> movie tmdb=9641
+
+[sync] 'The Panic in Needle Park 1971 1080p BluRay EgyDead CoM' (ngsabruq1iml)
+[tmdb] Found TMDB ID: 27554 for 'The Panic in Needle Park' (movie, 1971)
+[sync]   -> movie tmdb=27554
+
+[sync] 'Cheaper by the Dozen 2022 1080p WEB-DL EgyDead CoM' (665i5dayfih4)
+[tmdb] Found TMDB ID: 691683 for 'Cheaper by the Dozen' (movie, 2022)
+[sync]   -> movie tmdb=691683
+
+[sync] 'Cheaper By the Dozen 2003 1080p WEB-DL EgyDead CoM' (ppgg3gbcoli6)
+[tmdb] Found TMDB ID: 11007 for 'Cheaper By the Dozen' (movie, 2003)
+[sync]   -> movie tmdb=11007
+
+[sync] 'Ghostbusters 2016 EXTENDED 1080p BluRay EgyDead CoM' (6l3p0nnybhqk)
+[tmdb] No results found for 'Ghostbusters EXTENDED' (movie, 2016)
+[sync]   -> movie tmdb=None
+
+[sync] '3096 Days 2013 1080p BluRay EgyDead CoM' (1z69h3xkj8z5)
+[tmdb] Found TMDB ID: 166666 for '3096 Days' (movie, 2013)
+[sync]   -> movie tmdb=166666
+
+[sync] 'Hereditary 2018 1080p BluRay EgyDead CoM' (e83shvby0d29)
+[tmdb] Found TMDB ID: 493922 for 'Hereditary' (movie, 2018)
+[sync]   -> movie tmdb=493922
+
+[sync] 'The Truthers 2026 1080p WEB-DL EgyDead CoM' (zkzmwp3okdx1)
+[tmdb] Found TMDB ID: 1659155 for 'The Truthers' (movie, 2026)
+[sync]   -> movie tmdb=1659155
+
+[sync] 'Spider Man Far from Home 2019 1080p BluRay EgyDead CoM' (lx45kfa8kiyt)
+[tmdb] Found TMDB ID: 429617 for 'Spider Man Far from Home' (movie, 2019)
+[sync]   -> movie tmdb=429617
+
+[sync] 'The Amazing Spider Man 2 2014 1080p BluRay EgyDead CoM' (ozv1mq17abmc)
+[tmdb] Found TMDB ID: 102382 for 'The Amazing Spider Man 2' (movie, 2014)
+[sync]   -> movie tmdb=102382
+
+[sync] 'Corrida Dos Bichos 2026 1080p WEB-DL EgyDead CoM' (yn1r8byh2nvu)
+[tmdb] Found TMDB ID: 1263532 for 'Corrida Dos Bichos' (movie, 2026)
+[sync]   -> movie tmdb=1263532
+
+[sync] 'The Expendables 3 2014 EXTENDED 1080p BluRay EgyDead CoM' (1hqq2dijw1t2)
+[tmdb] No results found for 'The Expendables 3 EXTENDED' (movie, 2014)
+[sync]   -> movie tmdb=None
+
+[sync] 'Miracles From Heaven 2016 1080p BluRay EgyDead CoM' (sbgxl32gggpf)
+[tmdb] Found TMDB ID: 339984 for 'Miracles From Heaven' (movie, 2016)
+[sync]   -> movie tmdb=339984
+
+[sync] 'The Isolate Thief 2026 1080p WEB-DL EgyDead CoM' (42jeljo0gn7k)
+[tmdb] Found TMDB ID: 1404304 for 'The Isolate Thief' (movie, 2026)
+[sync]   -> movie tmdb=1404304
+
+[sync] 'The Intern 2015 1080p BluRay EgyDead CoM' (s42693hay4ys)
+[tmdb] Found TMDB ID: 257211 for 'The Intern' (movie, 2015)
+[sync]   -> movie tmdb=257211
+
+[sync] 'Lockout 2012 UNRATED 1080p BluRay EgyDead CoM' (jjgpnmpy8ssn)
+[tmdb] No results found for 'Lockout UNRATED' (movie, 2012)
+[sync]   -> movie tmdb=None
+
+[sync] 'Young Washington 2026 1080p WEB-DL EgyDead CoM' (njk0m906z1bp)
+[tmdb] Found TMDB ID: 1308767 for 'Young Washington' (movie, 2026)
+[sync]   -> movie tmdb=1308767
+
+[sync] 'The Devils Mouth 2026 1080p WEB-DL EgyDead CoM' (d7fjum0cenvw)
+[tmdb] Found TMDB ID: 1481343 for 'The Devils Mouth' (movie, 2026)
+[sync]   -> movie tmdb=1481343
+
+[sync] 'To The Max 2026 1080p WEB-DL EgyDead CoM' (j6ve71t0fgwq)
+[tmdb] Found TMDB ID: 1588838 for 'To The Max' (movie, 2026)
+[sync]   -> movie tmdb=1588838
+
+[sync] 'Evil Dead 2013 EXTENDED 1080p BluRay EgyDead CoM' (pbdaqonjr2tj)
+[tmdb] No results found for 'Evil Dead EXTENDED' (movie, 2013)
+[sync]   -> movie tmdb=None
+
+[sync] 'Splash City 2026 1080p AMZN WEB-DL' (cn22zjjm35nj)
+[tmdb] Found TMDB ID: 1248230 for 'Splash City' (movie, 2026)
+[sync]   -> movie tmdb=1248230
+
+[sync] 'Splash City 2026 1080p AMZN WEB-DL' (qshl3xba29z6)
+[tmdb] Found TMDB ID: 1248230 for 'Splash City' (movie, 2026)
+[sync]   -> movie tmdb=1248230
+
+[sync] 'Splash City 2026 1080p AMZN WEB-DL' (aj6zd2kglmn2)
+[tmdb] Found TMDB ID: 1248230 for 'Splash City' (movie, 2026)
+[sync]   -> movie tmdb=1248230
+
+[sync] 'Splash City 2026 1080p AMZN WEB-DL' (cefxlbsyvrib)
+[tmdb] Found TMDB ID: 1248230 for 'Splash City' (movie, 2026)
+[sync]   -> movie tmdb=1248230
+
+[sync] 'I Want Your Sex 2026 1080p AMZN WEB-DL' (w4kmn5tljvyk)
+[tmdb] Found TMDB ID: 1288059 for 'I Want Your Sex' (movie, 2026)
+[sync]   -> movie tmdb=1288059
+
+[sync] 'the secret woman 2026 1080p web' (y1q0evke503r)
+[tmdb] Found TMDB ID: 1631807 for 'the secret woman' (movie, 2026)
+[sync]   -> movie tmdb=1631807
+
+[sync] 'the secret woman 2026 1080p web' (eso62geu7jax)
+[tmdb] Found TMDB ID: 1631807 for 'the secret woman' (movie, 2026)
+[sync]   -> movie tmdb=1631807
+
+[sync] 'the secret woman 2026 1080p web' (dv6eqywhz8k5)
+[tmdb] Found TMDB ID: 1631807 for 'the secret woman' (movie, 2026)
+[sync]   -> movie tmdb=1631807
+
+[sync] 'the secret woman 2026 1080p web' (mg9rigjl83om)
+[tmdb] Found TMDB ID: 1631807 for 'the secret woman' (movie, 2026)
+[sync]   -> movie tmdb=1631807
+
+[sync] 'Turning Point Generation 9 11 2026 1080p NF WEB-DL' (1dr6fatjw2ju)
+[tmdb] Found TMDB ID: 1752159 for 'Turning Point Generation 9 11' (movie, 2026)
+[sync]   -> movie tmdb=1752159
+
+[sync] 'The Crying Game 1992 REMASTERED 1080p BluRay EgyDead CoM' (rjg2cy8bd8rg)
+[tmdb] No results found for 'The Crying Game REMASTERED' (movie, 1992)
+[sync]   -> movie tmdb=None
+
+[sync] 'Labyrinth 1986 REMASTERED 1080p BluRay EgyDead CoM' (vue4t1fd3kf6)
+[tmdb] No results found for 'Labyrinth REMASTERED' (movie, 1986)
+[sync]   -> movie tmdb=None
+
+[sync] 'The Amazing Spider Man 2012 1080p BluRay EgyDead CoM' (ty5sjzcv4clw)
+[tmdb] Found TMDB ID: 1930 for 'The Amazing Spider Man' (movie, 2012)
+[sync]   -> movie tmdb=1930
+
+[sync] 'Lucky Strike 2026 1080p WEB-DL EgyDead CoM' (75raocne4vwc)
+[tmdb] Found TMDB ID: 1594914 for 'Lucky Strike' (movie, 2026)
+[sync]   -> movie tmdb=1594914
+
+[sync] 'Corrida Dos Bichos 2026 1080p WEB-DL EgyDead CoM' (0dzygr4eubjh)
+[tmdb] Found TMDB ID: 1263532 for 'Corrida Dos Bichos' (movie, 2026)
+[sync]   -> movie tmdb=1263532
+
+[sync] 'Disclosure Day 2026 1080p WEB-DL EgyDead CoM' (p8k7v8l3iqai)
+[tmdb] Found TMDB ID: 1275779 for 'Disclosure Day' (movie, 2026)
+[sync]   -> movie tmdb=1275779
+
+[sync] 'The Intern 2015 1080p BluRay EgyDead CoM' (qmt6vnyp1cqi)
+[tmdb] Found TMDB ID: 257211 for 'The Intern' (movie, 2015)
+[sync]   -> movie tmdb=257211
+
+[sync] 'The Invite 2026 1080p WEB-DL EgyDead CoM' (2xu6tvfuz4cb)
+[tmdb] Found TMDB ID: 950028 for 'The Invite' (movie, 2026)
+[sync]   -> movie tmdb=950028
+
+[sync] 'Young Washington 2026 1080p WEB-DL EgyDead CoM' (ou270od76g4e)
+[tmdb] Found TMDB ID: 1308767 for 'Young Washington' (movie, 2026)
+[sync]   -> movie tmdb=1308767
+
+[sync] 'Splash City 2026 1080p AMZN WEB-DL' (k5cs3ay79weq)
+[tmdb] Found TMDB ID: 1248230 for 'Splash City' (movie, 2026)
+[sync]   -> movie tmdb=1248230
+
+[sync] 'Splash City 2026 1080p AMZN WEB-DL' (19tgb850kxer)
+[tmdb] Found TMDB ID: 1248230 for 'Splash City' (movie, 2026)
+[sync]   -> movie tmdb=1248230
+
+[sync] 'Splash City 2026 1080p AMZN WEB-DL' (hgq7wktbwotf)
+[tmdb] Found TMDB ID: 1248230 for 'Splash City' (movie, 2026)
+[sync]   -> movie tmdb=1248230
+
+[sync] 'Splash City 2026 1080p AMZN WEB-DL' (zn0oyqo4bush)
+[tmdb] Found TMDB ID: 1248230 for 'Splash City' (movie, 2026)
+[sync]   -> movie tmdb=1248230
+
+[sync] 'The Panic in Needle Park 1971 1080p BluRay EgyDead CoM' (avz0geetmmqg)
+[tmdb] Found TMDB ID: 27554 for 'The Panic in Needle Park' (movie, 1971)
+[sync]   -> movie tmdb=27554
+
+[sync] 'Green Book 2018 1080p BluRay EgyDead CoM' (tb11glhegs6g)
+[tmdb] Found TMDB ID: 490132 for 'Green Book' (movie, 2018)
+[sync]   -> movie tmdb=490132
+
+[sync] 'Spider Island 2026 1080p WEB-DL' (mwgs99sr0j0w)
+[tmdb] Found TMDB ID: 1462861 for 'Spider Island' (movie, 2026)
+[sync]   -> movie tmdb=1462861
+
+[sync] 'The Whisper Man 2026 1080p NF WEB-DL' (01rmx1tnbgao)
+[tmdb] Found TMDB ID: 860508 for 'The Whisper Man' (movie, 2026)
+[sync]   -> movie tmdb=860508
+
+[sync] 'The Whisper Man 2026 1080p NF WEB-DL' (7mrnv8toy8bs)
+[tmdb] Found TMDB ID: 860508 for 'The Whisper Man' (movie, 2026)
+[sync]   -> movie tmdb=860508
+
+[sync] 'The Whisper Man 2026 1080p NF WEB-DL' (bv925t5xlb0g)
+[tmdb] Found TMDB ID: 860508 for 'The Whisper Man' (movie, 2026)
+[sync]   -> movie tmdb=860508
+
+[sync] 'The Whisper Man 2026 1080p NF WEB-DL' (63p0fh19ihni)
+[tmdb] Found TMDB ID: 860508 for 'The Whisper Man' (movie, 2026)
+[sync]   -> movie tmdb=860508
+
+[sync] 'She Rides Shotgun 2025 1080p BluRay' (x4lvuoys3wkv)
+[tmdb] Found TMDB ID: 1196573 for 'She Rides Shotgun' (movie, 2025)
+[sync]   -> movie tmdb=1196573
+
+[sync] 'She Rides Shotgun 2025 1080p BluRay' (sxox47z1d5uo)
+[tmdb] Found TMDB ID: 1196573 for 'She Rides Shotgun' (movie, 2025)
+[sync]   -> movie tmdb=1196573
+
+[sync] 'She Rides Shotgun 2025 1080p BluRay' (vlrd0voosmr4)
+[tmdb] Found TMDB ID: 1196573 for 'She Rides Shotgun' (movie, 2025)
+[sync]   -> movie tmdb=1196573
+
+[sync] 'She Rides Shotgun 2025 1080p BluRay' (0tqcxw97lh53)
+[tmdb] Found TMDB ID: 1196573 for 'She Rides Shotgun' (movie, 2025)
+[sync]   -> movie tmdb=1196573
+
+[sync] 'Splash City 2026 1080p AMZN WEB-DL' (rrlxllxasw4a)
+[tmdb] Found TMDB ID: 1248230 for 'Splash City' (movie, 2026)
+[sync]   -> movie tmdb=1248230
+
+[sync] 'Splash City 2026 1080p AMZN WEB-DL' (72fu5x1ij2pv)
+[tmdb] Found TMDB ID: 1248230 for 'Splash City' (movie, 2026)
+[sync]   -> movie tmdb=1248230
+
+[sync] 'Splash City 2026 1080p AMZN WEB-DL' (h9a3qlahp6iu)
+[tmdb] Found TMDB ID: 1248230 for 'Splash City' (movie, 2026)
+[sync]   -> movie tmdb=1248230
+
+[sync] 'Splash City 2026 1080p AMZN WEB-DL' (sk9gsfjdawa2)
+[tmdb] Found TMDB ID: 1248230 for 'Splash City' (movie, 2026)
+[sync]   -> movie tmdb=1248230
+
+[sync] 'Turning Point Generation 9 11 2026 1080p NF WEB-DL' (qluplbvcd4o0)
+[tmdb] Found TMDB ID: 1752159 for 'Turning Point Generation 9 11' (movie, 2026)
+[sync]   -> movie tmdb=1752159
+
+[sync] 'She Rides Shotgun 2025 1080p BluRay' (0gyuaxedy0s4)
+[tmdb] Found TMDB ID: 1196573 for 'She Rides Shotgun' (movie, 2025)
+[sync]   -> movie tmdb=1196573
+
+[sync] 'She Rides Shotgun 2025 1080p BluRay' (ytj3btoydlt3)
+[tmdb] Found TMDB ID: 1196573 for 'She Rides Shotgun' (movie, 2025)
+[sync]   -> movie tmdb=1196573
+
+[sync] 'She Rides Shotgun 2025 1080p BluRay' (gtkji0j4fl0x)
+[tmdb] Found TMDB ID: 1196573 for 'She Rides Shotgun' (movie, 2025)
+[sync]   -> movie tmdb=1196573
+
+[sync] 'She Rides Shotgun 2025 1080p BluRay' (ljx9jpsshmh5)
+[tmdb] Found TMDB ID: 1196573 for 'She Rides Shotgun' (movie, 2025)
+[sync]   -> movie tmdb=1196573
+
+[sync] 'The Mongoose 2026 1080p SCREENER WEB-DL' (2v05tdsybhgs)
+[tmdb] No results found for 'The Mongoose SCREENER' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'Summers Last Resort 2026 720p WEB-DL EgyDead CoM' (leqkyche14zg)
+[tmdb] Found TMDB ID: 1617191 for 'Summers Last Resort' (movie, 2026)
+[sync]   -> movie tmdb=1617191
+
+[sync] 'Splash City 2026 1080p AMZN WEB-DL' (9c4enw20vnw7)
+[tmdb] Found TMDB ID: 1248230 for 'Splash City' (movie, 2026)
+[sync]   -> movie tmdb=1248230
+
+[sync] 'Splash City 2026 1080p AMZN WEB-DL' (3um8alncba9g)
+[tmdb] Found TMDB ID: 1248230 for 'Splash City' (movie, 2026)
+[sync]   -> movie tmdb=1248230
+
+[sync] 'Splash City 2026 1080p AMZN WEB-DL' (krkbmurocrdc)
+[tmdb] Found TMDB ID: 1248230 for 'Splash City' (movie, 2026)
+[sync]   -> movie tmdb=1248230
+
+[sync] 'Splash City 2026 1080p AMZN WEB-DL' (f9nybk36ubrj)
+[tmdb] Found TMDB ID: 1248230 for 'Splash City' (movie, 2026)
+[sync]   -> movie tmdb=1248230
+
+[sync] 'Mayday 2026 1080p ATVP WEB-DL' (opl7f6cz24xz)
+[tmdb] Found TMDB ID: 1137844 for 'Mayday' (movie, 2026)
+[sync]   -> movie tmdb=1137844
+
+[sync] 'Mayday 2026 1080p ATVP WEB-DL' (xicb15daq6zt)
+[tmdb] Found TMDB ID: 1137844 for 'Mayday' (movie, 2026)
+[sync]   -> movie tmdb=1137844
+
+[sync] 'Mayday 2026 1080p ATVP WEB-DL' (x8zycb70t55r)
+[tmdb] Found TMDB ID: 1137844 for 'Mayday' (movie, 2026)
+[sync]   -> movie tmdb=1137844
+
+[sync] 'Mayday 2026 1080p ATVP WEB-DL' (zeqi97hhyqtt)
+[tmdb] Found TMDB ID: 1137844 for 'Mayday' (movie, 2026)
+[sync]   -> movie tmdb=1137844
+
+[sync] 'Wrath of Man 2021 1080p BluRay EgyDead CoM' (6wlu5o8128bn)
+[tmdb] Found TMDB ID: 637649 for 'Wrath of Man' (movie, 2021)
+[sync]   -> movie tmdb=637649
+
+[sync] 'Ghostbusters 2016 EXTENDED 1080p BluRay EgyDead CoM' (2u2ko030lny8)
+[tmdb] No results found for 'Ghostbusters EXTENDED' (movie, 2016)
+[sync]   -> movie tmdb=None
+
+[sync] 'Ghostbusters 2 1989 REMASTERED 1080p BluRay EgyDead CoM' (chkyoqg37tfs)
+[tmdb] No results found for 'Ghostbusters 2 REMASTERED' (movie, 1989)
+[sync]   -> movie tmdb=None
+
+[sync] 'Splash City 2026 1080p AMZN WEB-DL' (p0la5mohr6k5)
+[tmdb] Found TMDB ID: 1248230 for 'Splash City' (movie, 2026)
+[sync]   -> movie tmdb=1248230
+
+[sync] 'Splash City 2026 1080p AMZN WEB-DL' (508gnhux0eu4)
+[tmdb] Found TMDB ID: 1248230 for 'Splash City' (movie, 2026)
+[sync]   -> movie tmdb=1248230
+
+[sync] 'Splash City 2026 1080p AMZN WEB-DL' (icd0rs5hxgh9)
+[tmdb] Found TMDB ID: 1248230 for 'Splash City' (movie, 2026)
+[sync]   -> movie tmdb=1248230
+
+[sync] 'Splash City 2026 1080p AMZN WEB-DL' (qdqde5ltb0at)
+[tmdb] Found TMDB ID: 1248230 for 'Splash City' (movie, 2026)
+[sync]   -> movie tmdb=1248230
+
+[sync] 'Rose Of Nevada 2025 1080p BluRay' (udv99ng6naxy)
+[tmdb] Found TMDB ID: 1399525 for 'Rose Of Nevada' (movie, 2025)
+[sync]   -> movie tmdb=1399525
+
+[sync] 'Rose Of Nevada 2025 1080p BluRay' (amb5d0eoocl5)
+[tmdb] Found TMDB ID: 1399525 for 'Rose Of Nevada' (movie, 2025)
+[sync]   -> movie tmdb=1399525
+
+[sync] 'Rose Of Nevada 2025 1080p BluRay' (1h2gdhp24yj1)
+[tmdb] Found TMDB ID: 1399525 for 'Rose Of Nevada' (movie, 2025)
+[sync]   -> movie tmdb=1399525
+
+[sync] 'Rose Of Nevada 2025 1080p BluRay' (f7wh25zsnsea)
+[tmdb] Found TMDB ID: 1399525 for 'Rose Of Nevada' (movie, 2025)
+[sync]   -> movie tmdb=1399525
+
+[sync] 'Mayday 2026 1080p ATVP WEB-DL' (zvl9o6tgqf0w)
+[tmdb] Found TMDB ID: 1137844 for 'Mayday' (movie, 2026)
+[sync]   -> movie tmdb=1137844
+
+[sync] 'Mayday 2026 1080p ATVP WEB-DL' (q5a71tuzoc3r)
+[tmdb] Found TMDB ID: 1137844 for 'Mayday' (movie, 2026)
+[sync]   -> movie tmdb=1137844
+
+[sync] 'Mayday 2026 1080p ATVP WEB-DL' (kkcvu7uazco9)
+[tmdb] Found TMDB ID: 1137844 for 'Mayday' (movie, 2026)
+[sync]   -> movie tmdb=1137844
+
+[sync] 'Mayday 2026 1080p ATVP WEB-DL' (t233v3o3lult)
+[tmdb] Found TMDB ID: 1137844 for 'Mayday' (movie, 2026)
+[sync]   -> movie tmdb=1137844
+
+[sync] 'Hereditary 2018 1080p BluRay EgyDead CoM' (o8j2mfe7xuk6)
+[tmdb] Found TMDB ID: 493922 for 'Hereditary' (movie, 2018)
+[sync]   -> movie tmdb=493922
+
+[sync] 'The Outer Threat 2026 1080p WEB DL EgyDead CoM' (9ffqa7x7mv2p)
+[tmdb] No results found for 'The Outer Threat DL' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'The Outer Threat 2026 1080p WEB DL EgyDead CoM' (2xlviob0ceig)
+[tmdb] No results found for 'The Outer Threat DL' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'The Outer Threat 2026 1080p WEB DL EgyDead CoM' (2kgg32ijz28m)
+[tmdb] No results found for 'The Outer Threat DL' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'Lucky Strike 2026 1080p WEB-DL EgyDead CoM' (9ukot0gut5tz)
+[tmdb] Found TMDB ID: 1594914 for 'Lucky Strike' (movie, 2026)
+[sync]   -> movie tmdb=1594914
+
+[sync] 'Corrida Dos Bichos 2026 1080p WEB-DL EgyDead CoM' (7l72sn03322l)
+[tmdb] Found TMDB ID: 1263532 for 'Corrida Dos Bichos' (movie, 2026)
+[sync]   -> movie tmdb=1263532
+
+[sync] 'Lockbox 2026 1080p WEB-DL EgyDead CoM' (ixendjonueu6)
+[tmdb] Found TMDB ID: 1500890 for 'Lockbox' (movie, 2026)
+[sync]   -> movie tmdb=1500890
+
+[sync] 'The 40 Year Old Virgin 2005 EXTENDED 1080p BluRay EgyDead CoM' (ihgzcbhlz5ym)
+[tmdb] Found TMDB ID: 6957 for 'The 40 Year Old Virgin EXTENDED' (movie, 2005)
+[sync]   -> movie tmdb=6957
+
+[sync] 'The Longest Yard 2005 1080p BluRay EgyDead CoM' (xaoco33tvcy5)
+[tmdb] Found TMDB ID: 9291 for 'The Longest Yard' (movie, 2005)
+[sync]   -> movie tmdb=9291
+
+[sync] 'To The Max 2026 1080p WEB-DL EgyDead CoM' (q4sxrtlq27gw)
+[tmdb] Found TMDB ID: 1588838 for 'To The Max' (movie, 2026)
+[sync]   -> movie tmdb=1588838
+
+[sync] 'Dont Say Good Luck 2026 1080p WEB-DL EgyDead CoM' (gedt052v7hjl)
+[tmdb] Found TMDB ID: 1504358 for 'Dont Say Good Luck' (movie, 2026)
+[sync]   -> movie tmdb=1504358
+
+[sync] 'Superhero Movie 2008 EXTENDED 1080p BluRay EgyDead CoM' (ugub4tptdzhb)
+[tmdb] No results found for 'Superhero Movie EXTENDED' (movie, 2008)
+[sync]   -> movie tmdb=None
+
+[sync] 'He ll Never Find Me 2026 1080p WEB EgyDead CoM' (thq2no5i55hi)
+[tmdb] Found TMDB ID: 1735229 for 'He ll Never Find Me' (movie, 2026)
+[sync]   -> movie tmdb=1735229
+
+[sync] 'Green Book 2018 1080p BluRay EgyDead CoM' (s1l96lfq7z6x)
+[tmdb] Found TMDB ID: 490132 for 'Green Book' (movie, 2018)
+[sync]   -> movie tmdb=490132
+
+[sync] 'Labyrinth 1986 REMASTERED 1080p BluRay EgyDead CoM' (wdfu8p55nrkk)
+[tmdb] No results found for 'Labyrinth REMASTERED' (movie, 1986)
+[sync]   -> movie tmdb=None
+
+[sync] 'Crybaby Bridge 2026 1080p WEB-DL EgyDead CoM' (ky2srtq1udan)
+[tmdb] Found TMDB ID: 1431247 for 'Crybaby Bridge' (movie, 2026)
+[sync]   -> movie tmdb=1431247
+
+[sync] 'Disclosure Day 2026 1080p WEB-DL EgyDead CoM' (pu3agzsdgosy)
+[tmdb] Found TMDB ID: 1275779 for 'Disclosure Day' (movie, 2026)
+[sync]   -> movie tmdb=1275779
+
+[sync] 'the secret woman 2026 1080p web' (sec6ibbtixuj)
+[tmdb] Found TMDB ID: 1631807 for 'the secret woman' (movie, 2026)
+[sync]   -> movie tmdb=1631807
+
+[sync] 'the secret woman 2026 1080p web' (1t5h5em1ymb1)
+[tmdb] Found TMDB ID: 1631807 for 'the secret woman' (movie, 2026)
+[sync]   -> movie tmdb=1631807
+
+[sync] 'the secret woman 2026 1080p web' (kon1gxgf61g8)
+[tmdb] Found TMDB ID: 1631807 for 'the secret woman' (movie, 2026)
+[sync]   -> movie tmdb=1631807
+
+[sync] 'the secret woman 2026 1080p web' (ivgmrzz17dur)
+[tmdb] Found TMDB ID: 1631807 for 'the secret woman' (movie, 2026)
+[sync]   -> movie tmdb=1631807
+
+[sync] 'The Whisper Man 2026 1080p NF WEB-DL' (kd737m1bz6a1)
+[tmdb] Found TMDB ID: 860508 for 'The Whisper Man' (movie, 2026)
+[sync]   -> movie tmdb=860508
+
+[sync] 'The Whisper Man 2026 1080p NF WEB-DL' (hvrat0m93qei)
+[tmdb] Found TMDB ID: 860508 for 'The Whisper Man' (movie, 2026)
+[sync]   -> movie tmdb=860508
+
+[sync] 'The Panic in Needle Park 1971 1080p BluRay EgyDead CoM' (6o8vkjx4yz39)
+[tmdb] Found TMDB ID: 27554 for 'The Panic in Needle Park' (movie, 1971)
+[sync]   -> movie tmdb=27554
+
+[sync] 'The Whisper Man 2026 1080p NF WEB-DL' (qz5evt8uhcwm)
+[tmdb] Found TMDB ID: 860508 for 'The Whisper Man' (movie, 2026)
+[sync]   -> movie tmdb=860508
+
+[sync] 'The Whisper Man 2026 1080p NF WEB-DL' (vv5khpyq01tk)
+[tmdb] Found TMDB ID: 860508 for 'The Whisper Man' (movie, 2026)
+[sync]   -> movie tmdb=860508
+
+[sync] 'the secret woman 2026 1080p web' (elqvj2e8t9dm)
+[tmdb] Found TMDB ID: 1631807 for 'the secret woman' (movie, 2026)
+[sync]   -> movie tmdb=1631807
+
+[sync] 'the secret woman 2026 1080p web' (t88928l36bqf)
+[tmdb] Found TMDB ID: 1631807 for 'the secret woman' (movie, 2026)
+[sync]   -> movie tmdb=1631807
+
+[sync] 'the secret woman 2026 1080p web' (ddmiijo28949)
+[tmdb] Found TMDB ID: 1631807 for 'the secret woman' (movie, 2026)
+[sync]   -> movie tmdb=1631807
+
+[sync] 'the secret woman 2026 1080p web' (9ks5caevrs88)
+[tmdb] Found TMDB ID: 1631807 for 'the secret woman' (movie, 2026)
+[sync]   -> movie tmdb=1631807
+
+[sync] 'The Runner 2026 1080p AMZN WEB-DL' (sggp3qt5dr2h)
+[tmdb] Found TMDB ID: 1386315 for 'The Runner' (movie, 2026)
+[sync]   -> movie tmdb=1386315
+
+[sync] 'Cheaper By the Dozen 2003 1080p WEB-DL EgyDead CoM' (zu0vhimrnaf6)
+[tmdb] Found TMDB ID: 11007 for 'Cheaper By the Dozen' (movie, 2003)
+[sync]   -> movie tmdb=11007
+
+[sync] 'Cheaper by the Dozen 1950 1080p WEB-DL EgyDead CoM' (2lvmak5k0u9m)
+[tmdb] Found TMDB ID: 33839 for 'Cheaper by the Dozen' (movie, 1950)
+[sync]   -> movie tmdb=33839
+
+[sync] 'Miracles From Heaven 2016 1080p BluRay EgyDead CoM' (qhuwcfo9ob0v)
+[tmdb] Found TMDB ID: 339984 for 'Miracles From Heaven' (movie, 2016)
+[sync]   -> movie tmdb=339984
+
+[sync] 'Wrath of Man 2021 1080p BluRay EgyDead CoM' (fdeo6wzd11ht)
+[tmdb] Found TMDB ID: 637649 for 'Wrath of Man' (movie, 2021)
+[sync]   -> movie tmdb=637649
+
+[sync] 'Evil Dead 2013 EXTENDED 1080p BluRay EgyDead CoM' (ll8ki7s6isk5)
+[tmdb] No results found for 'Evil Dead EXTENDED' (movie, 2013)
+[sync]   -> movie tmdb=None
+
+[sync] 'Descendants Wicked Wonderland 2026 1080p WEB-DL EgyDead CoM' (gzmo2c8pnhu8)
+[tmdb] Found TMDB ID: 1318621 for 'Descendants Wicked Wonderland' (movie, 2026)
+[sync]   -> movie tmdb=1318621
+
+[sync] 'Desire 2026 1080p WEB-DL EgyDead CoM' (7p6etlvdp6u6)
+[tmdb] Found TMDB ID: 1668364 for 'Desire' (movie, 2026)
+[sync]   -> movie tmdb=1668364
+
+[sync] 'The Outer Threat 2026 1080p WEB DL EgyDead CoM' (0wiqxdzq5aei)
+[tmdb] No results found for 'The Outer Threat DL' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'The Outer Threat 2026 1080p WEB DL EgyDead CoM' (jyszhpnlsjus)
+[tmdb] No results found for 'The Outer Threat DL' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'The Outer Threat 2026 1080p WEB DL EgyDead CoM' (8u6hlo3ujwgk)
+[tmdb] No results found for 'The Outer Threat DL' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'Spider Man No Way Home 2021 EXTENDED 1080p WEB-DL EgyDead CoM' (8whjixuc7pi9)
+[tmdb] No results found for 'Spider Man No Way Home EXTENDED' (movie, 2021)
+[sync]   -> movie tmdb=None
+
+[sync] 'The Amazing Spider Man 2 2014 1080p BluRay EgyDead CoM' (q9i52r6cc0g2)
+[tmdb] Found TMDB ID: 102382 for 'The Amazing Spider Man 2' (movie, 2014)
+[sync]   -> movie tmdb=102382
+
+[sync] 'Corrida Dos Bichos 2026 1080p WEB-DL EgyDead CoM' (gsnpl0hdhsec)
+[tmdb] Found TMDB ID: 1263532 for 'Corrida Dos Bichos' (movie, 2026)
+[sync]   -> movie tmdb=1263532
+
+[sync] 'The Isolate Thief 2026 1080p WEB-DL EgyDead CoM' (m9xt3p5014hg)
+[tmdb] Found TMDB ID: 1404304 for 'The Isolate Thief' (movie, 2026)
+[sync]   -> movie tmdb=1404304
+
+[sync] 'The 40 Year Old Virgin 2005 EXTENDED 1080p BluRay EgyDead CoM' (6zcs6bu5py5s)
+[tmdb] Found TMDB ID: 6957 for 'The 40 Year Old Virgin EXTENDED' (movie, 2005)
+[sync]   -> movie tmdb=6957
+
+[sync] 'The Vanishing 1988 REMASTERED 1080p BluRay EgyDead CoM' (79tte7cftyvx)
+[tmdb] No results found for 'The Vanishing REMASTERED' (movie, 1988)
+[sync]   -> movie tmdb=None
+
+[sync] 'The Crying Game 1992 REMASTERED 1080p BluRay EgyDead CoM' (fcujzwopxyjh)
+[tmdb] No results found for 'The Crying Game REMASTERED' (movie, 1992)
+[sync]   -> movie tmdb=None
+
+[sync] 'Nando Between Two Worlds A Sintonia Film 2026 1080p WEB-DL EgyDead CoM' (lzmf47l9qsj0)
+[tmdb] Found TMDB ID: 1487864 for 'Nando Between Two Worlds A Sintonia Film' (movie, 2026)
+[sync]   -> movie tmdb=1487864
+
+[sync] 'My Best Friend His Girlfriend And Me 2026 1080p WEB-DL EgyDead CoM' (rswj5l9cb7u4)
+[tmdb] Found TMDB ID: 1589248 for 'My Best Friend His Girlfriend And Me' (movie, 2026)
+[sync]   -> movie tmdb=1589248
+
+[sync] 'Dont Say Good Luck 2026 1080p WEB-DL EgyDead CoM' (nf5ee14cycwi)
+[tmdb] Found TMDB ID: 1504358 for 'Dont Say Good Luck' (movie, 2026)
+[sync]   -> movie tmdb=1504358
+
+[sync] 'Ace Ventura Jr Pet Detective 2009 1080p WEB-DL EgyDead CoM' (kva5sinvzz4m)
+[tmdb] Found TMDB ID: 15338 for 'Ace Ventura Jr Pet Detective' (movie, 2009)
+[sync]   -> movie tmdb=15338
+
+[sync] 'The Whisper Man 2026 1080p NF WEB-DL' (3sgja0zp4xxy)
+[tmdb] Found TMDB ID: 860508 for 'The Whisper Man' (movie, 2026)
+[sync]   -> movie tmdb=860508
+
+[sync] 'The Whisper Man 2026 1080p NF WEB-DL' (cemmj4okghsx)
+[tmdb] Found TMDB ID: 860508 for 'The Whisper Man' (movie, 2026)
+[sync]   -> movie tmdb=860508
+
+[sync] 'The Whisper Man 2026 1080p NF WEB-DL' (ufrpjammdcls)
+[tmdb] Found TMDB ID: 860508 for 'The Whisper Man' (movie, 2026)
+[sync]   -> movie tmdb=860508
+
+[sync] 'The Whisper Man 2026 1080p NF WEB-DL' (q6dqrwyonje7)
+[tmdb] Found TMDB ID: 860508 for 'The Whisper Man' (movie, 2026)
+[sync]   -> movie tmdb=860508
+
+[sync] 'Crybaby Bridge 2026 1080p WEB-DL EgyDead CoM' (rc6cxhllv48q)
+[tmdb] Found TMDB ID: 1431247 for 'Crybaby Bridge' (movie, 2026)
+[sync]   -> movie tmdb=1431247
+
+[sync] 'Disclosure Day 2026 1080p WEB-DL EgyDead CoM' (jqjlw196cus3)
+[tmdb] Found TMDB ID: 1275779 for 'Disclosure Day' (movie, 2026)
+[sync]   -> movie tmdb=1275779
+
+[sync] 'The Panic in Needle Park 1971 1080p BluRay EgyDead CoM' (b8kvg8c6xm3c)
+[tmdb] Found TMDB ID: 27554 for 'The Panic in Needle Park' (movie, 1971)
+[sync]   -> movie tmdb=27554
+
+[sync] 'Bombshell 2019 1080p BluRay EgyDead CoM' (71bimbu9uire)
+[tmdb] Found TMDB ID: 525661 for 'Bombshell' (movie, 2019)
+[sync]   -> movie tmdb=525661
+
+[sync] 'Cheaper by the Dozen 2022 1080p WEB-DL EgyDead CoM' (zbtznlm9fz1q)
+[tmdb] Found TMDB ID: 691683 for 'Cheaper by the Dozen' (movie, 2022)
+[sync]   -> movie tmdb=691683
+
+[sync] 'Cheaper by the Dozen 1950 1080p WEB-DL EgyDead CoM' (7d8mlstchiep)
+[tmdb] Found TMDB ID: 33839 for 'Cheaper by the Dozen' (movie, 1950)
+[sync]   -> movie tmdb=33839
+
+[sync] 'The Truthers 2026 1080p WEB-DL EgyDead CoM' (gjqj4it4fjfq)
+[tmdb] Found TMDB ID: 1659155 for 'The Truthers' (movie, 2026)
+[sync]   -> movie tmdb=1659155
+
+[sync] 'Summers Last Resort 2026 720p WEB-DL EgyDead CoM' (yvdy9ml2veow)
+[tmdb] Found TMDB ID: 1617191 for 'Summers Last Resort' (movie, 2026)
+[sync]   -> movie tmdb=1617191
+
+[sync] 'Wrath of Man 2021 1080p BluRay EgyDead CoM' (cdpr6evbpntr)
+[tmdb] Found TMDB ID: 637649 for 'Wrath of Man' (movie, 2021)
+[sync]   -> movie tmdb=637649
+
+[sync] 'Ghostbusters 2 1989 REMASTERED 1080p BluRay EgyDead CoM' (i50mfryx5w3a)
+[tmdb] No results found for 'Ghostbusters 2 REMASTERED' (movie, 1989)
+[sync]   -> movie tmdb=None
+
+[sync] 'The Devils Mouth 2026 1080p WEB-DL EgyDead CoM' (0ipptevfchm4)
+[tmdb] Found TMDB ID: 1481343 for 'The Devils Mouth' (movie, 2026)
+[sync]   -> movie tmdb=1481343
+
+[sync] 'Evil Dead 2013 EXTENDED 1080p BluRay EgyDead CoM' (kaxkeajhgjie)
+[tmdb] No results found for 'Evil Dead EXTENDED' (movie, 2013)
+[sync]   -> movie tmdb=None
+
+[sync] 'The Chronicles of Riddick 2004 DC 1080p BluRay EgyDead CoM' (238i139nsh6s)
+[tmdb] No results found for 'The Chronicles of Riddick DC' (movie, 2004)
+[sync]   -> movie tmdb=None
+
+[sync] 'Spider Man Far from Home 2019 1080p BluRay EgyDead CoM' (avf1hg0iofme)
+[tmdb] Found TMDB ID: 429617 for 'Spider Man Far from Home' (movie, 2019)
+[sync]   -> movie tmdb=429617
+
+[sync] 'The Amazing Spider Man 2 2014 1080p BluRay EgyDead CoM' (ye9megenzr4q)
+[tmdb] Found TMDB ID: 102382 for 'The Amazing Spider Man 2' (movie, 2014)
+[sync]   -> movie tmdb=102382
+
+[sync] 'The Amazing Spider Man 2012 1080p BluRay EgyDead CoM' (xsqqqu1ob549)
+[tmdb] Found TMDB ID: 1930 for 'The Amazing Spider Man' (movie, 2012)
+[sync]   -> movie tmdb=1930
+
+[sync] 'The Sheriffs of Savage Wells 2026 1080p WEB-DL EgyDead CoM' (9gbfuzjl4buf)
+[tmdb] Found TMDB ID: 1614075 for 'The Sheriffs of Savage Wells' (movie, 2026)
+[sync]   -> movie tmdb=1614075
+
+[sync] 'Corrida Dos Bichos 2026 1080p WEB-DL EgyDead CoM' (1s8h9rg755ws)
+[tmdb] Found TMDB ID: 1263532 for 'Corrida Dos Bichos' (movie, 2026)
+[sync]   -> movie tmdb=1263532
+
+[sync] 'Anyone But You 2023 1080p BluRay EgyDead CoM' (wmw52dozyggo)
+[tmdb] Found TMDB ID: 1072790 for 'Anyone But You' (movie, 2023)
+[sync]   -> movie tmdb=1072790
+
+[sync] 'The Expendables 3 2014 EXTENDED 1080p BluRay EgyDead CoM' (9wx6kj803q9h)
+[tmdb] No results found for 'The Expendables 3 EXTENDED' (movie, 2014)
+[sync]   -> movie tmdb=None
+
+[sync] 'The Isolate Thief 2026 1080p WEB-DL EgyDead CoM' (2elisv9ajhp8)
+[tmdb] Found TMDB ID: 1404304 for 'The Isolate Thief' (movie, 2026)
+[sync]   -> movie tmdb=1404304
+
+[sync] 'The 40 Year Old Virgin 2005 EXTENDED 1080p BluRay EgyDead CoM' (0ugwbe5d3n6c)
+[tmdb] Found TMDB ID: 6957 for 'The 40 Year Old Virgin EXTENDED' (movie, 2005)
+[sync]   -> movie tmdb=6957
+
+[sync] 'The Longest Yard 2005 1080p BluRay EgyDead CoM' (eg61yzudc5oc)
+[tmdb] Found TMDB ID: 9291 for 'The Longest Yard' (movie, 2005)
+[sync]   -> movie tmdb=9291
+
+[sync] 'Young Washington 2026 1080p WEB-DL EgyDead CoM' (pqcm9t95nxvf)
+[tmdb] Found TMDB ID: 1308767 for 'Young Washington' (movie, 2026)
+[sync]   -> movie tmdb=1308767
+
+[sync] 'To The Max 2026 1080p WEB-DL EgyDead CoM' (tz7b7zkdnrzn)
+[tmdb] Found TMDB ID: 1588838 for 'To The Max' (movie, 2026)
+[sync]   -> movie tmdb=1588838
+
+[sync] 'My Best Friend His Girlfriend And Me 2026 1080p WEB-DL EgyDead CoM' (6fo9cl4066qp)
+[tmdb] Found TMDB ID: 1589248 for 'My Best Friend His Girlfriend And Me' (movie, 2026)
+[sync]   -> movie tmdb=1589248
+
+[sync] 'Dont Say Good Luck 2026 1080p WEB-DL EgyDead CoM' (i8p4pz5oiom5)
+[tmdb] Found TMDB ID: 1504358 for 'Dont Say Good Luck' (movie, 2026)
+[sync]   -> movie tmdb=1504358
+
+[sync] 'Ace Ventura Jr Pet Detective 2009 1080p WEB-DL EgyDead CoM' (4gy32t49djgq)
+[tmdb] Found TMDB ID: 15338 for 'Ace Ventura Jr Pet Detective' (movie, 2009)
+[sync]   -> movie tmdb=15338
+
+[sync] 'Green Book 2018 1080p BluRay EgyDead CoM' (ilxuzi3mls0w)
+[tmdb] Found TMDB ID: 490132 for 'Green Book' (movie, 2018)
+[sync]   -> movie tmdb=490132
+
+[sync] 'Boulevard 2026 1080p WEB-DL EgyDead CoM' (r5n9r9lo649h)
+[tmdb] Found TMDB ID: 1595852 for 'Boulevard' (movie, 2026)
+[sync]   -> movie tmdb=1595852
+
+[sync] 'Pinocchio Unstrung 2026 1080p BluRay EgyDead CoM' (7epzo7a9zau5)
+[tmdb] Found TMDB ID: 1232569 for 'Pinocchio Unstrung' (movie, 2026)
+[sync]   -> movie tmdb=1232569
+
+[sync] 'Here The Whole Time 2026 1080p WEB-DL EgyDead CoM' (gh1w4u0ba9vx)
+[tmdb] Found TMDB ID: 1418582 for 'Here The Whole Time' (movie, 2026)
+[sync]   -> movie tmdb=1418582
+
+[sync] 'Here The Whole Time 2026 1080p WEB-DL EgyDead CoM' (ercqujbdfj0m)
+[tmdb] Found TMDB ID: 1418582 for 'Here The Whole Time' (movie, 2026)
+[sync]   -> movie tmdb=1418582
+
+[sync] 'Here The Whole Time 2026 1080p WEB-DL EgyDead CoM' (n0gacun7ktcy)
+[tmdb] Found TMDB ID: 1418582 for 'Here The Whole Time' (movie, 2026)
+[sync]   -> movie tmdb=1418582
+
+[sync] '3096 Days 2013 1080p BluRay EgyDead CoM' (a8gsxn44zc91)
+[tmdb] Found TMDB ID: 166666 for '3096 Days' (movie, 2013)
+[sync]   -> movie tmdb=166666
+
+[sync] 'The Mongoose 2026 1080p SCREENER WEB-DL' (vt0nj2mns64f)
+[tmdb] No results found for 'The Mongoose SCREENER' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'Kill Trip 2026 1080p WEB-DL EgyDead CoM' (0us1ou290fe9)
+[tmdb] Found TMDB ID: 1473505 for 'Kill Trip' (movie, 2026)
+[sync]   -> movie tmdb=1473505
+
+[sync] 'Desire 2026 1080p WEB-DL EgyDead CoM' (f8jqb9w6e40q)
+[tmdb] Found TMDB ID: 1668364 for 'Desire' (movie, 2026)
+[sync]   -> movie tmdb=1668364
+
+[sync] 'Crybaby Bridge 2026 1080p WEB-DL EgyDead CoM' (dn1d9teqgcis)
+[tmdb] Found TMDB ID: 1431247 for 'Crybaby Bridge' (movie, 2026)
+[sync]   -> movie tmdb=1431247
+
+[sync] 'Disclosure Day 2026 1080p WEB-DL EgyDead CoM' (fbo1tjb6c4y1)
+[tmdb] Found TMDB ID: 1275779 for 'Disclosure Day' (movie, 2026)
+[sync]   -> movie tmdb=1275779
+
+[sync] 'The Panic in Needle Park 1971 1080p BluRay EgyDead CoM' (xv8inwdwhkw7)
+[tmdb] Found TMDB ID: 27554 for 'The Panic in Needle Park' (movie, 1971)
+[sync]   -> movie tmdb=27554
+
+[sync] 'Bombshell 2019 1080p BluRay EgyDead CoM' (v1bx55g9xyu2)
+[tmdb] Found TMDB ID: 525661 for 'Bombshell' (movie, 2019)
+[sync]   -> movie tmdb=525661
+
+[sync] 'Cheaper By the Dozen 2003 1080p WEB-DL EgyDead CoM' (zoyqupuubano)
+[tmdb] Found TMDB ID: 11007 for 'Cheaper By the Dozen' (movie, 2003)
+[sync]   -> movie tmdb=11007
+
+[sync] 'Cheaper by the Dozen 1950 1080p WEB-DL EgyDead CoM' (kmbfuhbhzfsr)
+[tmdb] Found TMDB ID: 33839 for 'Cheaper by the Dozen' (movie, 1950)
+[sync]   -> movie tmdb=33839
+
+[sync] 'The Truthers 2026 1080p WEB-DL EgyDead CoM' (o2e5alnzspjm)
+[tmdb] Found TMDB ID: 1659155 for 'The Truthers' (movie, 2026)
+[sync]   -> movie tmdb=1659155
+
+[sync] 'Miracles From Heaven 2016 1080p BluRay EgyDead CoM' (y1nexnyl2l64)
+[tmdb] Found TMDB ID: 339984 for 'Miracles From Heaven' (movie, 2016)
+[sync]   -> movie tmdb=339984
+
+[sync] 'Wrath of Man 2021 1080p BluRay EgyDead CoM' (p9dktje768f5)
+[tmdb] Found TMDB ID: 637649 for 'Wrath of Man' (movie, 2021)
+[sync]   -> movie tmdb=637649
+
+[sync] 'Ghostbusters 2016 EXTENDED 1080p BluRay EgyDead CoM' (g6xkcr1y990m)
+[tmdb] No results found for 'Ghostbusters EXTENDED' (movie, 2016)
+[sync]   -> movie tmdb=None
+
+[sync] 'Ghostbusters 2 1989 REMASTERED 1080p BluRay EgyDead CoM' (4dvgl9mrrtem)
+[tmdb] No results found for 'Ghostbusters 2 REMASTERED' (movie, 1989)
+[sync]   -> movie tmdb=None
+
+[sync] 'The Devils Mouth 2026 1080p WEB-DL EgyDead CoM' (s4k7pm9bdoys)
+[tmdb] Found TMDB ID: 1481343 for 'The Devils Mouth' (movie, 2026)
+[sync]   -> movie tmdb=1481343
+
+[sync] 'Evil Dead 2013 EXTENDED 1080p BluRay EgyDead CoM' (ioicshlq9msz)
+[tmdb] No results found for 'Evil Dead EXTENDED' (movie, 2013)
+[sync]   -> movie tmdb=None
+
+[sync] 'The Amazing Spider Man 2 2014 1080p BluRay EgyDead CoM' (ifnmf8ta7896)
+[tmdb] Found TMDB ID: 102382 for 'The Amazing Spider Man 2' (movie, 2014)
+[sync]   -> movie tmdb=102382
+
+[sync] 'Lucky Strike 2026 1080p WEB-DL EgyDead CoM' (jwztmy8g7v86)
+[tmdb] Found TMDB ID: 1594914 for 'Lucky Strike' (movie, 2026)
+[sync]   -> movie tmdb=1594914
+
+[sync] 'Corrida Dos Bichos 2026 1080p WEB-DL EgyDead CoM' (a6s3e7nkl3xj)
+[tmdb] Found TMDB ID: 1263532 for 'Corrida Dos Bichos' (movie, 2026)
+[sync]   -> movie tmdb=1263532
+
+[sync] 'The Expendables 3 2014 EXTENDED 1080p BluRay EgyDead CoM' (93triierhos4)
+[tmdb] No results found for 'The Expendables 3 EXTENDED' (movie, 2014)
+[sync]   -> movie tmdb=None
+
+[sync] 'The Isolate Thief 2026 1080p WEB-DL EgyDead CoM' (tf7bip1zfxd6)
+[tmdb] Found TMDB ID: 1404304 for 'The Isolate Thief' (movie, 2026)
+[sync]   -> movie tmdb=1404304
+
+[sync] 'The Intern 2015 1080p BluRay EgyDead CoM' (iqh3647mffyh)
+[tmdb] Found TMDB ID: 257211 for 'The Intern' (movie, 2015)
+[sync]   -> movie tmdb=257211
+
+[sync] 'The Longest Yard 2005 1080p BluRay EgyDead CoM' (p7enhjzqq9d9)
+[tmdb] Found TMDB ID: 9291 for 'The Longest Yard' (movie, 2005)
+[sync]   -> movie tmdb=9291
+
+[sync] 'The Vanishing 1988 REMASTERED 1080p BluRay EgyDead CoM' (hittd0enqz0p)
+[tmdb] No results found for 'The Vanishing REMASTERED' (movie, 1988)
+[sync]   -> movie tmdb=None
+
+[sync] 'The Invite 2026 1080p WEB-DL EgyDead CoM' (k8i9p18vccj6)
+[tmdb] Found TMDB ID: 950028 for 'The Invite' (movie, 2026)
+[sync]   -> movie tmdb=950028
+
+[sync] 'Hunter Killer 2018 1080p BluRay EgyDead CoM' (tzgk57c1u3hi)
+[tmdb] Found TMDB ID: 399402 for 'Hunter Killer' (movie, 2018)
+[sync]   -> movie tmdb=399402
+
+[sync] 'To The Max 2026 1080p WEB-DL EgyDead CoM' (vjk4tlx8r2jy)
+[tmdb] Found TMDB ID: 1588838 for 'To The Max' (movie, 2026)
+[sync]   -> movie tmdb=1588838
+
+[sync] 'Superhero Movie 2008 EXTENDED 1080p BluRay EgyDead CoM' (a2dwn44vxvdj)
+[tmdb] No results found for 'Superhero Movie EXTENDED' (movie, 2008)
+[sync]   -> movie tmdb=None
+
+[sync] 'Ace Ventura Jr Pet Detective 2009 1080p WEB-DL EgyDead CoM' (lbao3oajay6p)
+[tmdb] Found TMDB ID: 15338 for 'Ace Ventura Jr Pet Detective' (movie, 2009)
+[sync]   -> movie tmdb=15338
+
+[sync] 'Here The Whole Time 2026 1080p WEB-DL EgyDead CoM' (xl7fs2t2ychs)
+[tmdb] Found TMDB ID: 1418582 for 'Here The Whole Time' (movie, 2026)
+[sync]   -> movie tmdb=1418582
+
+[sync] 'Here The Whole Time 2026 1080p WEB-DL EgyDead CoM' (xous4xxrrxb7)
+[tmdb] Found TMDB ID: 1418582 for 'Here The Whole Time' (movie, 2026)
+[sync]   -> movie tmdb=1418582
+
+[sync] 'Here The Whole Time 2026 1080p WEB-DL EgyDead CoM' (q20pdq9pxan4)
+[tmdb] Found TMDB ID: 1418582 for 'Here The Whole Time' (movie, 2026)
+[sync]   -> movie tmdb=1418582
+
+[sync] 'Spider Island 2026 1080p WEB-DL' (yvycfxo4tq1p)
+[tmdb] Found TMDB ID: 1462861 for 'Spider Island' (movie, 2026)
+[sync]   -> movie tmdb=1462861
+
+[sync] 'the secret woman 2026 1080p web' (cyk6lv0zr19l)
+[tmdb] Found TMDB ID: 1631807 for 'the secret woman' (movie, 2026)
+[sync]   -> movie tmdb=1631807
+
+[sync] 'the secret woman 2026 1080p web' (afe9ih487cnz)
+[tmdb] Found TMDB ID: 1631807 for 'the secret woman' (movie, 2026)
+[sync]   -> movie tmdb=1631807
+
+[sync] 'the secret woman 2026 1080p web' (ioaekak5ve6a)
+[tmdb] Found TMDB ID: 1631807 for 'the secret woman' (movie, 2026)
+[sync]   -> movie tmdb=1631807
+
+[sync] 'the secret woman 2026 1080p web' (2mgns0f9z3nl)
+[tmdb] Found TMDB ID: 1631807 for 'the secret woman' (movie, 2026)
+[sync]   -> movie tmdb=1631807
+
+[sync] 'the secret woman 2026 1080p web' (3s1wszt8ht2k)
+[tmdb] Found TMDB ID: 1631807 for 'the secret woman' (movie, 2026)
+[sync]   -> movie tmdb=1631807
+
+[sync] 'the secret woman 2026 1080p web' (mr0j36dkgs0h)
+[tmdb] Found TMDB ID: 1631807 for 'the secret woman' (movie, 2026)
+[sync]   -> movie tmdb=1631807
+
+[sync] 'the secret woman 2026 1080p web' (afpdeo30gobl)
+[tmdb] Found TMDB ID: 1631807 for 'the secret woman' (movie, 2026)
+[sync]   -> movie tmdb=1631807
+
+[sync] 'the secret woman 2026 1080p web' (b2pxhbek8ljk)
+[tmdb] Found TMDB ID: 1631807 for 'the secret woman' (movie, 2026)
+[sync]   -> movie tmdb=1631807
+
+[sync] 'The Runner 2026 1080p AMZN WEB-DL' (jnlc0497lkhg)
+[tmdb] Found TMDB ID: 1386315 for 'The Runner' (movie, 2026)
+[sync]   -> movie tmdb=1386315
+
+[sync] 'The Mongoose 2026 1080p SCREENER WEB-DL' (a21fa9p0oivc)
+[tmdb] No results found for 'The Mongoose SCREENER' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'Descendants Wicked Wonderland 2026 1080p WEB-DL EgyDead CoM' (wgivyj2vna0g)
+[tmdb] Found TMDB ID: 1318621 for 'Descendants Wicked Wonderland' (movie, 2026)
+[sync]   -> movie tmdb=1318621
+
+[sync] 'Desire 2026 1080p WEB-DL EgyDead CoM' (2z29mhgcl9ep)
+[tmdb] Found TMDB ID: 1668364 for 'Desire' (movie, 2026)
+[sync]   -> movie tmdb=1668364
+
+[sync] 'The Crying Game 1992 REMASTERED 1080p BluRay EgyDead CoM' (h3xi7k8gfwam)
+[tmdb] No results found for 'The Crying Game REMASTERED' (movie, 1992)
+[sync]   -> movie tmdb=None
+
+[sync] 'Labyrinth 1986 REMASTERED 1080p BluRay EgyDead CoM' (j4q8bh8w55d2)
+[tmdb] No results found for 'Labyrinth REMASTERED' (movie, 1986)
+[sync]   -> movie tmdb=None
+
+[sync] 'Cheaper by the Dozen 1950 1080p WEB-DL EgyDead CoM' (a04znsoxfywq)
+[tmdb] Found TMDB ID: 33839 for 'Cheaper by the Dozen' (movie, 1950)
+[sync]   -> movie tmdb=33839
+
+[sync] 'The Truthers 2026 1080p WEB-DL EgyDead CoM' (2izqk8pc9tpr)
+[tmdb] Found TMDB ID: 1659155 for 'The Truthers' (movie, 2026)
+[sync]   -> movie tmdb=1659155
+
+[sync] 'Summers Last Resort 2026 720p WEB-DL EgyDead CoM' (q95couwmd87b)
+[tmdb] Found TMDB ID: 1617191 for 'Summers Last Resort' (movie, 2026)
+[sync]   -> movie tmdb=1617191
+
+[sync] 'Miracles From Heaven 2016 1080p BluRay EgyDead CoM' (y8k9cv8yzpxd)
+[tmdb] Found TMDB ID: 339984 for 'Miracles From Heaven' (movie, 2016)
+[sync]   -> movie tmdb=339984
+
+[sync] 'Boulevard 2026 1080p WEB-DL EgyDead CoM' (51k49ld0eiyf)
+[tmdb] Found TMDB ID: 1595852 for 'Boulevard' (movie, 2026)
+[sync]   -> movie tmdb=1595852
+
+[sync] 'Wrath of Man 2021 1080p BluRay EgyDead CoM' (nm4bj0rha2k8)
+[tmdb] Found TMDB ID: 637649 for 'Wrath of Man' (movie, 2021)
+[sync]   -> movie tmdb=637649
+
+[sync] '3096 Days 2013 1080p BluRay EgyDead CoM' (jfupazy79en2)
+[tmdb] Found TMDB ID: 166666 for '3096 Days' (movie, 2013)
+[sync]   -> movie tmdb=166666
+
+[sync] 'The Devils Mouth 2026 1080p WEB-DL EgyDead CoM' (7q8gi4m35475)
+[tmdb] Found TMDB ID: 1481343 for 'The Devils Mouth' (movie, 2026)
+[sync]   -> movie tmdb=1481343
+
+[sync] 'Descendants Wicked Wonderland 2026 1080p WEB-DL EgyDead CoM' (qucaeyhk4k51)
+[tmdb] Found TMDB ID: 1318621 for 'Descendants Wicked Wonderland' (movie, 2026)
+[sync]   -> movie tmdb=1318621
+
+[sync] 'Spider Man No Way Home 2021 EXTENDED 1080p WEB-DL EgyDead CoM' (5896las4qf8j)
+[tmdb] No results found for 'Spider Man No Way Home EXTENDED' (movie, 2021)
+[sync]   -> movie tmdb=None
+
+[sync] 'The Amazing Spider Man 2012 1080p BluRay EgyDead CoM' (6i08ppgdcsvm)
+[tmdb] Found TMDB ID: 1930 for 'The Amazing Spider Man' (movie, 2012)
+[sync]   -> movie tmdb=1930
+
+[sync] 'The Sheriffs of Savage Wells 2026 1080p WEB-DL EgyDead CoM' (h82wh5t8r5in)
+[tmdb] Found TMDB ID: 1614075 for 'The Sheriffs of Savage Wells' (movie, 2026)
+[sync]   -> movie tmdb=1614075
+
+[sync] 'Lucky Strike 2026 1080p WEB-DL EgyDead CoM' (h1flzousbhi5)
+[tmdb] Found TMDB ID: 1594914 for 'Lucky Strike' (movie, 2026)
+[sync]   -> movie tmdb=1594914
+
+[sync] 'Corrida Dos Bichos 2026 1080p WEB-DL EgyDead CoM' (62pfkhyw1rsg)
+[tmdb] Found TMDB ID: 1263532 for 'Corrida Dos Bichos' (movie, 2026)
+[sync]   -> movie tmdb=1263532
+
+[sync] 'Anyone But You 2023 1080p BluRay EgyDead CoM' (w27idh05a0n4)
+[tmdb] Found TMDB ID: 1072790 for 'Anyone But You' (movie, 2023)
+[sync]   -> movie tmdb=1072790
+
+[sync] 'The Expendables 3 2014 EXTENDED 1080p BluRay EgyDead CoM' (cvq47bbjd9e0)
+[tmdb] No results found for 'The Expendables 3 EXTENDED' (movie, 2014)
+[sync]   -> movie tmdb=None
+
+[sync] 'The Crying Game 1992 REMASTERED 1080p BluRay EgyDead CoM' (l8uo8ix78waa)
+[tmdb] No results found for 'The Crying Game REMASTERED' (movie, 1992)
+[sync]   -> movie tmdb=None
+
+[sync] 'Lockbox 2026 1080p WEB-DL EgyDead CoM' (0dqaakr0bmol)
+[tmdb] Found TMDB ID: 1500890 for 'Lockbox' (movie, 2026)
+[sync]   -> movie tmdb=1500890
+
+[sync] 'The Intern 2015 1080p BluRay EgyDead CoM' (ewruxy5s9vhn)
+[tmdb] Found TMDB ID: 257211 for 'The Intern' (movie, 2015)
+[sync]   -> movie tmdb=257211
+
+[sync] 'The Invite 2026 1080p WEB-DL EgyDead CoM' (pk3concehuo3)
+[tmdb] Found TMDB ID: 950028 for 'The Invite' (movie, 2026)
+[sync]   -> movie tmdb=950028
+
+[sync] 'War Wolves 2009 1080p WEB-DL EgyDead CoM' (0iqn0v75fp36)
+[tmdb] Found TMDB ID: 28686 for 'War Wolves' (movie, 2009)
+[sync]   -> movie tmdb=28686
+
+[sync] 'Hunter Killer 2018 1080p BluRay EgyDead CoM' (w89jompy63ix)
+[tmdb] Found TMDB ID: 399402 for 'Hunter Killer' (movie, 2018)
+[sync]   -> movie tmdb=399402
+
+[sync] 'Daddys in Trouble 2026 1080p WEB-DL EgyDead CoM' (t6hg3zhtp9np)
+[tmdb] Found TMDB ID: 1315843 for 'Daddys in Trouble' (movie, 2026)
+[sync]   -> movie tmdb=1315843
+
+[sync] 'My Best Friend His Girlfriend And Me 2026 1080p WEB-DL EgyDead CoM' (03zx5iggedj6)
+[tmdb] Found TMDB ID: 1589248 for 'My Best Friend His Girlfriend And Me' (movie, 2026)
+[sync]   -> movie tmdb=1589248
+
+[sync] '3096 Days 2013 1080p BluRay EgyDead CoM' (qeb9zgnuf653)
+[tmdb] Found TMDB ID: 166666 for '3096 Days' (movie, 2013)
+[sync]   -> movie tmdb=166666
+
+[sync] 'Here The Whole Time 2026 1080p WEB-DL EgyDead CoM' (u69fldx5itz5)
+[tmdb] Found TMDB ID: 1418582 for 'Here The Whole Time' (movie, 2026)
+[sync]   -> movie tmdb=1418582
+
+[sync] 'Here The Whole Time 2026 1080p WEB-DL EgyDead CoM' (q4pt8u9mkmii)
+[tmdb] Found TMDB ID: 1418582 for 'Here The Whole Time' (movie, 2026)
+[sync]   -> movie tmdb=1418582
+
+[sync] 'Here The Whole Time 2026 1080p WEB-DL EgyDead CoM' (0ykkaohtu7kj)
+[tmdb] Found TMDB ID: 1418582 for 'Here The Whole Time' (movie, 2026)
+[sync]   -> movie tmdb=1418582
+
+[sync] 'The Wrong Girls 2026 1080p AMZN WEB-DL' (5cfege6tlxqy)
+[tmdb] Found TMDB ID: 1226699 for 'The Wrong Girls' (movie, 2026)
+[sync]   -> movie tmdb=1226699
+
+[sync] 'Spider Island 2026 1080p WEB-DL' (cyonsqa1jj1k)
+[tmdb] Found TMDB ID: 1462861 for 'Spider Island' (movie, 2026)
+[sync]   -> movie tmdb=1462861
+
+[sync] 'I Want Your Sex 2026 1080p AMZN WEB-DL' (9qmmvaxdn7hp)
+[tmdb] Found TMDB ID: 1288059 for 'I Want Your Sex' (movie, 2026)
+[sync]   -> movie tmdb=1288059
+
+[sync] 'Kill Trip 2026 1080p WEB-DL EgyDead CoM' (ggsogumer7p2)
+[tmdb] Found TMDB ID: 1473505 for 'Kill Trip' (movie, 2026)
+[sync]   -> movie tmdb=1473505
+
+[sync] 'Grand Theft Auto VI An Extended Look 2026 1080p NF WEB-DL' (s4clpmzj0uyl)
+[tmdb] Found TMDB ID: 1744462 for 'Grand Theft Auto VI An Extended Look' (movie, 2026)
+[sync]   -> movie tmdb=1744462
+
+[sync] 'Bombshell 2019 1080p BluRay EgyDead CoM' (fg8dye0y1hw0)
+[tmdb] Found TMDB ID: 525661 for 'Bombshell' (movie, 2019)
+[sync]   -> movie tmdb=525661
+
+[sync] 'Cheaper by the Dozen 2022 1080p WEB-DL EgyDead CoM' (a04zqsmgmhn9)
+[tmdb] Found TMDB ID: 691683 for 'Cheaper by the Dozen' (movie, 2022)
+[sync]   -> movie tmdb=691683
+
+[sync] 'Miracles From Heaven 2016 1080p BluRay EgyDead CoM' (2sulylgtvhjn)
+[tmdb] Found TMDB ID: 339984 for 'Miracles From Heaven' (movie, 2016)
+[sync]   -> movie tmdb=339984
+
+[sync] 'Hereditary 2018 1080p BluRay EgyDead CoM' (3nzrftllqily)
+[tmdb] Found TMDB ID: 493922 for 'Hereditary' (movie, 2018)
+[sync]   -> movie tmdb=493922
+
+[sync] 'The Devils Mouth 2026 1080p WEB-DL EgyDead CoM' (7mtjdyzxaet2)
+[tmdb] Found TMDB ID: 1481343 for 'The Devils Mouth' (movie, 2026)
+[sync]   -> movie tmdb=1481343
+
+[sync] 'The Chronicles of Riddick 2004 DC 1080p BluRay EgyDead CoM' (uw7wlajy66ss)
+[tmdb] No results found for 'The Chronicles of Riddick DC' (movie, 2004)
+[sync]   -> movie tmdb=None
+
+[sync] 'The Panic in Needle Park 1971 1080p BluRay EgyDead CoM' (vq7bx3v9n9rm)
+[tmdb] Found TMDB ID: 27554 for 'The Panic in Needle Park' (movie, 1971)
+[sync]   -> movie tmdb=27554
+
+[sync] 'Lucky Strike 2026 1080p WEB-DL EgyDead CoM' (jp3ydex8be3u)
+[tmdb] Found TMDB ID: 1594914 for 'Lucky Strike' (movie, 2026)
+[sync]   -> movie tmdb=1594914
+
+[sync] 'Corrida Dos Bichos 2026 1080p WEB-DL EgyDead CoM' (t20vbpov5dvr)
+[tmdb] Found TMDB ID: 1263532 for 'Corrida Dos Bichos' (movie, 2026)
+[sync]   -> movie tmdb=1263532
+
+[sync] 'Anyone But You 2023 1080p BluRay EgyDead CoM' (st61l0eygyev)
+[tmdb] Found TMDB ID: 1072790 for 'Anyone But You' (movie, 2023)
+[sync]   -> movie tmdb=1072790
+
+[sync] 'Lockbox 2026 1080p WEB-DL EgyDead CoM' (qymd3ho79w8e)
+[tmdb] Found TMDB ID: 1500890 for 'Lockbox' (movie, 2026)
+[sync]   -> movie tmdb=1500890
+
+[sync] 'The Intern 2015 1080p BluRay EgyDead CoM' (wi0yp1he53an)
+[tmdb] Found TMDB ID: 257211 for 'The Intern' (movie, 2015)
+[sync]   -> movie tmdb=257211
+
+[sync] 'Lockout 2012 UNRATED 1080p BluRay EgyDead CoM' (qjqx7ets0oi8)
+[tmdb] No results found for 'Lockout UNRATED' (movie, 2012)
+[sync]   -> movie tmdb=None
+
+[sync] 'The 40 Year Old Virgin 2005 EXTENDED 1080p BluRay EgyDead CoM' (2diqafpngeks)
+[tmdb] Found TMDB ID: 6957 for 'The 40 Year Old Virgin EXTENDED' (movie, 2005)
+[sync]   -> movie tmdb=6957
+
+[sync] 'The Longest Yard 2005 1080p BluRay EgyDead CoM' (iuf8scc43aho)
+[tmdb] Found TMDB ID: 9291 for 'The Longest Yard' (movie, 2005)
+[sync]   -> movie tmdb=9291
+
+[sync] 'Summers Last Resort 2026 720p WEB-DL EgyDead CoM' (hb25qyfgezkz)
+[tmdb] Found TMDB ID: 1617191 for 'Summers Last Resort' (movie, 2026)
+[sync]   -> movie tmdb=1617191
+
+[sync] 'War Wolves 2009 1080p WEB-DL EgyDead CoM' (3vk6lnwtnpw8)
+[tmdb] Found TMDB ID: 28686 for 'War Wolves' (movie, 2009)
+[sync]   -> movie tmdb=28686
+
+[sync] 'Hunter Killer 2018 1080p BluRay EgyDead CoM' (e334aqbmstty)
+[tmdb] Found TMDB ID: 399402 for 'Hunter Killer' (movie, 2018)
+[sync]   -> movie tmdb=399402
+
+[sync] 'Wrath of Man 2021 1080p BluRay EgyDead CoM' (1d9cbc78x4oj)
+[tmdb] Found TMDB ID: 637649 for 'Wrath of Man' (movie, 2021)
+[sync]   -> movie tmdb=637649
+
+[sync] 'My Best Friend His Girlfriend And Me 2026 1080p WEB-DL EgyDead CoM' (2msxpxpgmmeo)
+[tmdb] Found TMDB ID: 1589248 for 'My Best Friend His Girlfriend And Me' (movie, 2026)
+[sync]   -> movie tmdb=1589248
+
+[sync] 'He ll Never Find Me 2026 1080p WEB EgyDead CoM' (a7ds5i4u2ozz)
+[tmdb] Found TMDB ID: 1735229 for 'He ll Never Find Me' (movie, 2026)
+[sync]   -> movie tmdb=1735229
+
+[sync] 'Ghostbusters 2016 EXTENDED 1080p BluRay EgyDead CoM' (a13lz7dlideh)
+[tmdb] No results found for 'Ghostbusters EXTENDED' (movie, 2016)
+[sync]   -> movie tmdb=None
+
+[sync] 'Hereditary 2018 1080p BluRay EgyDead CoM' (vfotofq0e8mw)
+[tmdb] Found TMDB ID: 493922 for 'Hereditary' (movie, 2018)
+[sync]   -> movie tmdb=493922
+
+[sync] 'Here The Whole Time 2026 1080p WEB-DL EgyDead CoM' (8f62mzmsh7pi)
+[tmdb] Found TMDB ID: 1418582 for 'Here The Whole Time' (movie, 2026)
+[sync]   -> movie tmdb=1418582
+
+[sync] 'Here The Whole Time 2026 1080p WEB-DL EgyDead CoM' (notc8ckd84v5)
+[tmdb] Found TMDB ID: 1418582 for 'Here The Whole Time' (movie, 2026)
+[sync]   -> movie tmdb=1418582
+
+[sync] 'Here The Whole Time 2026 1080p WEB-DL EgyDead CoM' (k52yxza181jd)
+[tmdb] Found TMDB ID: 1418582 for 'Here The Whole Time' (movie, 2026)
+[sync]   -> movie tmdb=1418582
+
+[sync] 'The Chronicles of Riddick 2004 DC 1080p BluRay EgyDead CoM' (9emd78m0795v)
+[tmdb] No results found for 'The Chronicles of Riddick DC' (movie, 2004)
+[sync]   -> movie tmdb=None
+
+[sync] 'Spider Man No Way Home 2021 EXTENDED 1080p WEB-DL EgyDead CoM' (x7g650hunny9)
+[tmdb] No results found for 'Spider Man No Way Home EXTENDED' (movie, 2021)
+[sync]   -> movie tmdb=None
+
+[sync] 'Spider Man Far from Home 2019 1080p BluRay EgyDead CoM' (802m386jwvqz)
+[tmdb] Found TMDB ID: 429617 for 'Spider Man Far from Home' (movie, 2019)
+[sync]   -> movie tmdb=429617
+
+[sync] 'The Whisper Man 2026 1080p NF WEB-DL' (jioy9zo78sfw)
+[tmdb] Found TMDB ID: 860508 for 'The Whisper Man' (movie, 2026)
+[sync]   -> movie tmdb=860508
+
+[sync] 'The Whisper Man 2026 1080p NF WEB-DL' (vnewbpdllhvn)
+[tmdb] Found TMDB ID: 860508 for 'The Whisper Man' (movie, 2026)
+[sync]   -> movie tmdb=860508
+
+[sync] 'Lucky Strike 2026 1080p WEB-DL EgyDead CoM' (u7jt8fl90hu1)
+[tmdb] Found TMDB ID: 1594914 for 'Lucky Strike' (movie, 2026)
+[sync]   -> movie tmdb=1594914
+
+[sync] 'The Whisper Man 2026 1080p NF WEB-DL' (dg6qpbhfo955)
+[tmdb] Found TMDB ID: 860508 for 'The Whisper Man' (movie, 2026)
+[sync]   -> movie tmdb=860508
+
+[sync] 'Corrida Dos Bichos 2026 1080p WEB-DL EgyDead CoM' (ibhfxundyy9r)
+[tmdb] Found TMDB ID: 1263532 for 'Corrida Dos Bichos' (movie, 2026)
+[sync]   -> movie tmdb=1263532
+
+[sync] 'The Whisper Man 2026 1080p NF WEB-DL' (clfrwqkt5s8u)
+[tmdb] Found TMDB ID: 860508 for 'The Whisper Man' (movie, 2026)
+[sync]   -> movie tmdb=860508
+
+[sync] 'She Rides Shotgun 2025 1080p BluRay' (ciy5wgagbar1)
+[tmdb] Found TMDB ID: 1196573 for 'She Rides Shotgun' (movie, 2025)
+[sync]   -> movie tmdb=1196573
+
+[sync] 'She Rides Shotgun 2025 1080p BluRay' (9hgr9tldjlmp)
+[tmdb] Found TMDB ID: 1196573 for 'She Rides Shotgun' (movie, 2025)
+[sync]   -> movie tmdb=1196573
+
+[sync] 'She Rides Shotgun 2025 1080p BluRay' (6fdg4wljbvco)
+[tmdb] Found TMDB ID: 1196573 for 'She Rides Shotgun' (movie, 2025)
+[sync]   -> movie tmdb=1196573
+
+[sync] 'She Rides Shotgun 2025 1080p BluRay' (dlapw85j6a03)
+[tmdb] Found TMDB ID: 1196573 for 'She Rides Shotgun' (movie, 2025)
+[sync]   -> movie tmdb=1196573
+
+[sync] 'The 40 Year Old Virgin 2005 EXTENDED 1080p BluRay EgyDead CoM' (p58n3hq3e69m)
+[tmdb] Found TMDB ID: 6957 for 'The 40 Year Old Virgin EXTENDED' (movie, 2005)
+[sync]   -> movie tmdb=6957
+
+[sync] 'Just Play Dead 2026 1080p AMZN WEB-DL' (2539lbclyqhx)
+[tmdb] Found TMDB ID: 1480574 for 'Just Play Dead' (movie, 2026)
+[sync]   -> movie tmdb=1480574
+
+[sync] 'To The Max 2026 1080p WEB-DL EgyDead CoM' (fwitbrayvnn8)
+[tmdb] Found TMDB ID: 1588838 for 'To The Max' (movie, 2026)
+[sync]   -> movie tmdb=1588838
+
+[sync] 'My Best Friend His Girlfriend And Me 2026 1080p WEB-DL EgyDead CoM' (l6227sw8g0hb)
+[tmdb] Found TMDB ID: 1589248 for 'My Best Friend His Girlfriend And Me' (movie, 2026)
+[sync]   -> movie tmdb=1589248
+
+[sync] 'Superhero Movie 2008 EXTENDED 1080p BluRay EgyDead CoM' (oxevvbio9af2)
+[tmdb] No results found for 'Superhero Movie EXTENDED' (movie, 2008)
+[sync]   -> movie tmdb=None
+
+[sync] 'He ll Never Find Me 2026 1080p WEB EgyDead CoM' (ufmxa51sh8fc)
+[tmdb] Found TMDB ID: 1735229 for 'He ll Never Find Me' (movie, 2026)
+[sync]   -> movie tmdb=1735229
+
+[sync] 'Ace Ventura Jr Pet Detective 2009 1080p WEB-DL EgyDead CoM' (08sda3lwxn08)
+[tmdb] Found TMDB ID: 15338 for 'Ace Ventura Jr Pet Detective' (movie, 2009)
+[sync]   -> movie tmdb=15338
+
+[sync] 'Green Book 2018 1080p BluRay EgyDead CoM' (ampdoe9avo14)
+[tmdb] Found TMDB ID: 490132 for 'Green Book' (movie, 2018)
+[sync]   -> movie tmdb=490132
+
+[sync] 'the secret woman 2026 1080p web' (xazl45jc964c)
+[tmdb] Found TMDB ID: 1631807 for 'the secret woman' (movie, 2026)
+[sync]   -> movie tmdb=1631807
+
+[sync] 'the secret woman 2026 1080p web' (ao3ho1q6fbyy)
+[tmdb] Found TMDB ID: 1631807 for 'the secret woman' (movie, 2026)
+[sync]   -> movie tmdb=1631807
+
+[sync] 'the secret woman 2026 1080p web' (rurmdgq2mav8)
+[tmdb] Found TMDB ID: 1631807 for 'the secret woman' (movie, 2026)
+[sync]   -> movie tmdb=1631807
+
+[sync] 'the secret woman 2026 1080p web' (diw87vs7pdxn)
+[tmdb] Found TMDB ID: 1631807 for 'the secret woman' (movie, 2026)
+[sync]   -> movie tmdb=1631807
+
+[sync] 'Grand Theft Auto VI An Extended Look 2026 1080p NF WEB-DL' (k4202zxpjw3n)
+[tmdb] Found TMDB ID: 1744462 for 'Grand Theft Auto VI An Extended Look' (movie, 2026)
+[sync]   -> movie tmdb=1744462
+
+[sync] 'the secret woman 2026 1080p web' (q1l4nigtx663)
+[tmdb] Found TMDB ID: 1631807 for 'the secret woman' (movie, 2026)
+[sync]   -> movie tmdb=1631807
+
+[sync] 'the secret woman 2026 1080p web' (yhn18pkh66rq)
+[tmdb] Found TMDB ID: 1631807 for 'the secret woman' (movie, 2026)
+[sync]   -> movie tmdb=1631807
+
+[sync] 'the secret woman 2026 1080p web' (1u31qbhnmujp)
+[tmdb] Found TMDB ID: 1631807 for 'the secret woman' (movie, 2026)
+[sync]   -> movie tmdb=1631807
+
+[sync] 'the secret woman 2026 1080p web' (v0yiix8nuncn)
+[tmdb] Found TMDB ID: 1631807 for 'the secret woman' (movie, 2026)
+[sync]   -> movie tmdb=1631807
+
+[sync] 'Pinocchio Unstrung 2026 1080p BluRay EgyDead CoM' (659sqyjmo4yh)
+[tmdb] Found TMDB ID: 1232569 for 'Pinocchio Unstrung' (movie, 2026)
+[sync]   -> movie tmdb=1232569
+
+[sync] 'Here The Whole Time 2026 1080p WEB-DL EgyDead CoM' (7e6ovu4gyi3j)
+[tmdb] Found TMDB ID: 1418582 for 'Here The Whole Time' (movie, 2026)
+[sync]   -> movie tmdb=1418582
+
+[sync] 'Here The Whole Time 2026 1080p WEB-DL EgyDead CoM' (ekm7rzwy8bvh)
+[tmdb] Found TMDB ID: 1418582 for 'Here The Whole Time' (movie, 2026)
+[sync]   -> movie tmdb=1418582
+
+[sync] 'Here The Whole Time 2026 1080p WEB-DL EgyDead CoM' (siduhbk1vfep)
+[tmdb] Found TMDB ID: 1418582 for 'Here The Whole Time' (movie, 2026)
+[sync]   -> movie tmdb=1418582
+
+[sync] 'the secret woman 2026 1080p web' (pv2bm0rb38a1)
+[tmdb] Found TMDB ID: 1631807 for 'the secret woman' (movie, 2026)
+[sync]   -> movie tmdb=1631807
+
+[sync] 'the secret woman 2026 1080p web' (88by5i8tvc91)
+[tmdb] Found TMDB ID: 1631807 for 'the secret woman' (movie, 2026)
+[sync]   -> movie tmdb=1631807
+
+[sync] 'the secret woman 2026 1080p web' (135oy6xp5she)
+[tmdb] Found TMDB ID: 1631807 for 'the secret woman' (movie, 2026)
+[sync]   -> movie tmdb=1631807
+
+[sync] 'the secret woman 2026 1080p web' (e9i1mmrd355t)
+[tmdb] Found TMDB ID: 1631807 for 'the secret woman' (movie, 2026)
+[sync]   -> movie tmdb=1631807
+
+[sync] 'The Mongoose 2026 1080p SCREENER WEB-DL' (zzz9qznpj2qw)
+[tmdb] No results found for 'The Mongoose SCREENER' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'Confinement 2026 1080p AMZN WEB-DL' (p6ubo3j5vgry)
+[tmdb] Found TMDB ID: 1742458 for 'Confinement' (movie, 2026)
+[sync]   -> movie tmdb=1742458
+
+[sync] 'Grand Theft Auto VI An Extended Look 2026 1080p NF WEB-DL' (9ecc5i4w22kb)
+[tmdb] Found TMDB ID: 1744462 for 'Grand Theft Auto VI An Extended Look' (movie, 2026)
+[sync]   -> movie tmdb=1744462
+
+[sync] 'Lovesick S01E06 1080p NF WEB-DL' (lttvkiy7w92h)
+[tmdb] Found TMDB ID: 290234 for 'Lovesick' (tv, )
+[tmdb] Season: 1, Episode: 6
+[sync]   -> TV tmdb=290234 S1E6
+
+[sync] 'Lovesick S01E05 1080p NF WEB-DL' (kerqcuipud3w)
+[tmdb] Found TMDB ID: 290234 for 'Lovesick' (tv, )
+[tmdb] Season: 1, Episode: 5
+[sync]   -> TV tmdb=290234 S1E5
+
+[sync] 'Lovesick S01E04 1080p NF WEB-DL' (yei55b7zvxzn)
+[tmdb] Found TMDB ID: 290234 for 'Lovesick' (tv, )
+[tmdb] Season: 1, Episode: 4
+[sync]   -> TV tmdb=290234 S1E4
+
+[sync] "OK! Let's Get Divorced Episode 5 1080p" (d5jrxu76qtgc)
+[tmdb] No results found for 'OK! Let's Get Divorced Episode 5' (movie, )
+[sync]   -> movie tmdb=None
+
+[sync] "OK! Let's Get Divorced Episode 5 1080p" (uc767ec0t802)
+[tmdb] No results found for 'OK! Let's Get Divorced Episode 5' (movie, )
+[sync]   -> movie tmdb=None
+
+[sync] "OK! Let's Get Divorced Episode 5 1080p" (uy2fmtg6t686)
+[tmdb] No results found for 'OK! Let's Get Divorced Episode 5' (movie, )
+[sync]   -> movie tmdb=None
+
+[sync] 'Medical Examiner Dr  Qin- Bones of the Past (2026) Episode 21 720p' (00m2jnu3wr56)
+[tmdb] No results found for 'Medical Examiner Dr Qin- Bones of the Past Episode 21' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'Medical Examiner Dr  Qin- Bones of the Past (2026) Episode 21 720p' (4ajzqtmdedz7)
+[tmdb] No results found for 'Medical Examiner Dr Qin- Bones of the Past Episode 21' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'Medical Examiner Dr  Qin- Bones of the Past (2026) Episode 21 720p' (eww0bb0rxlab)
+[tmdb] No results found for 'Medical Examiner Dr Qin- Bones of the Past Episode 21' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'Lovesick S01E03 1080p NF WEB-DL' (s42b2su93dlv)
+[tmdb] Found TMDB ID: 290234 for 'Lovesick' (tv, )
+[tmdb] Season: 1, Episode: 3
+[sync]   -> TV tmdb=290234 S1E3
+
+[sync] 'Lovesick S01E02 1080p NF WEB-DL' (fn25jdsjbog2)
+[tmdb] Found TMDB ID: 290234 for 'Lovesick' (tv, )
+[tmdb] Season: 1, Episode: 2
+[sync]   -> TV tmdb=290234 S1E2
+
+[sync] 'Lovesick S01E01 1080p NF WEB-DL' (c0y7ehh430jg)
+[tmdb] Found TMDB ID: 290234 for 'Lovesick' (tv, )
+[tmdb] Season: 1, Episode: 1
+[sync]   -> TV tmdb=290234 S1E1
+
+[sync] 'Lovesick S01E01 1080p NF WEB-DL' (12468sq2n535)
+[tmdb] Found TMDB ID: 290234 for 'Lovesick' (tv, )
+[tmdb] Season: 1, Episode: 1
+[sync]   -> TV tmdb=290234 S1E1
+
+[sync] 'Cang Feng EP21 1080p' (lxit4pu2c6yv)
+[tmdb] No results found for 'Cang Feng EP21' (movie, )
+[sync]   -> movie tmdb=None
+
+[sync] 'Brothers S01E07 1080p' (39ghfhxnpdao)
+[tmdb] Found TMDB ID: 4613 for 'Brothers' (tv, )
+[tmdb] Season: 1, Episode: 7
+[sync]   -> TV tmdb=4613 S1E7
+
+[sync] 'Brothers S01E06 1080p' (bbkgwl2zsg8f)
+[tmdb] Found TMDB ID: 4613 for 'Brothers' (tv, )
+[tmdb] Season: 1, Episode: 6
+[sync]   -> TV tmdb=4613 S1E6
+
+[sync] 'Braving the Famine with My Wife (2026) Episode 14 720p' (482bavgxpcp1)
+[tmdb] No results found for 'Braving the Famine with My Wife Episode 14' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'Braving the Famine with My Wife (2026) Episode 13 720p' (2s2eg1zv9bzx)
+[tmdb] No results found for 'Braving the Famine with My Wife Episode 13' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'Born Again Episode 23 720p' (41vqsg0lvsjc)
+[tmdb] No results found for 'Born Again Episode 23' (movie, )
+[sync]   -> movie tmdb=None
+
+[sync] 'Blossom Through the Cloud Episode 7 1080p' (25n452rwdx6z)
+[tmdb] No results found for 'Blossom Through the Cloud Episode 7' (movie, )
+[sync]   -> movie tmdb=None
+
+[sync] 'Blossom Through the Cloud Episode 7 1080p' (z1d4k7ssuc01)
+[tmdb] No results found for 'Blossom Through the Cloud Episode 7' (movie, )
+[sync]   -> movie tmdb=None
+
+[sync] 'Blossom Through the Cloud Episode 7 1080p' (3r200q0b70ib)
+[tmdb] No results found for 'Blossom Through the Cloud Episode 7' (movie, )
+[sync]   -> movie tmdb=None
+
+[sync] 'Blossom Through the Cloud Episode 7 1080p' (1k0gsx2ctrzm)
+[tmdb] No results found for 'Blossom Through the Cloud Episode 7' (movie, )
+[sync]   -> movie tmdb=None
+
+[sync] 'Blossom Through the Cloud Episode 6 1080p' (5gf74einybmp)
+[tmdb] No results found for 'Blossom Through the Cloud Episode 6' (movie, )
+[sync]   -> movie tmdb=None
+
+[sync] 'Blossom Through the Cloud Episode 6 1080p' (v6qcf3yn3mdo)
+[tmdb] No results found for 'Blossom Through the Cloud Episode 6' (movie, )
+[sync]   -> movie tmdb=None
+
+[sync] 'Reacher S04E06 1080p AMZN WEB-DL' (0cwf14uq72q6)
+[tmdb] Found TMDB ID: 108978 for 'Reacher' (tv, )
+[tmdb] Season: 4, Episode: 6
+[sync]   -> TV tmdb=108978 S4E6
+
+[sync] 'Reacher S04E06 1080p AMZN WEB-DL' (8896hj1hg5hy)
+[tmdb] Found TMDB ID: 108978 for 'Reacher' (tv, )
+[tmdb] Season: 4, Episode: 6
+[sync]   -> TV tmdb=108978 S4E6
+
+[sync] 'Reacher S04E06 1080p AMZN WEB-DL' (qqlugr4890z6)
+[tmdb] Found TMDB ID: 108978 for 'Reacher' (tv, )
+[tmdb] Season: 4, Episode: 6
+[sync]   -> TV tmdb=108978 S4E6
+
+[sync] 'Women in Blue 2024 S02E04 1080p WEB' (ow8k6kar1ko3)
+[tmdb] Found TMDB ID: 253983 for 'Women in Blue' (tv, 2024)
+[tmdb] Season: 2, Episode: 4
+[sync]   -> TV tmdb=253983 S2E4
+
+[sync] 'Ted Lasso S04E051080p ATVP WEB-DL' (1p8so1rre3gi)
+[tmdb] Found TMDB ID: 97546 for 'Ted Lasso' (tv, )
+[tmdb] Season: 4, Episode: 5
+[sync]   -> TV tmdb=97546 S4E5
+
+[sync] 'Corrida Dos Bichos 2026 1080p WEB-DL EgyDead CoM' (0og1ireqw9li)
+[tmdb] Found TMDB ID: 1263532 for 'Corrida Dos Bichos' (movie, 2026)
+[sync]   -> movie tmdb=1263532
+
+[sync] 'Our Happy Days S01E110 720p' (qtf0d90kyo4p)
+[tmdb] Found TMDB ID: 313735 for 'Our Happy Days' (tv, )
+[tmdb] Season: 1, Episode: 110
+[sync]   -> TV tmdb=313735 S1E110
+
+[sync] 'Our Happy Days S01E110 720p' (vduova8bjk2l)
+[tmdb] Found TMDB ID: 313735 for 'Our Happy Days' (tv, )
+[tmdb] Season: 1, Episode: 110
+[sync]   -> TV tmdb=313735 S1E110
+
+[sync] 'Koukaku Kidoutai (2026) - 09 [1080p]' (oqowp8cxgcgj)
+[tmdb] No results found for 'Koukaku Kidoutai - 09 [ ]' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'Koukaku Kidoutai (2026) - 09 [1080p]' (lkltfos953bx)
+[tmdb] No results found for 'Koukaku Kidoutai - 09 [ ]' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'Koukaku Kidoutai (2026) - 09 [1080p]' (o1zrpb3k6lfn)
+[tmdb] No results found for 'Koukaku Kidoutai - 09 [ ]' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'Koukaku Kidoutai (2026) - 09 [1080p]' (nlfcjoez4vzy)
+[tmdb] No results found for 'Koukaku Kidoutai - 09 [ ]' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'Family Register S01E42 720p' (ilctx0bbt76t)
+[tmdb] Found TMDB ID: 320406 for 'Family Register' (tv, )
+[tmdb] Season: 1, Episode: 42
+[sync]   -> TV tmdb=320406 S1E42
+
+[sync] 'Family Register S01E42 720p' (tsfvbtittfz6)
+[tmdb] Found TMDB ID: 320406 for 'Family Register' (tv, )
+[tmdb] Season: 1, Episode: 42
+[sync]   -> TV tmdb=320406 S1E42
+
+[sync] 'Family Register S01E42 720p' (xr8poidvmfzz)
+[tmdb] Found TMDB ID: 320406 for 'Family Register' (tv, )
+[tmdb] Season: 1, Episode: 42
+[sync]   -> TV tmdb=320406 S1E42
+
+[sync] 'Turning Point Generation 9 11 2026 1080p NF WEB-DL' (ylkis1xfdubb)
+[tmdb] Found TMDB ID: 1752159 for 'Turning Point Generation 9 11' (movie, 2026)
+[sync]   -> movie tmdb=1752159
+
+[sync] 'A Trap Called Desire S01E17 720p' (w9ibkvninnas)
+[tmdb] Found TMDB ID: 326991 for 'A Trap Called Desire' (tv, )
+[tmdb] Season: 1, Episode: 17
+[sync]   -> TV tmdb=326991 S1E17
+
+[sync] 'A Trap Called Desire S01E17 720p' (uwfbtyd284e1)
+[tmdb] Found TMDB ID: 326991 for 'A Trap Called Desire' (tv, )
+[tmdb] Season: 1, Episode: 17
+[sync]   -> TV tmdb=326991 S1E17
+
+[sync] 'She Rides Shotgun 2025 1080p BluRay' (c94gfk0n0cmq)
+[tmdb] Found TMDB ID: 1196573 for 'She Rides Shotgun' (movie, 2025)
+[sync]   -> movie tmdb=1196573
+
+[sync] 'A Trap Called Desire S01E17 720p' (n1dn3rfnlf9u)
+[tmdb] Found TMDB ID: 326991 for 'A Trap Called Desire' (tv, )
+[tmdb] Season: 1, Episode: 17
+[sync]   -> TV tmdb=326991 S1E17
+
+[sync] 'She Rides Shotgun 2025 1080p BluRay' (qmvfz8lwowhz)
+[tmdb] Found TMDB ID: 1196573 for 'She Rides Shotgun' (movie, 2025)
+[sync]   -> movie tmdb=1196573
+
+[sync] 'A Trap Called Desire S01E17 720p' (cfq24nmyc6bn)
+[tmdb] Found TMDB ID: 326991 for 'A Trap Called Desire' (tv, )
+[tmdb] Season: 1, Episode: 17
+[sync]   -> TV tmdb=326991 S1E17
+
+[sync] 'She Rides Shotgun 2025 1080p BluRay' (n9yodprygrk3)
+[tmdb] Found TMDB ID: 1196573 for 'She Rides Shotgun' (movie, 2025)
+[sync]   -> movie tmdb=1196573
+
+[sync] 'She Rides Shotgun 2025 1080p BluRay' (f4mngp5dnm1x)
+[tmdb] Found TMDB ID: 1196573 for 'She Rides Shotgun' (movie, 2025)
+[sync]   -> movie tmdb=1196573
+
+[sync] 'Just Play Dead 2026 1080p AMZN WEB-DL' (8z8ihk31gsrh)
+[tmdb] Found TMDB ID: 1480574 for 'Just Play Dead' (movie, 2026)
+[sync]   -> movie tmdb=1480574
+
+[sync] 'Blossom Through The Cloud S01E01 1080p' (mvj4ndv8b3v2)
+[tmdb] Found TMDB ID: 286988 for 'Blossom Through The Cloud' (tv, )
+[tmdb] Season: 1, Episode: 1
+[sync]   -> TV tmdb=286988 S1E1
+
+[sync] 'Confinement 2026 1080p AMZN WEB-DL' (kgyvsdnih669)
+[tmdb] Found TMDB ID: 1742458 for 'Confinement' (movie, 2026)
+[sync]   -> movie tmdb=1742458
+
+[sync] 'Blossom Through The Cloud S01E01 1080p' (mk7dynbmka50)
+[tmdb] Found TMDB ID: 286988 for 'Blossom Through The Cloud' (tv, )
+[tmdb] Season: 1, Episode: 1
+[sync]   -> TV tmdb=286988 S1E1
+
+[sync] 'Blossom Through The Cloud S01E01 1080p' (0592wu8pvi4w)
+[tmdb] Found TMDB ID: 286988 for 'Blossom Through The Cloud' (tv, )
+[tmdb] Season: 1, Episode: 1
+[sync]   -> TV tmdb=286988 S1E1
+
+[sync] 'AWAKEN Episode 14 1080p WEB-DL' (qwylgqo5zxw9)
+[tmdb] No results found for 'AWAKEN Episode 14' (movie, )
+[sync]   -> movie tmdb=None
+
+[sync] 'Detective Conan - 1211 [1080p]' (ds446a8dox9j)
+[tmdb] No results found for 'Detective Conan - 1211 [ ]' (movie, )
+[sync]   -> movie tmdb=None
+
+[sync] 'Rescue Me S02E12 1080p NF WEB-DL' (xquh9611p73n)
+[tmdb] Found TMDB ID: 4344 for 'Rescue Me' (tv, )
+[tmdb] Season: 2, Episode: 12
+[sync]   -> TV tmdb=4344 S2E12
+
+[sync] 'Rescue Me S02E12 1080p NF WEB-DL' (qj750kwibdxn)
+[tmdb] Found TMDB ID: 4344 for 'Rescue Me' (tv, )
+[tmdb] Season: 2, Episode: 12
+[sync]   -> TV tmdb=4344 S2E12
+
+[sync] 'Rescue Me S02E12 1080p NF WEB-DL' (8hzgntj4ovqa)
+[tmdb] Found TMDB ID: 4344 for 'Rescue Me' (tv, )
+[tmdb] Season: 2, Episode: 12
+[sync]   -> TV tmdb=4344 S2E12
+
+[sync] 'Rescue Me S02E12 1080p NF WEB-DL' (x3xz91le3yxz)
+[tmdb] Found TMDB ID: 4344 for 'Rescue Me' (tv, )
+[tmdb] Season: 2, Episode: 12
+[sync]   -> TV tmdb=4344 S2E12
+
+[sync] 'The Upshaws S02E04 1080p NF WEB-DL' (knmdxn4i6mdj)
+[tmdb] Found TMDB ID: 121509 for 'The Upshaws' (tv, )
+[tmdb] Season: 2, Episode: 4
+[sync]   -> TV tmdb=121509 S2E4
+
+[sync] 'The Upshaws S02E03 1080p NF WEB-DL' (xek8oydg970b)
+[tmdb] Found TMDB ID: 121509 for 'The Upshaws' (tv, )
+[tmdb] Season: 2, Episode: 3
+[sync]   -> TV tmdb=121509 S2E3
+
+[sync] 'The Upshaws S02E02 1080p NF WEB-DL' (ruz0i5adi2f1)
+[tmdb] Found TMDB ID: 121509 for 'The Upshaws' (tv, )
+[tmdb] Season: 2, Episode: 2
+[sync]   -> TV tmdb=121509 S2E2
+
+[sync] 'The Upshaws S02E02 1080p NF WEB-DL' (ou5ups8xu96d)
+[tmdb] Found TMDB ID: 121509 for 'The Upshaws' (tv, )
+[tmdb] Season: 2, Episode: 2
+[sync]   -> TV tmdb=121509 S2E2
+
+[sync] 'The Upshaws S02E02 1080p NF WEB-DL' (fyqvhvwmqmsd)
+[tmdb] Found TMDB ID: 121509 for 'The Upshaws' (tv, )
+[tmdb] Season: 2, Episode: 2
+[sync]   -> TV tmdb=121509 S2E2
+
+[sync] 'The Upshaws S02E02 1080p NF WEB-DL' (mlfp5i49eup5)
+[tmdb] Found TMDB ID: 121509 for 'The Upshaws' (tv, )
+[tmdb] Season: 2, Episode: 2
+[sync]   -> TV tmdb=121509 S2E2
+
+[sync] 'The Upshaws S02E01 1080p NF WEB-DL' (dhafzvzkh1gu)
+[tmdb] Found TMDB ID: 121509 for 'The Upshaws' (tv, )
+[tmdb] Season: 2, Episode: 1
+[sync]   -> TV tmdb=121509 S2E1
+
+[sync] 'The Upshaws S01E10 1080p NF WEB-DL' (q4jpw2tjaf8y)
+[tmdb] Found TMDB ID: 121509 for 'The Upshaws' (tv, )
+[tmdb] Season: 1, Episode: 10
+[sync]   -> TV tmdb=121509 S1E10
+
+[sync] 'The Upshaws S01E09 1080p NF WEB-DL' (0lkbajvq9r4d)
+[tmdb] Found TMDB ID: 121509 for 'The Upshaws' (tv, )
+[tmdb] Season: 1, Episode: 9
+[sync]   -> TV tmdb=121509 S1E9
+
+[sync] 'The Upshaws S01E08 1080p NF WEB-DL' (ilne76df9i7w)
+[tmdb] Found TMDB ID: 121509 for 'The Upshaws' (tv, )
+[tmdb] Season: 1, Episode: 8
+[sync]   -> TV tmdb=121509 S1E8
+
+[sync] 'The Upshaws S01E07 1080p NF WEB-DL' (3e48kml4j02x)
+[tmdb] Found TMDB ID: 121509 for 'The Upshaws' (tv, )
+[tmdb] Season: 1, Episode: 7
+[sync]   -> TV tmdb=121509 S1E7
+
+[sync] 'The Upshaws S01E06 1080p NF WEB-DL' (vv844ppxeui5)
+[tmdb] Found TMDB ID: 121509 for 'The Upshaws' (tv, )
+[tmdb] Season: 1, Episode: 6
+[sync]   -> TV tmdb=121509 S1E6
+
+[sync] 'The Upshaws S01E05 1080p NF WEB-DL' (xxem2yns5m4t)
+[tmdb] Found TMDB ID: 121509 for 'The Upshaws' (tv, )
+[tmdb] Season: 1, Episode: 5
+[sync]   -> TV tmdb=121509 S1E5
+
+[sync] 'The Politician S02E01 1080p NF WEB-DL' (t460lmbjl2da)
+[tmdb] Found TMDB ID: 83127 for 'The Politician' (tv, )
+[tmdb] Season: 2, Episode: 1
+[sync]   -> TV tmdb=83127 S2E1
+
+[sync] 'The Politician S01E07 1080p NF WEB-DL' (a3qxa5rqf1yf)
+[tmdb] Found TMDB ID: 83127 for 'The Politician' (tv, )
+[tmdb] Season: 1, Episode: 7
+[sync]   -> TV tmdb=83127 S1E7
+
+[sync] 'The Politician S01E06 1080p NF WEB-DL' (dxnr6p35ymvv)
+[tmdb] Found TMDB ID: 83127 for 'The Politician' (tv, )
+[tmdb] Season: 1, Episode: 6
+[sync]   -> TV tmdb=83127 S1E6
+
+[sync] 'The Politician S01E05 1080p NF WEB-DL' (vecpcp3b864n)
+[tmdb] Found TMDB ID: 83127 for 'The Politician' (tv, )
+[tmdb] Season: 1, Episode: 5
+[sync]   -> TV tmdb=83127 S1E5
+
+[sync] 'The Politician S01E03 1080p NF WEB-DL' (3nl84wo9c9b8)
+[tmdb] Found TMDB ID: 83127 for 'The Politician' (tv, )
+[tmdb] Season: 1, Episode: 3
+[sync]   -> TV tmdb=83127 S1E3
+
+[sync] 'The Politician S01E03 1080p NF WEB-DL' (dh0z7anioztm)
+[tmdb] Found TMDB ID: 83127 for 'The Politician' (tv, )
+[tmdb] Season: 1, Episode: 3
+[sync]   -> TV tmdb=83127 S1E3
+
+[sync] 'The Politician S01E03 1080p NF WEB-DL' (qmgj8tzctkzc)
+[tmdb] Found TMDB ID: 83127 for 'The Politician' (tv, )
+[tmdb] Season: 1, Episode: 3
+[sync]   -> TV tmdb=83127 S1E3
+
+[sync] 'The Politician S01E03 1080p NF WEB-DL' (o83ot9e150is)
+[tmdb] Found TMDB ID: 83127 for 'The Politician' (tv, )
+[tmdb] Season: 1, Episode: 3
+[sync]   -> TV tmdb=83127 S1E3
+
+[sync] 'The Politician S01E02 1080p NF WEB-DL' (byomwpc3skuo)
+[tmdb] Found TMDB ID: 83127 for 'The Politician' (tv, )
+[tmdb] Season: 1, Episode: 2
+[sync]   -> TV tmdb=83127 S1E2
+
+[sync] 'The Politician S01E01 1080p NF WEB-DL' (8o6o5sjtgyay)
+[tmdb] Found TMDB ID: 83127 for 'The Politician' (tv, )
+[tmdb] Season: 1, Episode: 1
+[sync]   -> TV tmdb=83127 S1E1
+
+[sync] 'Ted Lasso S04E051080p ATVP WEB-DL' (a5l2pge7ixdb)
+[tmdb] Found TMDB ID: 97546 for 'Ted Lasso' (tv, )
+[tmdb] Season: 4, Episode: 5
+[sync]   -> TV tmdb=97546 S4E5
+
+[sync] 'Ted Lasso S04E051080p ATVP WEB-DL' (2uvrs5yqycv8)
+[tmdb] Found TMDB ID: 97546 for 'Ted Lasso' (tv, )
+[tmdb] Season: 4, Episode: 5
+[sync]   -> TV tmdb=97546 S4E5
+
+[sync] 'Ted Lasso S04E051080p ATVP WEB-DL' (hl3do3k0kel6)
+[tmdb] Found TMDB ID: 97546 for 'Ted Lasso' (tv, )
+[tmdb] Season: 4, Episode: 5
+[sync]   -> TV tmdb=97546 S4E5
+
+[sync] 'Ted Lasso S04E051080p ATVP WEB-DL' (hhmiw2vn4k25)
+[tmdb] Found TMDB ID: 97546 for 'Ted Lasso' (tv, )
+[tmdb] Season: 4, Episode: 5
+[sync]   -> TV tmdb=97546 S4E5
+
+[sync] 'Rescue Me S03E12 1080p NF WEB-DL' (euy05ytck3jc)
+[tmdb] Found TMDB ID: 4344 for 'Rescue Me' (tv, )
+[tmdb] Season: 3, Episode: 12
+[sync]   -> TV tmdb=4344 S3E12
+
+[sync] 'Rescue Me S03E11 1080p NF WEB-DL' (lyvhcle5o7wr)
+[tmdb] Found TMDB ID: 4344 for 'Rescue Me' (tv, )
+[tmdb] Season: 3, Episode: 11
+[sync]   -> TV tmdb=4344 S3E11
+
+[sync] 'Rescue Me S03E10 1080p NF WEB-DL' (syevqus9idbx)
+[tmdb] Found TMDB ID: 4344 for 'Rescue Me' (tv, )
+[tmdb] Season: 3, Episode: 10
+[sync]   -> TV tmdb=4344 S3E10
+
+[sync] 'Rescue Me S03E04 1080p NF WEB-DL' (mmlxshfycvlg)
+[tmdb] Found TMDB ID: 4344 for 'Rescue Me' (tv, )
+[tmdb] Season: 3, Episode: 4
+[sync]   -> TV tmdb=4344 S3E4
+
+[sync] 'Rescue Me S02E13 1080p NF WEB-DL' (wi7x0fvkfi2o)
+[tmdb] Found TMDB ID: 4344 for 'Rescue Me' (tv, )
+[tmdb] Season: 2, Episode: 13
+[sync]   -> TV tmdb=4344 S2E13
+
+[sync] 'Rescue Me S02E12 1080p NF WEB-DL' (jys6by0066hb)
+[tmdb] Found TMDB ID: 4344 for 'Rescue Me' (tv, )
+[tmdb] Season: 2, Episode: 12
+[sync]   -> TV tmdb=4344 S2E12
+
+[sync] 'Rescue Me S02E12 1080p NF WEB-DL' (3za0rr7z3wxz)
+[tmdb] Found TMDB ID: 4344 for 'Rescue Me' (tv, )
+[tmdb] Season: 2, Episode: 12
+[sync]   -> TV tmdb=4344 S2E12
+
+[sync] 'Rescue Me S02E12 1080p NF WEB-DL' (m5h6anzn7esc)
+[tmdb] Found TMDB ID: 4344 for 'Rescue Me' (tv, )
+[tmdb] Season: 2, Episode: 12
+[sync]   -> TV tmdb=4344 S2E12
+
+[sync] 'Rescue Me S02E12 1080p NF WEB-DL' (jtsz9ixhyu5f)
+[tmdb] Found TMDB ID: 4344 for 'Rescue Me' (tv, )
+[tmdb] Season: 2, Episode: 12
+[sync]   -> TV tmdb=4344 S2E12
+
+[sync] 'Rescue Me S02E11 1080p NF WEB-DL' (cp67n7gio4yy)
+[tmdb] Found TMDB ID: 4344 for 'Rescue Me' (tv, )
+[tmdb] Season: 2, Episode: 11
+[sync]   -> TV tmdb=4344 S2E11
+
+[sync] 'Rescue Me S02E10 1080p NF WEB-DL' (796o19cosxlc)
+[tmdb] Found TMDB ID: 4344 for 'Rescue Me' (tv, )
+[tmdb] Season: 2, Episode: 10
+[sync]   -> TV tmdb=4344 S2E10
+
+[sync] 'Rescue Me S02E09 1080p NF WEB-DL' (8yon6y0p3z30)
+[tmdb] Found TMDB ID: 4344 for 'Rescue Me' (tv, )
+[tmdb] Season: 2, Episode: 9
+[sync]   -> TV tmdb=4344 S2E9
+
+[sync] 'The Upshaws S01E04 1080p NF WEB-DL' (vemdxcojzia6)
+[tmdb] Found TMDB ID: 121509 for 'The Upshaws' (tv, )
+[tmdb] Season: 1, Episode: 4
+[sync]   -> TV tmdb=121509 S1E4
+
+[sync] 'The Upshaws S01E03 1080p NF WEB-DL' (3bj4w63t4bgb)
+[tmdb] Found TMDB ID: 121509 for 'The Upshaws' (tv, )
+[tmdb] Season: 1, Episode: 3
+[sync]   -> TV tmdb=121509 S1E3
+
+[sync] 'The Upshaws S01E02 1080p NF WEB-DL' (ar2y072eixfz)
+[tmdb] Found TMDB ID: 121509 for 'The Upshaws' (tv, )
+[tmdb] Season: 1, Episode: 2
+[sync]   -> TV tmdb=121509 S1E2
+
+[sync] 'The Upshaws S01E01 1080p NF WEB-DL' (53hbzoxf7rz7)
+[tmdb] Found TMDB ID: 121509 for 'The Upshaws' (tv, )
+[tmdb] Season: 1, Episode: 1
+[sync]   -> TV tmdb=121509 S1E1
+
+[sync] 'The Politician S02E07 1080p NF WEB-DL' (0m5bcge9sh4k)
+[tmdb] Found TMDB ID: 83127 for 'The Politician' (tv, )
+[tmdb] Season: 2, Episode: 7
+[sync]   -> TV tmdb=83127 S2E7
+
+[sync] 'The Politician S02E06 1080p NF WEB-DL' (lm5mv899u7jy)
+[tmdb] Found TMDB ID: 83127 for 'The Politician' (tv, )
+[tmdb] Season: 2, Episode: 6
+[sync]   -> TV tmdb=83127 S2E6
+
+[sync] 'The Politician S02E05 1080p NF WEB-DL' (mngls04pt7py)
+[tmdb] Found TMDB ID: 83127 for 'The Politician' (tv, )
+[tmdb] Season: 2, Episode: 5
+[sync]   -> TV tmdb=83127 S2E5
+
+[sync] 'The Politician S02E04 1080p NF WEB-DL' (u4mq1gczuhxd)
+[tmdb] Found TMDB ID: 83127 for 'The Politician' (tv, )
+[tmdb] Season: 2, Episode: 4
+[sync]   -> TV tmdb=83127 S2E4
+
+[sync] 'The Politician S02E03 1080p NF WEB-DL' (2a3nyi4il8w4)
+[tmdb] Found TMDB ID: 83127 for 'The Politician' (tv, )
+[tmdb] Season: 2, Episode: 3
+[sync]   -> TV tmdb=83127 S2E3
+
+[sync] 'The Politician S02E02 1080p NF WEB-DL' (ea24xx0pk4i2)
+[tmdb] Found TMDB ID: 83127 for 'The Politician' (tv, )
+[tmdb] Season: 2, Episode: 2
+[sync]   -> TV tmdb=83127 S2E2
+
+[sync] 'The Politician S01E08 1080p NF WEB-DL' (s1d4pgr6172j)
+[tmdb] Found TMDB ID: 83127 for 'The Politician' (tv, )
+[tmdb] Season: 1, Episode: 8
+[sync]   -> TV tmdb=83127 S1E8
+
+[sync] 'The Politician S01E04 1080p NF WEB-DL' (yzskpsmdjajo)
+[tmdb] Found TMDB ID: 83127 for 'The Politician' (tv, )
+[tmdb] Season: 1, Episode: 4
+[sync]   -> TV tmdb=83127 S1E4
+
+[sync] 'Teenage Bounty Hunters S01E07 1080p NF WEB-DL' (89bc5y0jdaeo)
+[tmdb] Found TMDB ID: 90766 for 'Teenage Bounty Hunters' (tv, )
+[tmdb] Season: 1, Episode: 7
+[sync]   -> TV tmdb=90766 S1E7
+
+[sync] 'Teenage Bounty Hunters S01E06 1080p NF WEB-DL' (37pca6o85zoz)
+[tmdb] Found TMDB ID: 90766 for 'Teenage Bounty Hunters' (tv, )
+[tmdb] Season: 1, Episode: 6
+[sync]   -> TV tmdb=90766 S1E6
+
+[sync] 'Teenage Bounty Hunters S01E05 1080p NF WEB-DL' (eavhlwybuu3i)
+[tmdb] Found TMDB ID: 90766 for 'Teenage Bounty Hunters' (tv, )
+[tmdb] Season: 1, Episode: 5
+[sync]   -> TV tmdb=90766 S1E5
+
+[sync] 'Teenage Bounty Hunters S01E05 1080p NF WEB-DL' (uabuo7km34ki)
+[tmdb] Found TMDB ID: 90766 for 'Teenage Bounty Hunters' (tv, )
+[tmdb] Season: 1, Episode: 5
+[sync]   -> TV tmdb=90766 S1E5
+
+[sync] 'Teenage Bounty Hunters S01E05 1080p NF WEB-DL' (ynvsngtsbubc)
+[tmdb] Found TMDB ID: 90766 for 'Teenage Bounty Hunters' (tv, )
+[tmdb] Season: 1, Episode: 5
+[sync]   -> TV tmdb=90766 S1E5
+
+[sync] 'Teenage Bounty Hunters S01E05 1080p NF WEB-DL' (jls5gdlmcb4l)
+[tmdb] Found TMDB ID: 90766 for 'Teenage Bounty Hunters' (tv, )
+[tmdb] Season: 1, Episode: 5
+[sync]   -> TV tmdb=90766 S1E5
+
+[sync] 'Teenage Bounty Hunters S01E04 1080p NF WEB-DL' (pun8f91ff53r)
+[tmdb] Found TMDB ID: 90766 for 'Teenage Bounty Hunters' (tv, )
+[tmdb] Season: 1, Episode: 4
+[sync]   -> TV tmdb=90766 S1E4
+
+[sync] 'Teenage Bounty Hunters S01E03 1080p NF WEB-DL' (f1ioziw0njk2)
+[tmdb] Found TMDB ID: 90766 for 'Teenage Bounty Hunters' (tv, )
+[tmdb] Season: 1, Episode: 3
+[sync]   -> TV tmdb=90766 S1E3
+
+[sync] 'Teenage Bounty Hunters S01E02 1080p NF WEB-DL' (9082oy0phup6)
+[tmdb] Found TMDB ID: 90766 for 'Teenage Bounty Hunters' (tv, )
+[tmdb] Season: 1, Episode: 2
+[sync]   -> TV tmdb=90766 S1E2
+
+[sync] 'Teenage Bounty Hunters S01E01 1080p NF WEB-DL' (revals9hyii4)
+[tmdb] Found TMDB ID: 90766 for 'Teenage Bounty Hunters' (tv, )
+[tmdb] Season: 1, Episode: 1
+[sync]   -> TV tmdb=90766 S1E1
+
+[sync] 'All the Truth in My Lies S01E05 1080p NF WEB-DL' (xnyjz93o2535)
+[tmdb] Found TMDB ID: 292558 for 'All the Truth in My Lies' (tv, )
+[tmdb] Season: 1, Episode: 5
+[sync]   -> TV tmdb=292558 S1E5
+
+[sync] 'All the Truth in My Lies S01E04 1080p NF WEB-DL' (bnk3ildp5wm8)
+[tmdb] Found TMDB ID: 292558 for 'All the Truth in My Lies' (tv, )
+[tmdb] Season: 1, Episode: 4
+[sync]   -> TV tmdb=292558 S1E4
+
+[sync] 'All the Truth in My Lies S01E03 1080p NF WEB-DL' (ni1a0m4bxrqt)
+[tmdb] Found TMDB ID: 292558 for 'All the Truth in My Lies' (tv, )
+[tmdb] Season: 1, Episode: 3
+[sync]   -> TV tmdb=292558 S1E3
+
+[sync] 'All the Truth in My Lies S01E02 1080p NF WEB-DL' (s7nbi3mkkaq7)
+[tmdb] Found TMDB ID: 292558 for 'All the Truth in My Lies' (tv, )
+[tmdb] Season: 1, Episode: 2
+[sync]   -> TV tmdb=292558 S1E2
+
+[sync] 'All the Truth in My Lies S01E01 1080p NF WEB-DL' (ujys940hyxcf)
+[tmdb] Found TMDB ID: 292558 for 'All the Truth in My Lies' (tv, )
+[tmdb] Season: 1, Episode: 1
+[sync]   -> TV tmdb=292558 S1E1
+
+[sync] 'All the Truth in My Lies S01E01 1080p NF WEB-DL' (fpcm2kjx4t7t)
+[tmdb] Found TMDB ID: 292558 for 'All the Truth in My Lies' (tv, )
+[tmdb] Season: 1, Episode: 1
+[sync]   -> TV tmdb=292558 S1E1
+
+[sync] 'dark matter s02e01 1080p web' (rin23cvivnee)
+[tmdb] Found TMDB ID: 196322 for 'dark matter' (tv, )
+[tmdb] Season: 2, Episode: 1
+[sync]   -> TV tmdb=196322 S2E1
+
+[sync] 'star trek strange new worlds s04e06 1080p' (bm6jrn0b1q7i)
+[tmdb] Found TMDB ID: 103516 for 'star trek strange new worlds' (tv, )
+[tmdb] Season: 4, Episode: 6
+[sync]   -> TV tmdb=103516 S4E6
+
+[sync] 'Leanne S02E10 1080p NF WEB-DL' (osy3qugp5p0f)
+[tmdb] Found TMDB ID: 252751 for 'Leanne' (tv, )
+[tmdb] Season: 2, Episode: 10
+[sync]   -> TV tmdb=252751 S2E10
+
+[sync] 'Medical Examiner Dr  Qin- Bones of the Past (2026) Episode 15 720p' (fgc4izxw94mz)
+[tmdb] No results found for 'Medical Examiner Dr Qin- Bones of the Past Episode 15' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'Medical Examiner Dr  Qin- Bones of the Past (2026) Episode 15 720p' (k0zqlt9cv2uc)
+[tmdb] No results found for 'Medical Examiner Dr Qin- Bones of the Past Episode 15' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'Medical Examiner Dr  Qin- Bones of the Past (2026) Episode 15 720p' (fol3ekq3l9li)
+[tmdb] No results found for 'Medical Examiner Dr Qin- Bones of the Past Episode 15' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'Medical Examiner Dr  Qin- Bones of the Past (2026) Episode 15 720p' (vid4991gwd5p)
+[tmdb] No results found for 'Medical Examiner Dr Qin- Bones of the Past Episode 15' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'Fired Up! EP05 1080p' (eanxkvkinyxb)
+[tmdb] No results found for 'Fired Up! EP05' (movie, )
+[sync]   -> movie tmdb=None
+
+[sync] 'Fired Up! EP05 1080p' (vhmywj3rypo6)
+[tmdb] No results found for 'Fired Up! EP05' (movie, )
+[sync]   -> movie tmdb=None
+
+[sync] 'Fired Up! EP05 1080p' (ln8kz3qbw0ez)
+[tmdb] No results found for 'Fired Up! EP05' (movie, )
+[sync]   -> movie tmdb=None
+
+[sync] 'Fired Up! EP05 1080p' (0i9enouopxmz)
+[tmdb] No results found for 'Fired Up! EP05' (movie, )
+[sync]   -> movie tmdb=None
+
+[sync] 'Our Happy Days 2026 S01E107 720p' (2pkstsh99xta)
+[tmdb] Found TMDB ID: 313735 for 'Our Happy Days' (tv, 2026)
+[tmdb] Season: 1, Episode: 107
+[sync]   -> TV tmdb=313735 S1E107
+
+[sync] 'Our Happy Days 2026 S01E107 720p' (6nq5vnezrab8)
+[tmdb] Found TMDB ID: 313735 for 'Our Happy Days' (tv, 2026)
+[tmdb] Season: 1, Episode: 107
+[sync]   -> TV tmdb=313735 S1E107
+
+[sync] 'Our Happy Days 2026 S01E107 720p' (ivsyx7cxodzp)
+[tmdb] Found TMDB ID: 313735 for 'Our Happy Days' (tv, 2026)
+[tmdb] Season: 1, Episode: 107
+[sync]   -> TV tmdb=313735 S1E107
+
+[sync] 'Our Happy Days 2026 S01E107 720p' (uvzt9j8d8r7f)
+[tmdb] Found TMDB ID: 313735 for 'Our Happy Days' (tv, 2026)
+[tmdb] Season: 1, Episode: 107
+[sync]   -> TV tmdb=313735 S1E107
+
+[sync] 'Remnants of Gold (2026) Episode 5 720p' (q2m4hz8us71u)
+[tmdb] No results found for 'Remnants of Gold Episode 5' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'Remnants of Gold (2026) Episode 5 720p' (6gb6ma9bwzgp)
+[tmdb] No results found for 'Remnants of Gold Episode 5' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'Remnants of Gold (2026) Episode 5 720p' (rhda693arpm6)
+[tmdb] No results found for 'Remnants of Gold Episode 5' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'Remnants of Gold (2026) Episode 5 720p' (gi0i6nd332qd)
+[tmdb] No results found for 'Remnants of Gold Episode 5' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'Crossroad S01E06 1080p' (46t91fpfwore)
+[tmdb] Found TMDB ID: 293943 for 'Crossroad' (tv, )
+[tmdb] Season: 1, Episode: 6
+[sync]   -> TV tmdb=293943 S1E6
+
+[sync] 'Crossroad S01E06 1080p' (qqufz4qgsfcc)
+[tmdb] Found TMDB ID: 293943 for 'Crossroad' (tv, )
+[tmdb] Season: 1, Episode: 6
+[sync]   -> TV tmdb=293943 S1E6
+
+[sync] 'Crossroad S01E06 1080p' (0602exu803ra)
+[tmdb] Found TMDB ID: 293943 for 'Crossroad' (tv, )
+[tmdb] Season: 1, Episode: 6
+[sync]   -> TV tmdb=293943 S1E6
+
+[sync] 'Crossroad S01E06 1080p' (mac593u5v1ve)
+[tmdb] Found TMDB ID: 293943 for 'Crossroad' (tv, )
+[tmdb] Season: 1, Episode: 6
+[sync]   -> TV tmdb=293943 S1E6
+
+[sync] 'Cang Feng (2026) Episode 16 720p' (ug8m7jmsd3d6)
+[tmdb] No results found for 'Cang Feng Episode 16' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'Cang Feng (2026) Episode 16 720p' (np71nko0e9cz)
+[tmdb] No results found for 'Cang Feng Episode 16' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'Cang Feng (2026) Episode 16 720p' (ux9sni4sy3e8)
+[tmdb] No results found for 'Cang Feng Episode 16' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'Cang Feng (2026) Episode 16 720p' (st7zq0w848ij)
+[tmdb] No results found for 'Cang Feng Episode 16' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'jukishi - 09 [1080p]' (jtpbppmvphmv)
+[tmdb] No results found for 'jukishi - 09 [ ]' (movie, )
+[sync]   -> movie tmdb=None
+
+[sync] 'jukishi - 09 [1080p]' (esbq69m521lo)
+[tmdb] No results found for 'jukishi - 09 [ ]' (movie, )
+[sync]   -> movie tmdb=None
+
+[sync] 'jukishi - 09 [1080p]' (n7ujn48f1x8z)
+[tmdb] No results found for 'jukishi - 09 [ ]' (movie, )
+[sync]   -> movie tmdb=None
+
+[sync] 'jukishi - 09 [1080p]' (shz5g6m0azqb)
+[tmdb] No results found for 'jukishi - 09 [ ]' (movie, )
+[sync]   -> movie tmdb=None
+
+[sync] 'Mousetrap S01E02 1080p NF WEB-DL' (lnddi20va3ei)
+[tmdb] Found TMDB ID: 290193 for 'Mousetrap' (tv, )
+[tmdb] Season: 1, Episode: 2
+[sync]   -> TV tmdb=290193 S1E2
+
+[sync] 'Mousetrap S01E01 1080p NF WEB-DL' (v2serpcty5xk)
+[tmdb] Found TMDB ID: 290193 for 'Mousetrap' (tv, )
+[tmdb] Season: 1, Episode: 1
+[sync]   -> TV tmdb=290193 S1E1
+
+[sync] 'Medical Examiner Dr  Qin- Bones of the Past (2026) Episode 16 720p' (hstvg88fdsvd)
+[tmdb] No results found for 'Medical Examiner Dr Qin- Bones of the Past Episode 16' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'Medical Examiner Dr  Qin- Bones of the Past (2026) Episode 15 720p' (pboz5byffptj)
+[tmdb] No results found for 'Medical Examiner Dr Qin- Bones of the Past Episode 15' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'Medical Examiner Dr  Qin- Bones of the Past (2026) Episode 15 720p' (t2lvy6zfmeji)
+[tmdb] No results found for 'Medical Examiner Dr Qin- Bones of the Past Episode 15' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'Medical Examiner Dr  Qin- Bones of the Past (2026) Episode 15 720p' (oxvg7wi5p6h1)
+[tmdb] No results found for 'Medical Examiner Dr Qin- Bones of the Past Episode 15' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'Medical Examiner Dr  Qin- Bones of the Past (2026) Episode 15 720p' (re0xqw43358m)
+[tmdb] No results found for 'Medical Examiner Dr Qin- Bones of the Past Episode 15' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'Love Siargao 2026 S01E19 720p' (hx4auk9tyiwh)
+[tmdb] Found TMDB ID: 310905 for 'Love Siargao' (tv, 2026)
+[tmdb] Season: 1, Episode: 19
+[sync]   -> TV tmdb=310905 S1E19
+
+[sync] 'Hanyi Enters the Heart (2026) Episode 23 720p' (skx0ab074mx8)
+[tmdb] No results found for 'Hanyi Enters the Heart Episode 23' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'Fired Up! EP05 1080p' (si7eptu0svw7)
+[tmdb] No results found for 'Fired Up! EP05' (movie, )
+[sync]   -> movie tmdb=None
+
+[sync] 'Fired Up! EP05 1080p' (2r2tyogqc7b2)
+[tmdb] No results found for 'Fired Up! EP05' (movie, )
+[sync]   -> movie tmdb=None
+
+[sync] 'Fired Up! EP05 1080p' (tof4jqofqdmy)
+[tmdb] No results found for 'Fired Up! EP05' (movie, )
+[sync]   -> movie tmdb=None
+
+[sync] 'Fired Up! EP05 1080p' (pvz5or8qwtfm)
+[tmdb] No results found for 'Fired Up! EP05' (movie, )
+[sync]   -> movie tmdb=None
+
+[sync] 'Born Again Episode 18 720p' (742hdhpr7j1q)
+[tmdb] No results found for 'Born Again Episode 18' (movie, )
+[sync]   -> movie tmdb=None
+
+[sync] '25 Years of You S01E07 1080p' (neysay2ftlr4)
+[tmdb] Found TMDB ID: 326063 for '25 Years of You' (tv, )
+[tmdb] Season: 1, Episode: 7
+[sync]   -> TV tmdb=326063 S1E7
+
+[sync] 'The Trembling of Cicada (2026) Episode 18 720p' (62jnkis2bqjf)
+[tmdb] No results found for 'The Trembling of Cicada Episode 18' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'The Trembling of Cicada (2026) Episode 17 720p' (al4mfptx37od)
+[tmdb] No results found for 'The Trembling of Cicada Episode 17' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'Our Happy Days 2026 S01E107 720p' (1bxpaqb19zes)
+[tmdb] Found TMDB ID: 313735 for 'Our Happy Days' (tv, 2026)
+[tmdb] Season: 1, Episode: 107
+[sync]   -> TV tmdb=313735 S1E107
+
+[sync] 'Our Happy Days 2026 S01E107 720p' (pdlorkxnilxj)
+[tmdb] Found TMDB ID: 313735 for 'Our Happy Days' (tv, 2026)
+[tmdb] Season: 1, Episode: 107
+[sync]   -> TV tmdb=313735 S1E107
+
+[sync] 'Our Happy Days 2026 S01E107 720p' (jn1cqg3382sp)
+[tmdb] Found TMDB ID: 313735 for 'Our Happy Days' (tv, 2026)
+[tmdb] Season: 1, Episode: 107
+[sync]   -> TV tmdb=313735 S1E107
+
+[sync] 'Our Happy Days 2026 S01E107 720p' (e8wdp8m0kxsn)
+[tmdb] Found TMDB ID: 313735 for 'Our Happy Days' (tv, 2026)
+[tmdb] Season: 1, Episode: 107
+[sync]   -> TV tmdb=313735 S1E107
+
+[sync] 'Remnants of Gold (2026) Episode 5 720p' (wmn3u4inq9hk)
+[tmdb] No results found for 'Remnants of Gold Episode 5' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'Remnants of Gold (2026) Episode 5 720p' (o2215mwsv6tm)
+[tmdb] No results found for 'Remnants of Gold Episode 5' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'Remnants of Gold (2026) Episode 5 720p' (x9qpmnxq8v5r)
+[tmdb] No results found for 'Remnants of Gold Episode 5' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'Remnants of Gold (2026) Episode 5 720p' (lh42izp20nfj)
+[tmdb] No results found for 'Remnants of Gold Episode 5' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'OK Lets Get Divorced Episode 4 1080p' (8uz9fccvrf5v)
+[tmdb] No results found for 'OK Lets Get Divorced Episode 4' (movie, )
+[sync]   -> movie tmdb=None
+
+[sync] 'Love U Lots 2026 Episode 6 720p' (67z0iaq9t54z)
+[tmdb] No results found for 'Love U Lots Episode 6' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'Family Register 2026 S01E39 720p' (egk2dhvkcaw8)
+[tmdb] Found TMDB ID: 320406 for 'Family Register' (tv, 2026)
+[tmdb] Season: 1, Episode: 39
+[sync]   -> TV tmdb=320406 S1E39
+
+[sync] 'Dating Alys Perez Episode 12 720p' (3yz9kdeuxqkq)
+[tmdb] No results found for 'Dating Alys Perez Episode 12' (movie, )
+[sync]   -> movie tmdb=None
+
+[sync] 'Crossroad S01E08 1080p' (sbhsa3mh8i86)
+[tmdb] Found TMDB ID: 293943 for 'Crossroad' (tv, )
+[tmdb] Season: 1, Episode: 8
+[sync]   -> TV tmdb=293943 S1E8
+
+[sync] 'Crossroad S01E07 1080p' (isgtoixjkm62)
+[tmdb] Found TMDB ID: 293943 for 'Crossroad' (tv, )
+[tmdb] Season: 1, Episode: 7
+[sync]   -> TV tmdb=293943 S1E7
+
+[sync] 'Crossroad S01E06 1080p' (olarlexy995l)
+[tmdb] Found TMDB ID: 293943 for 'Crossroad' (tv, )
+[tmdb] Season: 1, Episode: 6
+[sync]   -> TV tmdb=293943 S1E6
+
+[sync] 'Crossroad S01E06 1080p' (n79wwqi5yjsb)
+[tmdb] Found TMDB ID: 293943 for 'Crossroad' (tv, )
+[tmdb] Season: 1, Episode: 6
+[sync]   -> TV tmdb=293943 S1E6
+
+[sync] 'Crossroad S01E06 1080p' (4edm9x520v96)
+[tmdb] Found TMDB ID: 293943 for 'Crossroad' (tv, )
+[tmdb] Season: 1, Episode: 6
+[sync]   -> TV tmdb=293943 S1E6
+
+[sync] 'Crossroad S01E06 1080p' (m34f78jycknj)
+[tmdb] Found TMDB ID: 293943 for 'Crossroad' (tv, )
+[tmdb] Season: 1, Episode: 6
+[sync]   -> TV tmdb=293943 S1E6
+
+[sync] 'Cang Feng (2026) Episode 17 720p' (xhpf5eml4yik)
+[tmdb] No results found for 'Cang Feng Episode 17' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'Cang Feng (2026) Episode 16 720p' (q587zxjk2ubf)
+[tmdb] No results found for 'Cang Feng Episode 16' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'Cang Feng (2026) Episode 16 720p' (mndkg8f5l8xo)
+[tmdb] No results found for 'Cang Feng Episode 16' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'Cang Feng (2026) Episode 16 720p' (ahzlpvgjwkl2)
+[tmdb] No results found for 'Cang Feng Episode 16' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'Cang Feng (2026) Episode 16 720p' (3vc8py2ctcs8)
+[tmdb] No results found for 'Cang Feng Episode 16' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'A Trap Called Desire 2026 S01E14 720p' (nozy4sgwfu9n)
+[tmdb] Found TMDB ID: 326991 for 'A Trap Called Desire' (tv, 2026)
+[tmdb] Season: 1, Episode: 14
+[sync]   -> TV tmdb=326991 S1E14
+
+[sync] 'Isekai Nonbiri Nouka 2 - 12 [1080p]' (yqseg74v1bea)
+[tmdb] No results found for 'Isekai Nonbiri Nouka 2 - 12 [ ]' (movie, )
+[sync]   -> movie tmdb=None
+
+[sync] 'Otome Kaijuu Carameliser - 09 [1080p]' (5jobnrwuvfep)
+[tmdb] No results found for 'Otome Kaijuu Carameliser - 09 [ ]' (movie, )
+[sync]   -> movie tmdb=None
+
+[sync] 'Awaken S01E06 1080p WEB-DL' (1g52xt0x0yat)
+[sync]   -> TV tmdb=289761 S1E6
+
+[sync] 'Awaken S01E05 1080p WEB-DL' (2oj6nstq9fke)
+[sync]   -> TV tmdb=289761 S1E5
+
+[sync] 'Bang Dream Yumemita - 11 [1080p]' (02zlsl2cdv13)
+[tmdb] No results found for 'Bang Dream Yumemita - 11 [ ]' (movie, )
+[sync]   -> movie tmdb=None
+
+[sync] 'jukishi - 09 [1080p]' (hbzon1s0ab1r)
+[tmdb] No results found for 'jukishi - 09 [ ]' (movie, )
+[sync]   -> movie tmdb=None
+
+[sync] 'jukishi - 09 [1080p]' (o0vatb19uzys)
+[tmdb] No results found for 'jukishi - 09 [ ]' (movie, )
+[sync]   -> movie tmdb=None
+
+[sync] 'jukishi - 09 [1080p]' (w5wkj4kq5xdt)
+[tmdb] No results found for 'jukishi - 09 [ ]' (movie, )
+[sync]   -> movie tmdb=None
+
+[sync] 'jukishi - 09 [1080p]' (7urqij4p6pcj)
+[tmdb] No results found for 'jukishi - 09 [ ]' (movie, )
+[sync]   -> movie tmdb=None
+
+[sync] 'Mebius Dust - 08 [1080p]' (6xn5ijca4oeg)
+[tmdb] No results found for 'Mebius Dust - 08 [ ]' (movie, )
+[sync]   -> movie tmdb=None
+
+[sync] 'rakudai kenja - 10 [1080p]' (n3muqv58bxn8)
+[tmdb] No results found for 'rakudai kenja - 10 [ ]' (movie, )
+[sync]   -> movie tmdb=None
+
+[sync] 'Super no Ura de Yani Suu Futari - 08 [1080p]' (xf54zogrx748)
+[tmdb] No results found for 'Super no Ura de Yani Suu Futari - 08 [ ]' (movie, )
+[sync]   -> movie tmdb=None
+
+[sync] 'Bungou Stray Dogs Wan 2 - 09 [1080p]' (qkm5buwkh9sq)
+[tmdb] No results found for 'Bungou Stray Dogs Wan 2 - 09 [ ]' (movie, )
+[sync]   -> movie tmdb=None
+
+[sync] 'The Upshaws S03E01 1080p NF WEB-DL' (rpl3d00rd9zw)
+[tmdb] Found TMDB ID: 121509 for 'The Upshaws' (tv, )
+[tmdb] Season: 3, Episode: 1
+[sync]   -> TV tmdb=121509 S3E1
+
+[sync] 'The Upshaws S02E08 1080p NF WEB-DL' (9nxrgwftl7ww)
+[tmdb] Found TMDB ID: 121509 for 'The Upshaws' (tv, )
+[tmdb] Season: 2, Episode: 8
+[sync]   -> TV tmdb=121509 S2E8
+
+[sync] 'The Upshaws S02E07 1080p NF WEB-DL' (y4shf5vatk4x)
+[tmdb] Found TMDB ID: 121509 for 'The Upshaws' (tv, )
+[tmdb] Season: 2, Episode: 7
+[sync]   -> TV tmdb=121509 S2E7
+
+[sync] 'The Upshaws S02E06 1080p NF WEB-DL' (tzgs5le81ex4)
+[tmdb] Found TMDB ID: 121509 for 'The Upshaws' (tv, )
+[tmdb] Season: 2, Episode: 6
+[sync]   -> TV tmdb=121509 S2E6
+
+[sync] 'The Upshaws S02E05 1080p NF WEB-DL' (tghftlrtfdio)
+[tmdb] Found TMDB ID: 121509 for 'The Upshaws' (tv, )
+[tmdb] Season: 2, Episode: 5
+[sync]   -> TV tmdb=121509 S2E5
+
+[sync] 'The Upshaws S02E04 1080p NF WEB-DL' (7zz16ydghegq)
+[tmdb] Found TMDB ID: 121509 for 'The Upshaws' (tv, )
+[tmdb] Season: 2, Episode: 4
+[sync]   -> TV tmdb=121509 S2E4
+
+[sync] 'The Upshaws S02E03 1080p NF WEB-DL' (q9aci5w8ihaa)
+[tmdb] Found TMDB ID: 121509 for 'The Upshaws' (tv, )
+[tmdb] Season: 2, Episode: 3
+[sync]   -> TV tmdb=121509 S2E3
+
+[sync] 'The Upshaws S02E02 1080p NF WEB-DL' (owfmq0w9zywz)
+[tmdb] Found TMDB ID: 121509 for 'The Upshaws' (tv, )
+[tmdb] Season: 2, Episode: 2
+[sync]   -> TV tmdb=121509 S2E2
+
+[sync] 'The Upshaws S02E02 1080p NF WEB-DL' (95pru7gzud75)
+[tmdb] Found TMDB ID: 121509 for 'The Upshaws' (tv, )
+[tmdb] Season: 2, Episode: 2
+[sync]   -> TV tmdb=121509 S2E2
+
+[sync] 'The Upshaws S02E02 1080p NF WEB-DL' (1i9l1gn3k4we)
+[tmdb] Found TMDB ID: 121509 for 'The Upshaws' (tv, )
+[tmdb] Season: 2, Episode: 2
+[sync]   -> TV tmdb=121509 S2E2
+
+[sync] 'The Upshaws S02E02 1080p NF WEB-DL' (ekl1s2e0r42u)
+[tmdb] Found TMDB ID: 121509 for 'The Upshaws' (tv, )
+[tmdb] Season: 2, Episode: 2
+[sync]   -> TV tmdb=121509 S2E2
+
+[sync] 'The Upshaws S02E01 1080p NF WEB-DL' (av51ebprf1db)
+[tmdb] Found TMDB ID: 121509 for 'The Upshaws' (tv, )
+[tmdb] Season: 2, Episode: 1
+[sync]   -> TV tmdb=121509 S2E1
+
+[sync] 'The Upshaws S01E10 1080p NF WEB-DL' (ukqghav5l39s)
+[tmdb] Found TMDB ID: 121509 for 'The Upshaws' (tv, )
+[tmdb] Season: 1, Episode: 10
+[sync]   -> TV tmdb=121509 S1E10
+
+[sync] 'The Upshaws S01E09 1080p NF WEB-DL' (f8vus8a7hxta)
+[tmdb] Found TMDB ID: 121509 for 'The Upshaws' (tv, )
+[tmdb] Season: 1, Episode: 9
+[sync]   -> TV tmdb=121509 S1E9
+
+[sync] 'The Upshaws S01E08 1080p NF WEB-DL' (36wrbeaw3v0r)
+[tmdb] Found TMDB ID: 121509 for 'The Upshaws' (tv, )
+[tmdb] Season: 1, Episode: 8
+[sync]   -> TV tmdb=121509 S1E8
+
+[sync] 'The Upshaws S01E07 1080p NF WEB-DL' (lfrp66xj0rht)
+[tmdb] Found TMDB ID: 121509 for 'The Upshaws' (tv, )
+[tmdb] Season: 1, Episode: 7
+[sync]   -> TV tmdb=121509 S1E7
+
+[sync] 'The Upshaws S01E06 1080p NF WEB-DL' (55877wiqnnjo)
+[tmdb] Found TMDB ID: 121509 for 'The Upshaws' (tv, )
+[tmdb] Season: 1, Episode: 6
+[sync]   -> TV tmdb=121509 S1E6
+
+[sync] 'The Upshaws S01E05 1080p NF WEB-DL' (fnyo8e8x2b0h)
+[tmdb] Found TMDB ID: 121509 for 'The Upshaws' (tv, )
+[tmdb] Season: 1, Episode: 5
+[sync]   -> TV tmdb=121509 S1E5
+
+[sync] 'The Upshaws S01E04 1080p NF WEB-DL' (fq8oxk1fqgzy)
+[tmdb] Found TMDB ID: 121509 for 'The Upshaws' (tv, )
+[tmdb] Season: 1, Episode: 4
+[sync]   -> TV tmdb=121509 S1E4
+
+[sync] 'The Upshaws S01E03 1080p NF WEB-DL' (6dzf16nci9qm)
+[tmdb] Found TMDB ID: 121509 for 'The Upshaws' (tv, )
+[tmdb] Season: 1, Episode: 3
+[sync]   -> TV tmdb=121509 S1E3
+
+[sync] 'The Upshaws S01E02 1080p NF WEB-DL' (liiu2gx4ak9c)
+[tmdb] Found TMDB ID: 121509 for 'The Upshaws' (tv, )
+[tmdb] Season: 1, Episode: 2
+[sync]   -> TV tmdb=121509 S1E2
+
+[sync] 'The Upshaws S01E01 1080p NF WEB-DL' (xqgo8reejfkj)
+[tmdb] Found TMDB ID: 121509 for 'The Upshaws' (tv, )
+[tmdb] Season: 1, Episode: 1
+[sync]   -> TV tmdb=121509 S1E1
+
+[sync] 'The Politician S02E07 1080p NF WEB-DL' (d67o1ygy89a8)
+[tmdb] Found TMDB ID: 83127 for 'The Politician' (tv, )
+[tmdb] Season: 2, Episode: 7
+[sync]   -> TV tmdb=83127 S2E7
+
+[sync] 'The Politician S02E06 1080p NF WEB-DL' (avar08bpy4bq)
+[tmdb] Found TMDB ID: 83127 for 'The Politician' (tv, )
+[tmdb] Season: 2, Episode: 6
+[sync]   -> TV tmdb=83127 S2E6
+
+[sync] 'The Politician S02E05 1080p NF WEB-DL' (ysoavh5u4m9f)
+[tmdb] Found TMDB ID: 83127 for 'The Politician' (tv, )
+[tmdb] Season: 2, Episode: 5
+[sync]   -> TV tmdb=83127 S2E5
+
+[sync] 'The Politician S02E04 1080p NF WEB-DL' (7qrytrd864x5)
+[tmdb] Found TMDB ID: 83127 for 'The Politician' (tv, )
+[tmdb] Season: 2, Episode: 4
+[sync]   -> TV tmdb=83127 S2E4
+
+[sync] 'The Politician S02E03 1080p NF WEB-DL' (wue7umy2gv5l)
+[tmdb] Found TMDB ID: 83127 for 'The Politician' (tv, )
+[tmdb] Season: 2, Episode: 3
+[sync]   -> TV tmdb=83127 S2E3
+
+[sync] 'The Politician S02E02 1080p NF WEB-DL' (8jgcrvb2xg2f)
+[tmdb] Found TMDB ID: 83127 for 'The Politician' (tv, )
+[tmdb] Season: 2, Episode: 2
+[sync]   -> TV tmdb=83127 S2E2
+
+[sync] 'The Politician S02E01 1080p NF WEB-DL' (pzinfppemanz)
+[tmdb] Found TMDB ID: 83127 for 'The Politician' (tv, )
+[tmdb] Season: 2, Episode: 1
+[sync]   -> TV tmdb=83127 S2E1
+
+[sync] 'The Politician S01E08 1080p NF WEB-DL' (ekbjrkn5zxdy)
+[tmdb] Found TMDB ID: 83127 for 'The Politician' (tv, )
+[tmdb] Season: 1, Episode: 8
+[sync]   -> TV tmdb=83127 S1E8
+
+[sync] 'The Politician S01E07 1080p NF WEB-DL' (0z539u1ev72u)
+[tmdb] Found TMDB ID: 83127 for 'The Politician' (tv, )
+[tmdb] Season: 1, Episode: 7
+[sync]   -> TV tmdb=83127 S1E7
+
+[sync] 'The Politician S01E06 1080p NF WEB-DL' (nekq8z1k2u86)
+[tmdb] Found TMDB ID: 83127 for 'The Politician' (tv, )
+[tmdb] Season: 1, Episode: 6
+[sync]   -> TV tmdb=83127 S1E6
+
+[sync] 'The Politician S01E05 1080p NF WEB-DL' (c4cj6ion5xon)
+[tmdb] Found TMDB ID: 83127 for 'The Politician' (tv, )
+[tmdb] Season: 1, Episode: 5
+[sync]   -> TV tmdb=83127 S1E5
+
+[sync] 'The Politician S01E04 1080p NF WEB-DL' (6q52worutlun)
+[tmdb] Found TMDB ID: 83127 for 'The Politician' (tv, )
+[tmdb] Season: 1, Episode: 4
+[sync]   -> TV tmdb=83127 S1E4
+
+[sync] 'The Politician S01E03 1080p NF WEB-DL' (m1ryirfn0eu3)
+[tmdb] Found TMDB ID: 83127 for 'The Politician' (tv, )
+[tmdb] Season: 1, Episode: 3
+[sync]   -> TV tmdb=83127 S1E3
+
+[sync] 'The Politician S01E03 1080p NF WEB-DL' (hul0w562dhj5)
+[tmdb] Found TMDB ID: 83127 for 'The Politician' (tv, )
+[tmdb] Season: 1, Episode: 3
+[sync]   -> TV tmdb=83127 S1E3
+
+[sync] 'The Politician S01E03 1080p NF WEB-DL' (tie4dynqgeyk)
+[tmdb] Found TMDB ID: 83127 for 'The Politician' (tv, )
+[tmdb] Season: 1, Episode: 3
+[sync]   -> TV tmdb=83127 S1E3
+
+[sync] 'The Politician S01E03 1080p NF WEB-DL' (6kszde68ueby)
+[tmdb] Found TMDB ID: 83127 for 'The Politician' (tv, )
+[tmdb] Season: 1, Episode: 3
+[sync]   -> TV tmdb=83127 S1E3
+
+[sync] 'The Politician S01E02 1080p NF WEB-DL' (4e7aldrg2c1k)
+[tmdb] Found TMDB ID: 83127 for 'The Politician' (tv, )
+[tmdb] Season: 1, Episode: 2
+[sync]   -> TV tmdb=83127 S1E2
+
+[sync] 'The Politician S01E01 1080p NF WEB-DL' (avsvm4j9gmep)
+[tmdb] Found TMDB ID: 83127 for 'The Politician' (tv, )
+[tmdb] Season: 1, Episode: 1
+[sync]   -> TV tmdb=83127 S1E1
+
+[sync] 'Teenage Bounty Hunters S01E10 1080p NF WEB-DL' (j8yofl7tn44k)
+[tmdb] Found TMDB ID: 90766 for 'Teenage Bounty Hunters' (tv, )
+[tmdb] Season: 1, Episode: 10
+[sync]   -> TV tmdb=90766 S1E10
+
+[sync] 'Teenage Bounty Hunters S01E09 1080p NF WEB-DL' (19zcmgg4npx8)
+[tmdb] Found TMDB ID: 90766 for 'Teenage Bounty Hunters' (tv, )
+[tmdb] Season: 1, Episode: 9
+[sync]   -> TV tmdb=90766 S1E9
+
+[sync] 'Teenage Bounty Hunters S01E08 1080p NF WEB-DL' (d0k8wxp6gku5)
+[tmdb] Found TMDB ID: 90766 for 'Teenage Bounty Hunters' (tv, )
+[tmdb] Season: 1, Episode: 8
+[sync]   -> TV tmdb=90766 S1E8
+
+[sync] 'Teenage Bounty Hunters S01E07 1080p NF WEB-DL' (8uzskyqon82k)
+[tmdb] Found TMDB ID: 90766 for 'Teenage Bounty Hunters' (tv, )
+[tmdb] Season: 1, Episode: 7
+[sync]   -> TV tmdb=90766 S1E7
+
+[sync] 'Teenage Bounty Hunters S01E06 1080p NF WEB-DL' (voc05o0fvkhq)
+[tmdb] Found TMDB ID: 90766 for 'Teenage Bounty Hunters' (tv, )
+[tmdb] Season: 1, Episode: 6
+[sync]   -> TV tmdb=90766 S1E6
+
+[sync] 'Teenage Bounty Hunters S01E05 1080p NF WEB-DL' (k2o6rhlxgsip)
+[tmdb] Found TMDB ID: 90766 for 'Teenage Bounty Hunters' (tv, )
+[tmdb] Season: 1, Episode: 5
+[sync]   -> TV tmdb=90766 S1E5
+
+[sync] 'Teenage Bounty Hunters S01E05 1080p NF WEB-DL' (o7frgymlde97)
+[tmdb] Found TMDB ID: 90766 for 'Teenage Bounty Hunters' (tv, )
+[tmdb] Season: 1, Episode: 5
+[sync]   -> TV tmdb=90766 S1E5
+
+[sync] 'Teenage Bounty Hunters S01E05 1080p NF WEB-DL' (1d5uro93ott2)
+[tmdb] Found TMDB ID: 90766 for 'Teenage Bounty Hunters' (tv, )
+[tmdb] Season: 1, Episode: 5
+[sync]   -> TV tmdb=90766 S1E5
+
+[sync] 'Teenage Bounty Hunters S01E05 1080p NF WEB-DL' (931pp8mgj2y1)
+[tmdb] Found TMDB ID: 90766 for 'Teenage Bounty Hunters' (tv, )
+[tmdb] Season: 1, Episode: 5
+[sync]   -> TV tmdb=90766 S1E5
+
+[sync] 'Teenage Bounty Hunters S01E04 1080p NF WEB-DL' (98pb6lxxol2q)
+[tmdb] Found TMDB ID: 90766 for 'Teenage Bounty Hunters' (tv, )
+[tmdb] Season: 1, Episode: 4
+[sync]   -> TV tmdb=90766 S1E4
+
+[sync] 'Teenage Bounty Hunters S01E03 1080p NF WEB-DL' (6l8rl44zdlre)
+[tmdb] Found TMDB ID: 90766 for 'Teenage Bounty Hunters' (tv, )
+[tmdb] Season: 1, Episode: 3
+[sync]   -> TV tmdb=90766 S1E3
+
+[sync] 'Teenage Bounty Hunters S01E02 1080p NF WEB-DL' (j7q78qjgs0js)
+[tmdb] Found TMDB ID: 90766 for 'Teenage Bounty Hunters' (tv, )
+[tmdb] Season: 1, Episode: 2
+[sync]   -> TV tmdb=90766 S1E2
+
+[sync] 'Teenage Bounty Hunters S01E01 1080p NF WEB-DL' (oygxmr8of2bz)
+[tmdb] Found TMDB ID: 90766 for 'Teenage Bounty Hunters' (tv, )
+[tmdb] Season: 1, Episode: 1
+[sync]   -> TV tmdb=90766 S1E1
+
+[sync] 'All the Truth in My Lies S01E05 1080p NF WEB-DL' (qkesiixm4fhx)
+[tmdb] Found TMDB ID: 292558 for 'All the Truth in My Lies' (tv, )
+[tmdb] Season: 1, Episode: 5
+[sync]   -> TV tmdb=292558 S1E5
+
+[sync] 'All the Truth in My Lies S01E04 1080p NF WEB-DL' (lnzqv3ct122d)
+[tmdb] Found TMDB ID: 292558 for 'All the Truth in My Lies' (tv, )
+[tmdb] Season: 1, Episode: 4
+[sync]   -> TV tmdb=292558 S1E4
+
+[sync] 'All the Truth in My Lies S01E03 1080p NF WEB-DL' (bthriqw69o9j)
+[tmdb] Found TMDB ID: 292558 for 'All the Truth in My Lies' (tv, )
+[tmdb] Season: 1, Episode: 3
+[sync]   -> TV tmdb=292558 S1E3
+
+[sync] 'All the Truth in My Lies S01E02 1080p NF WEB-DL' (r1gwqaitc6kf)
+[tmdb] Found TMDB ID: 292558 for 'All the Truth in My Lies' (tv, )
+[tmdb] Season: 1, Episode: 2
+[sync]   -> TV tmdb=292558 S1E2
+
+[sync] 'All the Truth in My Lies S01E01 1080p NF WEB-DL' (aaith8plok2f)
+[tmdb] Found TMDB ID: 292558 for 'All the Truth in My Lies' (tv, )
+[tmdb] Season: 1, Episode: 1
+[sync]   -> TV tmdb=292558 S1E1
+
+[sync] 'All the Truth in My Lies S01E01 1080p NF WEB-DL' (116zhmb4404q)
+[tmdb] Found TMDB ID: 292558 for 'All the Truth in My Lies' (tv, )
+[tmdb] Season: 1, Episode: 1
+[sync]   -> TV tmdb=292558 S1E1
+
+[sync] 'dark matter s02e01 1080p web' (0lir8dnd4ss8)
+[tmdb] Found TMDB ID: 196322 for 'dark matter' (tv, )
+[tmdb] Season: 2, Episode: 1
+[sync]   -> TV tmdb=196322 S2E1
+
+[sync] 'star trek strange new worlds s04e06 1080p' (5mmabv541ji2)
+[tmdb] Found TMDB ID: 103516 for 'star trek strange new worlds' (tv, )
+[tmdb] Season: 4, Episode: 6
+[sync]   -> TV tmdb=103516 S4E6
+
+[sync] 'Leanne S02E10 1080p NF WEB-DL' (1frnowshlmmf)
+[tmdb] Found TMDB ID: 252751 for 'Leanne' (tv, )
+[tmdb] Season: 2, Episode: 10
+[sync]   -> TV tmdb=252751 S2E10
+
+[sync] 'Medical Examiner Dr  Qin- Bones of the Past (2026) Episode 15 720p' (jpi7bux1zw2v)
+[tmdb] No results found for 'Medical Examiner Dr Qin- Bones of the Past Episode 15' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'Medical Examiner Dr  Qin- Bones of the Past (2026) Episode 15 720p' (lhr7qr2v4la0)
+[tmdb] No results found for 'Medical Examiner Dr Qin- Bones of the Past Episode 15' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'Medical Examiner Dr  Qin- Bones of the Past (2026) Episode 15 720p' (f4bk1l0zsn1z)
+[tmdb] No results found for 'Medical Examiner Dr Qin- Bones of the Past Episode 15' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'Medical Examiner Dr  Qin- Bones of the Past (2026) Episode 15 720p' (j7ase8p274af)
+[tmdb] No results found for 'Medical Examiner Dr Qin- Bones of the Past Episode 15' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'Fired Up! EP05 1080p' (omqr3m2xu1me)
+[tmdb] No results found for 'Fired Up! EP05' (movie, )
+[sync]   -> movie tmdb=None
+
+[sync] 'Fired Up! EP05 1080p' (0i0q7epumc90)
+[tmdb] No results found for 'Fired Up! EP05' (movie, )
+[sync]   -> movie tmdb=None
+
+[sync] 'Fired Up! EP05 1080p' (f6ogei9g8moh)
+[tmdb] No results found for 'Fired Up! EP05' (movie, )
+[sync]   -> movie tmdb=None
+
+[sync] 'Fired Up! EP05 1080p' (lqiqhkxm5qhp)
+[tmdb] No results found for 'Fired Up! EP05' (movie, )
+[sync]   -> movie tmdb=None
+
+[sync] 'Our Happy Days 2026 S01E107 720p' (cnste9ialehv)
+[tmdb] Found TMDB ID: 313735 for 'Our Happy Days' (tv, 2026)
+[tmdb] Season: 1, Episode: 107
+[sync]   -> TV tmdb=313735 S1E107
+
+[sync] 'Our Happy Days 2026 S01E107 720p' (17dkpsgrsx17)
+[tmdb] Found TMDB ID: 313735 for 'Our Happy Days' (tv, 2026)
+[tmdb] Season: 1, Episode: 107
+[sync]   -> TV tmdb=313735 S1E107
+
+[sync] 'Our Happy Days 2026 S01E107 720p' (051ih99anx3s)
+[tmdb] Found TMDB ID: 313735 for 'Our Happy Days' (tv, 2026)
+[tmdb] Season: 1, Episode: 107
+[sync]   -> TV tmdb=313735 S1E107
+
+[sync] 'Our Happy Days 2026 S01E107 720p' (c71ifyi3yy1q)
+[tmdb] Found TMDB ID: 313735 for 'Our Happy Days' (tv, 2026)
+[tmdb] Season: 1, Episode: 107
+[sync]   -> TV tmdb=313735 S1E107
+
+[sync] 'Remnants of Gold (2026) Episode 5 720p' (exazcxt2svdl)
+[tmdb] No results found for 'Remnants of Gold Episode 5' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'Remnants of Gold (2026) Episode 5 720p' (14358q4nlziy)
+[tmdb] No results found for 'Remnants of Gold Episode 5' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'Remnants of Gold (2026) Episode 5 720p' (j21gip61eruf)
+[tmdb] No results found for 'Remnants of Gold Episode 5' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'Remnants of Gold (2026) Episode 5 720p' (srfesawr8xd6)
+[tmdb] No results found for 'Remnants of Gold Episode 5' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'Crossroad S01E06 1080p' (ryq4c5q6k1qc)
+[tmdb] Found TMDB ID: 293943 for 'Crossroad' (tv, )
+[tmdb] Season: 1, Episode: 6
+[sync]   -> TV tmdb=293943 S1E6
+
+[sync] 'Crossroad S01E06 1080p' (hc9chpofbeyf)
+[tmdb] Found TMDB ID: 293943 for 'Crossroad' (tv, )
+[tmdb] Season: 1, Episode: 6
+[sync]   -> TV tmdb=293943 S1E6
+
+[sync] 'Crossroad S01E06 1080p' (y04u3qfoil42)
+[tmdb] Found TMDB ID: 293943 for 'Crossroad' (tv, )
+[tmdb] Season: 1, Episode: 6
+[sync]   -> TV tmdb=293943 S1E6
+
+[sync] 'Crossroad S01E06 1080p' (6wberw8wk6mz)
+[tmdb] Found TMDB ID: 293943 for 'Crossroad' (tv, )
+[tmdb] Season: 1, Episode: 6
+[sync]   -> TV tmdb=293943 S1E6
+
+[sync] 'Cang Feng (2026) Episode 16 720p' (rbnd2xkhxnen)
+[tmdb] No results found for 'Cang Feng Episode 16' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'Cang Feng (2026) Episode 16 720p' (cw9fd64hkp5a)
+[tmdb] No results found for 'Cang Feng Episode 16' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'Cang Feng (2026) Episode 16 720p' (dzx69ggjorfk)
+[tmdb] No results found for 'Cang Feng Episode 16' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'Cang Feng (2026) Episode 16 720p' (snskbi9gfy7y)
+[tmdb] No results found for 'Cang Feng Episode 16' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'jukishi - 09 [1080p]' (f1id93t26adv)
+[tmdb] No results found for 'jukishi - 09 [ ]' (movie, )
+[sync]   -> movie tmdb=None
+
+[sync] 'jukishi - 09 [1080p]' (fqugyr1x428k)
+[tmdb] No results found for 'jukishi - 09 [ ]' (movie, )
+[sync]   -> movie tmdb=None
+
+[sync] 'jukishi - 09 [1080p]' (pr3uljzit95p)
+[tmdb] No results found for 'jukishi - 09 [ ]' (movie, )
+[sync]   -> movie tmdb=None
+
+[sync] 'jukishi - 09 [1080p]' (ixfcaacoq5qd)
+[tmdb] No results found for 'jukishi - 09 [ ]' (movie, )
+[sync]   -> movie tmdb=None
+
+[sync] 'Mousetrap S01E02 1080p NF WEB-DL' (9kd332ogoet7)
+[tmdb] Found TMDB ID: 290193 for 'Mousetrap' (tv, )
+[tmdb] Season: 1, Episode: 2
+[sync]   -> TV tmdb=290193 S1E2
+
+[sync] 'Mousetrap S01E01 1080p NF WEB-DL' (ocr7wm6d0o01)
+[tmdb] Found TMDB ID: 290193 for 'Mousetrap' (tv, )
+[tmdb] Season: 1, Episode: 1
+[sync]   -> TV tmdb=290193 S1E1
+
+[sync] 'Medical Examiner Dr  Qin- Bones of the Past (2026) Episode 16 720p' (kamo93tsoaan)
+[tmdb] No results found for 'Medical Examiner Dr Qin- Bones of the Past Episode 16' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'Medical Examiner Dr  Qin- Bones of the Past (2026) Episode 15 720p' (ygnf2lucy4n9)
+[tmdb] No results found for 'Medical Examiner Dr Qin- Bones of the Past Episode 15' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'Medical Examiner Dr  Qin- Bones of the Past (2026) Episode 15 720p' (egcsncpvtuu3)
+[tmdb] No results found for 'Medical Examiner Dr Qin- Bones of the Past Episode 15' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'Medical Examiner Dr  Qin- Bones of the Past (2026) Episode 15 720p' (efzavt5fug3b)
+[tmdb] No results found for 'Medical Examiner Dr Qin- Bones of the Past Episode 15' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'Medical Examiner Dr  Qin- Bones of the Past (2026) Episode 15 720p' (sncm0dh006ic)
+[tmdb] No results found for 'Medical Examiner Dr Qin- Bones of the Past Episode 15' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'Love Siargao 2026 S01E19 720p' (9k3v2q2syyjt)
+[tmdb] Found TMDB ID: 310905 for 'Love Siargao' (tv, 2026)
+[tmdb] Season: 1, Episode: 19
+[sync]   -> TV tmdb=310905 S1E19
+
+[sync] 'Hanyi Enters the Heart (2026) Episode 23 720p' (t2e7xiermpxa)
+[tmdb] No results found for 'Hanyi Enters the Heart Episode 23' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'Fired Up! EP05 1080p' (aaayhldm6cn1)
+[tmdb] No results found for 'Fired Up! EP05' (movie, )
+[sync]   -> movie tmdb=None
+
+[sync] 'Fired Up! EP05 1080p' (7ov78ayir8ih)
+[tmdb] No results found for 'Fired Up! EP05' (movie, )
+[sync]   -> movie tmdb=None
+
+[sync] 'Fired Up! EP05 1080p' (ee2691yfbo85)
+[tmdb] No results found for 'Fired Up! EP05' (movie, )
+[sync]   -> movie tmdb=None
+
+[sync] 'Fired Up! EP05 1080p' (bvks8cupc2wt)
+[tmdb] No results found for 'Fired Up! EP05' (movie, )
+[sync]   -> movie tmdb=None
+
+[sync] 'Born Again Episode 18 720p' (t61nwxfu6hf2)
+[tmdb] No results found for 'Born Again Episode 18' (movie, )
+[sync]   -> movie tmdb=None
+
+[sync] '25 Years of You S01E07 1080p' (s6y16hfd1942)
+[tmdb] Found TMDB ID: 326063 for '25 Years of You' (tv, )
+[tmdb] Season: 1, Episode: 7
+[sync]   -> TV tmdb=326063 S1E7
+
+[sync] 'The Trembling of Cicada (2026) Episode 18 720p' (1brwqjn9o3nj)
+[tmdb] No results found for 'The Trembling of Cicada Episode 18' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'The Trembling of Cicada (2026) Episode 17 720p' (9nnsbrcyen53)
+[tmdb] No results found for 'The Trembling of Cicada Episode 17' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'Our Happy Days 2026 S01E107 720p' (u7ysurxuoijc)
+[tmdb] Found TMDB ID: 313735 for 'Our Happy Days' (tv, 2026)
+[tmdb] Season: 1, Episode: 107
+[sync]   -> TV tmdb=313735 S1E107
+
+[sync] 'Our Happy Days 2026 S01E107 720p' (bnlwl4lvvg4o)
+[tmdb] Found TMDB ID: 313735 for 'Our Happy Days' (tv, 2026)
+[tmdb] Season: 1, Episode: 107
+[sync]   -> TV tmdb=313735 S1E107
+
+[sync] 'Our Happy Days 2026 S01E107 720p' (s272ddb9zqkh)
+[tmdb] Found TMDB ID: 313735 for 'Our Happy Days' (tv, 2026)
+[tmdb] Season: 1, Episode: 107
+[sync]   -> TV tmdb=313735 S1E107
+
+[sync] 'Our Happy Days 2026 S01E107 720p' (n5jmtuvw1zbq)
+[tmdb] Found TMDB ID: 313735 for 'Our Happy Days' (tv, 2026)
+[tmdb] Season: 1, Episode: 107
+[sync]   -> TV tmdb=313735 S1E107
+
+[sync] 'Remnants of Gold (2026) Episode 5 720p' (dpyw66tvysrj)
+[tmdb] No results found for 'Remnants of Gold Episode 5' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'Remnants of Gold (2026) Episode 5 720p' (mfitulpt0how)
+[tmdb] No results found for 'Remnants of Gold Episode 5' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'Remnants of Gold (2026) Episode 5 720p' (cw9ibb07nmh4)
+[tmdb] No results found for 'Remnants of Gold Episode 5' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'Remnants of Gold (2026) Episode 5 720p' (b459ojy0b8h7)
+[tmdb] No results found for 'Remnants of Gold Episode 5' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'OK Lets Get Divorced Episode 4 1080p' (dej2powhnl70)
+[tmdb] No results found for 'OK Lets Get Divorced Episode 4' (movie, )
+[sync]   -> movie tmdb=None
+
+[sync] 'Love U Lots 2026 Episode 6 720p' (nx2u15xx2tm1)
+[tmdb] No results found for 'Love U Lots Episode 6' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'Family Register 2026 S01E39 720p' (thop4xws18wf)
+[tmdb] Found TMDB ID: 320406 for 'Family Register' (tv, 2026)
+[tmdb] Season: 1, Episode: 39
+[sync]   -> TV tmdb=320406 S1E39
+
+[sync] 'Dating Alys Perez Episode 12 720p' (q1qviv3xg5y8)
+[tmdb] No results found for 'Dating Alys Perez Episode 12' (movie, )
+[sync]   -> movie tmdb=None
+
+[sync] 'Crossroad S01E08 1080p' (kmu0rko5inmk)
+[tmdb] Found TMDB ID: 293943 for 'Crossroad' (tv, )
+[tmdb] Season: 1, Episode: 8
+[sync]   -> TV tmdb=293943 S1E8
+
+[sync] 'Crossroad S01E07 1080p' (55qmoy1qljl5)
+[tmdb] Found TMDB ID: 293943 for 'Crossroad' (tv, )
+[tmdb] Season: 1, Episode: 7
+[sync]   -> TV tmdb=293943 S1E7
+
+[sync] 'Crossroad S01E06 1080p' (8ntex2t9xsdk)
+[tmdb] Found TMDB ID: 293943 for 'Crossroad' (tv, )
+[tmdb] Season: 1, Episode: 6
+[sync]   -> TV tmdb=293943 S1E6
+
+[sync] 'Crossroad S01E06 1080p' (qdsqqqysugod)
+[tmdb] Found TMDB ID: 293943 for 'Crossroad' (tv, )
+[tmdb] Season: 1, Episode: 6
+[sync]   -> TV tmdb=293943 S1E6
+
+[sync] 'Crossroad S01E06 1080p' (9b5zd7ao9wgq)
+[tmdb] Found TMDB ID: 293943 for 'Crossroad' (tv, )
+[tmdb] Season: 1, Episode: 6
+[sync]   -> TV tmdb=293943 S1E6
+
+[sync] 'Crossroad S01E06 1080p' (t2mlttmm6mae)
+[tmdb] Found TMDB ID: 293943 for 'Crossroad' (tv, )
+[tmdb] Season: 1, Episode: 6
+[sync]   -> TV tmdb=293943 S1E6
+
+[sync] 'Cang Feng (2026) Episode 17 720p' (ql8taneftyyg)
+[tmdb] No results found for 'Cang Feng Episode 17' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'Cang Feng (2026) Episode 16 720p' (30fq9jkg40ap)
+[tmdb] No results found for 'Cang Feng Episode 16' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'Cang Feng (2026) Episode 16 720p' (rnej2km5p9i1)
+[tmdb] No results found for 'Cang Feng Episode 16' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'Cang Feng (2026) Episode 16 720p' (p7sojsa2muep)
+[tmdb] No results found for 'Cang Feng Episode 16' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'Cang Feng (2026) Episode 16 720p' (retl3mvp5xfj)
+[tmdb] No results found for 'Cang Feng Episode 16' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'A Trap Called Desire 2026 S01E14 720p' (cngqjloutoh5)
+[tmdb] Found TMDB ID: 326991 for 'A Trap Called Desire' (tv, 2026)
+[tmdb] Season: 1, Episode: 14
+[sync]   -> TV tmdb=326991 S1E14
+
+[sync] 'Isekai Nonbiri Nouka 2 - 12 [1080p]' (m6smtuxaw0kk)
+[tmdb] No results found for 'Isekai Nonbiri Nouka 2 - 12 [ ]' (movie, )
+[sync]   -> movie tmdb=None
+
+[sync] 'Otome Kaijuu Carameliser - 09 [1080p]' (vtj4z2rc9e6l)
+[tmdb] No results found for 'Otome Kaijuu Carameliser - 09 [ ]' (movie, )
+[sync]   -> movie tmdb=None
+
+[sync] 'Awaken S01E06 1080p WEB-DL' (coriii3ekft3)
+[sync]   -> TV tmdb=289761 S1E6
+
+[sync] 'Awaken S01E05 1080p WEB-DL' (q2g3y30s92nr)
+[sync]   -> TV tmdb=289761 S1E5
+
+[sync] 'Bang Dream Yumemita - 11 [1080p]' (t089ntbpb1ev)
+[tmdb] No results found for 'Bang Dream Yumemita - 11 [ ]' (movie, )
+[sync]   -> movie tmdb=None
+
+[sync] 'jukishi - 09 [1080p]' (ll7i9whdq4hj)
+[tmdb] No results found for 'jukishi - 09 [ ]' (movie, )
+[sync]   -> movie tmdb=None
+
+[sync] 'jukishi - 09 [1080p]' (0klfnid8j8iu)
+[tmdb] No results found for 'jukishi - 09 [ ]' (movie, )
+[sync]   -> movie tmdb=None
+
+[sync] 'jukishi - 09 [1080p]' (ps77wtzulx4o)
+[tmdb] No results found for 'jukishi - 09 [ ]' (movie, )
+[sync]   -> movie tmdb=None
+
+[sync] 'jukishi - 09 [1080p]' (wrr8an36zsbw)
+[tmdb] No results found for 'jukishi - 09 [ ]' (movie, )
+[sync]   -> movie tmdb=None
+
+[sync] 'Mebius Dust - 08 [1080p]' (1weibveu8wgb)
+[tmdb] No results found for 'Mebius Dust - 08 [ ]' (movie, )
+[sync]   -> movie tmdb=None
+
+[sync] 'rakudai kenja - 10 [1080p]' (9jxls4av85am)
+[tmdb] No results found for 'rakudai kenja - 10 [ ]' (movie, )
+[sync]   -> movie tmdb=None
+
+[sync] 'Super no Ura de Yani Suu Futari - 08 [1080p]' (iv2lojxs1i6z)
+[tmdb] No results found for 'Super no Ura de Yani Suu Futari - 08 [ ]' (movie, )
+[sync]   -> movie tmdb=None
+
+[sync] 'Bungou Stray Dogs Wan 2 - 09 [1080p]' (6lom2qpxu100)
+[tmdb] No results found for 'Bungou Stray Dogs Wan 2 - 09 [ ]' (movie, )
+[sync]   -> movie tmdb=None
+
+[sync] 'The Upshaws S03E01 1080p NF WEB-DL' (bonshb7slrr6)
+[tmdb] Found TMDB ID: 121509 for 'The Upshaws' (tv, )
+[tmdb] Season: 3, Episode: 1
+[sync]   -> TV tmdb=121509 S3E1
+
+[sync] 'The Upshaws S02E08 1080p NF WEB-DL' (4ynl9ft077tp)
+[tmdb] Found TMDB ID: 121509 for 'The Upshaws' (tv, )
+[tmdb] Season: 2, Episode: 8
+[sync]   -> TV tmdb=121509 S2E8
+
+[sync] 'The Upshaws S02E07 1080p NF WEB-DL' (6jm6g6rxsp4x)
+[tmdb] Found TMDB ID: 121509 for 'The Upshaws' (tv, )
+[tmdb] Season: 2, Episode: 7
+[sync]   -> TV tmdb=121509 S2E7
+
+[sync] 'The Upshaws S02E06 1080p NF WEB-DL' (ze9ivazvwdwm)
+[tmdb] Found TMDB ID: 121509 for 'The Upshaws' (tv, )
+[tmdb] Season: 2, Episode: 6
+[sync]   -> TV tmdb=121509 S2E6
+
+[sync] 'The Upshaws S02E05 1080p NF WEB-DL' (s9kd3e2jop11)
+[tmdb] Found TMDB ID: 121509 for 'The Upshaws' (tv, )
+[tmdb] Season: 2, Episode: 5
+[sync]   -> TV tmdb=121509 S2E5
+
+[sync] 'The Upshaws S02E04 1080p NF WEB-DL' (i680rpykba1g)
+[tmdb] Found TMDB ID: 121509 for 'The Upshaws' (tv, )
+[tmdb] Season: 2, Episode: 4
+[sync]   -> TV tmdb=121509 S2E4
+
+[sync] 'The Upshaws S02E03 1080p NF WEB-DL' (r4ybd7ecwhg3)
+[tmdb] Found TMDB ID: 121509 for 'The Upshaws' (tv, )
+[tmdb] Season: 2, Episode: 3
+[sync]   -> TV tmdb=121509 S2E3
+
+[sync] 'The Upshaws S02E02 1080p NF WEB-DL' (qnzemmhf71ka)
+[tmdb] Found TMDB ID: 121509 for 'The Upshaws' (tv, )
+[tmdb] Season: 2, Episode: 2
+[sync]   -> TV tmdb=121509 S2E2
+
+[sync] 'The Upshaws S02E02 1080p NF WEB-DL' (zjvy4o9vm7y9)
+[tmdb] Found TMDB ID: 121509 for 'The Upshaws' (tv, )
+[tmdb] Season: 2, Episode: 2
+[sync]   -> TV tmdb=121509 S2E2
+
+[sync] 'The Upshaws S02E02 1080p NF WEB-DL' (f2e5ot78fblk)
+[tmdb] Found TMDB ID: 121509 for 'The Upshaws' (tv, )
+[tmdb] Season: 2, Episode: 2
+[sync]   -> TV tmdb=121509 S2E2
+
+[sync] 'The Upshaws S02E02 1080p NF WEB-DL' (dbswg8gcyy9w)
+[tmdb] Found TMDB ID: 121509 for 'The Upshaws' (tv, )
+[tmdb] Season: 2, Episode: 2
+[sync]   -> TV tmdb=121509 S2E2
+
+[sync] 'The Upshaws S02E01 1080p NF WEB-DL' (1ldoxeo5e4h8)
+[tmdb] Found TMDB ID: 121509 for 'The Upshaws' (tv, )
+[tmdb] Season: 2, Episode: 1
+[sync]   -> TV tmdb=121509 S2E1
+
+[sync] 'The Upshaws S01E10 1080p NF WEB-DL' (n4ebjkg5p2n2)
+[tmdb] Found TMDB ID: 121509 for 'The Upshaws' (tv, )
+[tmdb] Season: 1, Episode: 10
+[sync]   -> TV tmdb=121509 S1E10
+
+[sync] 'The Upshaws S01E09 1080p NF WEB-DL' (zmtxong0jon7)
+[tmdb] Found TMDB ID: 121509 for 'The Upshaws' (tv, )
+[tmdb] Season: 1, Episode: 9
+[sync]   -> TV tmdb=121509 S1E9
+
+[sync] 'The Upshaws S01E08 1080p NF WEB-DL' (1rzi21ggm2t5)
+[tmdb] Found TMDB ID: 121509 for 'The Upshaws' (tv, )
+[tmdb] Season: 1, Episode: 8
+[sync]   -> TV tmdb=121509 S1E8
+
+[sync] 'The Upshaws S01E07 1080p NF WEB-DL' (kljb19ttjnu1)
+[tmdb] Found TMDB ID: 121509 for 'The Upshaws' (tv, )
+[tmdb] Season: 1, Episode: 7
+[sync]   -> TV tmdb=121509 S1E7
+
+[sync] 'The Upshaws S01E06 1080p NF WEB-DL' (5pf6xdzv0xs0)
+[tmdb] Found TMDB ID: 121509 for 'The Upshaws' (tv, )
+[tmdb] Season: 1, Episode: 6
+[sync]   -> TV tmdb=121509 S1E6
+
+[sync] 'The Upshaws S01E05 1080p NF WEB-DL' (onadcz41qv83)
+[tmdb] Found TMDB ID: 121509 for 'The Upshaws' (tv, )
+[tmdb] Season: 1, Episode: 5
+[sync]   -> TV tmdb=121509 S1E5
+
+[sync] 'The Upshaws S01E04 1080p NF WEB-DL' (0xmahcnw24w7)
+[tmdb] Found TMDB ID: 121509 for 'The Upshaws' (tv, )
+[tmdb] Season: 1, Episode: 4
+[sync]   -> TV tmdb=121509 S1E4
+
+[sync] 'The Upshaws S01E03 1080p NF WEB-DL' (w9tlj5jfeaam)
+[tmdb] Found TMDB ID: 121509 for 'The Upshaws' (tv, )
+[tmdb] Season: 1, Episode: 3
+[sync]   -> TV tmdb=121509 S1E3
+
+[sync] 'The Upshaws S01E02 1080p NF WEB-DL' (ua5khio2lglm)
+[tmdb] Found TMDB ID: 121509 for 'The Upshaws' (tv, )
+[tmdb] Season: 1, Episode: 2
+[sync]   -> TV tmdb=121509 S1E2
+
+[sync] 'The Upshaws S01E01 1080p NF WEB-DL' (3qejwwkvcbxc)
+[tmdb] Found TMDB ID: 121509 for 'The Upshaws' (tv, )
+[tmdb] Season: 1, Episode: 1
+[sync]   -> TV tmdb=121509 S1E1
+
+[sync] 'The Politician S02E07 1080p NF WEB-DL' (ysq1wkbc02we)
+[tmdb] Found TMDB ID: 83127 for 'The Politician' (tv, )
+[tmdb] Season: 2, Episode: 7
+[sync]   -> TV tmdb=83127 S2E7
+
+[sync] 'The Politician S02E06 1080p NF WEB-DL' (ce89djkl2qhx)
+[tmdb] Found TMDB ID: 83127 for 'The Politician' (tv, )
+[tmdb] Season: 2, Episode: 6
+[sync]   -> TV tmdb=83127 S2E6
+
+[sync] 'The Politician S02E05 1080p NF WEB-DL' (g71plivmgscx)
+[tmdb] Found TMDB ID: 83127 for 'The Politician' (tv, )
+[tmdb] Season: 2, Episode: 5
+[sync]   -> TV tmdb=83127 S2E5
+
+[sync] 'The Politician S02E04 1080p NF WEB-DL' (btwt6x45i54b)
+[tmdb] Found TMDB ID: 83127 for 'The Politician' (tv, )
+[tmdb] Season: 2, Episode: 4
+[sync]   -> TV tmdb=83127 S2E4
+
+[sync] 'The Politician S02E03 1080p NF WEB-DL' (hqe954wf1ave)
+[tmdb] Found TMDB ID: 83127 for 'The Politician' (tv, )
+[tmdb] Season: 2, Episode: 3
+[sync]   -> TV tmdb=83127 S2E3
+
+[sync] 'The Politician S02E02 1080p NF WEB-DL' (eybpc7mbljlk)
+[tmdb] Found TMDB ID: 83127 for 'The Politician' (tv, )
+[tmdb] Season: 2, Episode: 2
+[sync]   -> TV tmdb=83127 S2E2
+
+[sync] 'The Politician S02E01 1080p NF WEB-DL' (gno19hfl04j2)
+[tmdb] Found TMDB ID: 83127 for 'The Politician' (tv, )
+[tmdb] Season: 2, Episode: 1
+[sync]   -> TV tmdb=83127 S2E1
+
+[sync] 'The Politician S01E08 1080p NF WEB-DL' (ma4b1m20ffhw)
+[tmdb] Found TMDB ID: 83127 for 'The Politician' (tv, )
+[tmdb] Season: 1, Episode: 8
+[sync]   -> TV tmdb=83127 S1E8
+
+[sync] 'The Politician S01E07 1080p NF WEB-DL' (1fxuvm53zlvv)
+[tmdb] Found TMDB ID: 83127 for 'The Politician' (tv, )
+[tmdb] Season: 1, Episode: 7
+[sync]   -> TV tmdb=83127 S1E7
+
+[sync] 'The Politician S01E06 1080p NF WEB-DL' (ga9kh742x173)
+[tmdb] Found TMDB ID: 83127 for 'The Politician' (tv, )
+[tmdb] Season: 1, Episode: 6
+[sync]   -> TV tmdb=83127 S1E6
+
+[sync] 'The Politician S01E05 1080p NF WEB-DL' (rlsw6hnfxc3f)
+[tmdb] Found TMDB ID: 83127 for 'The Politician' (tv, )
+[tmdb] Season: 1, Episode: 5
+[sync]   -> TV tmdb=83127 S1E5
+
+[sync] 'The Politician S01E04 1080p NF WEB-DL' (k4lk50xq5hej)
+[tmdb] Found TMDB ID: 83127 for 'The Politician' (tv, )
+[tmdb] Season: 1, Episode: 4
+[sync]   -> TV tmdb=83127 S1E4
+
+[sync] 'The Politician S01E03 1080p NF WEB-DL' (gcnipgm9de7n)
+[tmdb] Found TMDB ID: 83127 for 'The Politician' (tv, )
+[tmdb] Season: 1, Episode: 3
+[sync]   -> TV tmdb=83127 S1E3
+
+[sync] 'The Politician S01E03 1080p NF WEB-DL' (0kfb3m15xkin)
+[tmdb] Found TMDB ID: 83127 for 'The Politician' (tv, )
+[tmdb] Season: 1, Episode: 3
+[sync]   -> TV tmdb=83127 S1E3
+
+[sync] 'The Politician S01E03 1080p NF WEB-DL' (azxr9415ag61)
+[tmdb] Found TMDB ID: 83127 for 'The Politician' (tv, )
+[tmdb] Season: 1, Episode: 3
+[sync]   -> TV tmdb=83127 S1E3
+
+[sync] 'The Politician S01E03 1080p NF WEB-DL' (cn9yr6shc870)
+[tmdb] Found TMDB ID: 83127 for 'The Politician' (tv, )
+[tmdb] Season: 1, Episode: 3
+[sync]   -> TV tmdb=83127 S1E3
+
+[sync] 'The Politician S01E02 1080p NF WEB-DL' (3nuxl8z8mptt)
+[tmdb] Found TMDB ID: 83127 for 'The Politician' (tv, )
+[tmdb] Season: 1, Episode: 2
+[sync]   -> TV tmdb=83127 S1E2
+
+[sync] 'The Politician S01E01 1080p NF WEB-DL' (81pjbghoje16)
+[tmdb] Found TMDB ID: 83127 for 'The Politician' (tv, )
+[tmdb] Season: 1, Episode: 1
+[sync]   -> TV tmdb=83127 S1E1
+
+[sync] 'Teenage Bounty Hunters S01E10 1080p NF WEB-DL' (mdiwsgnla6pi)
+[tmdb] Found TMDB ID: 90766 for 'Teenage Bounty Hunters' (tv, )
+[tmdb] Season: 1, Episode: 10
+[sync]   -> TV tmdb=90766 S1E10
+
+[sync] 'Teenage Bounty Hunters S01E09 1080p NF WEB-DL' (jy8tt6txalff)
+[tmdb] Found TMDB ID: 90766 for 'Teenage Bounty Hunters' (tv, )
+[tmdb] Season: 1, Episode: 9
+[sync]   -> TV tmdb=90766 S1E9
+
+[sync] 'Teenage Bounty Hunters S01E08 1080p NF WEB-DL' (hqv7yohfhmtj)
+[tmdb] Found TMDB ID: 90766 for 'Teenage Bounty Hunters' (tv, )
+[tmdb] Season: 1, Episode: 8
+[sync]   -> TV tmdb=90766 S1E8
+
+[sync] 'Teenage Bounty Hunters S01E07 1080p NF WEB-DL' (peipvg4txd40)
+[tmdb] Found TMDB ID: 90766 for 'Teenage Bounty Hunters' (tv, )
+[tmdb] Season: 1, Episode: 7
+[sync]   -> TV tmdb=90766 S1E7
+
+[sync] 'Teenage Bounty Hunters S01E06 1080p NF WEB-DL' (5vzki1rku8if)
+[tmdb] Found TMDB ID: 90766 for 'Teenage Bounty Hunters' (tv, )
+[tmdb] Season: 1, Episode: 6
+[sync]   -> TV tmdb=90766 S1E6
+
+[sync] 'Teenage Bounty Hunters S01E05 1080p NF WEB-DL' (wddwk8p9epme)
+[tmdb] Found TMDB ID: 90766 for 'Teenage Bounty Hunters' (tv, )
+[tmdb] Season: 1, Episode: 5
+[sync]   -> TV tmdb=90766 S1E5
+
+[sync] 'Teenage Bounty Hunters S01E05 1080p NF WEB-DL' (t1pmi4h9g2j2)
+[tmdb] Found TMDB ID: 90766 for 'Teenage Bounty Hunters' (tv, )
+[tmdb] Season: 1, Episode: 5
+[sync]   -> TV tmdb=90766 S1E5
+
+[sync] 'Teenage Bounty Hunters S01E05 1080p NF WEB-DL' (cgc9wemlcvvr)
+[tmdb] Found TMDB ID: 90766 for 'Teenage Bounty Hunters' (tv, )
+[tmdb] Season: 1, Episode: 5
+[sync]   -> TV tmdb=90766 S1E5
+
+[sync] 'Teenage Bounty Hunters S01E05 1080p NF WEB-DL' (wvoa5yamz4ai)
+[tmdb] Found TMDB ID: 90766 for 'Teenage Bounty Hunters' (tv, )
+[tmdb] Season: 1, Episode: 5
+[sync]   -> TV tmdb=90766 S1E5
+
+[sync] 'Teenage Bounty Hunters S01E04 1080p NF WEB-DL' (2dk5w0tle7ge)
+[tmdb] Found TMDB ID: 90766 for 'Teenage Bounty Hunters' (tv, )
+[tmdb] Season: 1, Episode: 4
+[sync]   -> TV tmdb=90766 S1E4
+
+[sync] 'Teenage Bounty Hunters S01E03 1080p NF WEB-DL' (hz8xmfudq66x)
+[tmdb] Found TMDB ID: 90766 for 'Teenage Bounty Hunters' (tv, )
+[tmdb] Season: 1, Episode: 3
+[sync]   -> TV tmdb=90766 S1E3
+
+[sync] 'Teenage Bounty Hunters S01E02 1080p NF WEB-DL' (j34y8g7i6gsr)
+[tmdb] Found TMDB ID: 90766 for 'Teenage Bounty Hunters' (tv, )
+[tmdb] Season: 1, Episode: 2
+[sync]   -> TV tmdb=90766 S1E2
+
+[sync] 'Teenage Bounty Hunters S01E01 1080p NF WEB-DL' (4y7a46u26lt4)
+[tmdb] Found TMDB ID: 90766 for 'Teenage Bounty Hunters' (tv, )
+[tmdb] Season: 1, Episode: 1
+[sync]   -> TV tmdb=90766 S1E1
+
+[sync] 'All the Truth in My Lies S01E05 1080p NF WEB-DL' (qkser0dhugoj)
+[tmdb] Found TMDB ID: 292558 for 'All the Truth in My Lies' (tv, )
+[tmdb] Season: 1, Episode: 5
+[sync]   -> TV tmdb=292558 S1E5
+
+[sync] 'All the Truth in My Lies S01E04 1080p NF WEB-DL' (psz3sl6y5fl6)
+[tmdb] Found TMDB ID: 292558 for 'All the Truth in My Lies' (tv, )
+[tmdb] Season: 1, Episode: 4
+[sync]   -> TV tmdb=292558 S1E4
+
+[sync] 'All the Truth in My Lies S01E03 1080p NF WEB-DL' (mqom7zzl2usm)
+[tmdb] Found TMDB ID: 292558 for 'All the Truth in My Lies' (tv, )
+[tmdb] Season: 1, Episode: 3
+[sync]   -> TV tmdb=292558 S1E3
+
+[sync] 'All the Truth in My Lies S01E02 1080p NF WEB-DL' (cqhj9dqhio0f)
+[tmdb] Found TMDB ID: 292558 for 'All the Truth in My Lies' (tv, )
+[tmdb] Season: 1, Episode: 2
+[sync]   -> TV tmdb=292558 S1E2
+
+[sync] 'All the Truth in My Lies S01E01 1080p NF WEB-DL' (gcf9n27o7j8b)
+[tmdb] Found TMDB ID: 292558 for 'All the Truth in My Lies' (tv, )
+[tmdb] Season: 1, Episode: 1
+[sync]   -> TV tmdb=292558 S1E1
+
+[sync] 'All the Truth in My Lies S01E01 1080p NF WEB-DL' (yccbwzbczxq2)
+[tmdb] Found TMDB ID: 292558 for 'All the Truth in My Lies' (tv, )
+[tmdb] Season: 1, Episode: 1
+[sync]   -> TV tmdb=292558 S1E1
+
+[sync] 'dark matter s02e01 1080p web' (qh41ajwxzge2)
+[tmdb] Found TMDB ID: 196322 for 'dark matter' (tv, )
+[tmdb] Season: 2, Episode: 1
+[sync]   -> TV tmdb=196322 S2E1
+
+[sync] 'star trek strange new worlds s04e06 1080p' (orbgqooxeq89)
+[tmdb] Found TMDB ID: 103516 for 'star trek strange new worlds' (tv, )
+[tmdb] Season: 4, Episode: 6
+[sync]   -> TV tmdb=103516 S4E6
+
+[sync] 'Leanne S02E10 1080p NF WEB-DL' (qayj240q4ly3)
+[tmdb] Found TMDB ID: 252751 for 'Leanne' (tv, )
+[tmdb] Season: 2, Episode: 10
+[sync]   -> TV tmdb=252751 S2E10
+
+[sync] 'Teenage Bounty Hunters S01E05 1080p NF WEB-DL' (vz5p7dx1lspd)
+[tmdb] Found TMDB ID: 90766 for 'Teenage Bounty Hunters' (tv, )
+[tmdb] Season: 1, Episode: 5
+[sync]   -> TV tmdb=90766 S1E5
+
+[sync] 'Teenage Bounty Hunters S01E05 1080p NF WEB-DL' (icxjjb6keboy)
+[tmdb] Found TMDB ID: 90766 for 'Teenage Bounty Hunters' (tv, )
+[tmdb] Season: 1, Episode: 5
+[sync]   -> TV tmdb=90766 S1E5
+
+[sync] 'Teenage Bounty Hunters S01E05 1080p NF WEB-DL' (vke9qkfgapi3)
+[tmdb] Found TMDB ID: 90766 for 'Teenage Bounty Hunters' (tv, )
+[tmdb] Season: 1, Episode: 5
+[sync]   -> TV tmdb=90766 S1E5
+
+[sync] 'Teenage Bounty Hunters S01E04 1080p NF WEB-DL' (175o5fepn8e8)
+[tmdb] Found TMDB ID: 90766 for 'Teenage Bounty Hunters' (tv, )
+[tmdb] Season: 1, Episode: 4
+[sync]   -> TV tmdb=90766 S1E4
+
+[sync] 'Teenage Bounty Hunters S01E03 1080p NF WEB-DL' (414vz225ssaa)
+[tmdb] Found TMDB ID: 90766 for 'Teenage Bounty Hunters' (tv, )
+[tmdb] Season: 1, Episode: 3
+[sync]   -> TV tmdb=90766 S1E3
+
+[sync] 'Teenage Bounty Hunters S01E02 1080p NF WEB-DL' (frkzx4j7pcvy)
+[tmdb] Found TMDB ID: 90766 for 'Teenage Bounty Hunters' (tv, )
+[tmdb] Season: 1, Episode: 2
+[sync]   -> TV tmdb=90766 S1E2
+
+[sync] 'Teenage Bounty Hunters S01E01 1080p NF WEB-DL' (q9m6wfb04ucs)
+[tmdb] Found TMDB ID: 90766 for 'Teenage Bounty Hunters' (tv, )
+[tmdb] Season: 1, Episode: 1
+[sync]   -> TV tmdb=90766 S1E1
+
+[sync] 'All the Truth in My Lies S01E05 1080p NF WEB-DL' (7ydz18rbnyoe)
+[tmdb] Found TMDB ID: 292558 for 'All the Truth in My Lies' (tv, )
+[tmdb] Season: 1, Episode: 5
+[sync]   -> TV tmdb=292558 S1E5
+
+[sync] 'All the Truth in My Lies S01E04 1080p NF WEB-DL' (b21tzfd5p71d)
+[tmdb] Found TMDB ID: 292558 for 'All the Truth in My Lies' (tv, )
+[tmdb] Season: 1, Episode: 4
+[sync]   -> TV tmdb=292558 S1E4
+
+[sync] 'All the Truth in My Lies S01E03 1080p NF WEB-DL' (s54xp9oxb4fi)
+[tmdb] Found TMDB ID: 292558 for 'All the Truth in My Lies' (tv, )
+[tmdb] Season: 1, Episode: 3
+[sync]   -> TV tmdb=292558 S1E3
+
+[sync] 'All the Truth in My Lies S01E02 1080p NF WEB-DL' (lb8bf1y8s7d6)
+[tmdb] Found TMDB ID: 292558 for 'All the Truth in My Lies' (tv, )
+[tmdb] Season: 1, Episode: 2
+[sync]   -> TV tmdb=292558 S1E2
+
+[sync] 'All the Truth in My Lies S01E01 1080p NF WEB-DL' (blz2q5axtatu)
+[tmdb] Found TMDB ID: 292558 for 'All the Truth in My Lies' (tv, )
+[tmdb] Season: 1, Episode: 1
+[sync]   -> TV tmdb=292558 S1E1
+
+[sync] 'All the Truth in My Lies S01E01 1080p NF WEB-DL' (x9yy25h0xhx5)
+[tmdb] Found TMDB ID: 292558 for 'All the Truth in My Lies' (tv, )
+[tmdb] Season: 1, Episode: 1
+[sync]   -> TV tmdb=292558 S1E1
+
+[sync] 'dark matter s02e01 1080p web' (5q3xpapgc656)
+[tmdb] Found TMDB ID: 196322 for 'dark matter' (tv, )
+[tmdb] Season: 2, Episode: 1
+[sync]   -> TV tmdb=196322 S2E1
+
+[sync] 'star trek strange new worlds s04e06 1080p' (amew166aijl5)
+[tmdb] Found TMDB ID: 103516 for 'star trek strange new worlds' (tv, )
+[tmdb] Season: 4, Episode: 6
+[sync]   -> TV tmdb=103516 S4E6
+
+[sync] 'Leanne S02E10 1080p NF WEB-DL' (6hgrg1tmlcnz)
+[tmdb] Found TMDB ID: 252751 for 'Leanne' (tv, )
+[tmdb] Season: 2, Episode: 10
+[sync]   -> TV tmdb=252751 S2E10
+
+[sync] 'the secret woman 2026 1080p web' (tr5r8e9i6e86)
+[tmdb] Found TMDB ID: 1631807 for 'the secret woman' (movie, 2026)
+[sync]   -> movie tmdb=1631807
+
+[sync] 'the secret woman 2026 1080p web' (ioqupgxrurfz)
+[tmdb] Found TMDB ID: 1631807 for 'the secret woman' (movie, 2026)
+[sync]   -> movie tmdb=1631807
+
+[sync] 'the secret woman 2026 1080p web' (p7424f3aa8wt)
+[tmdb] Found TMDB ID: 1631807 for 'the secret woman' (movie, 2026)
+[sync]   -> movie tmdb=1631807
+
+[sync] 'the secret woman 2026 1080p web' (0965uhu96ttv)
+[tmdb] Found TMDB ID: 1631807 for 'the secret woman' (movie, 2026)
+[sync]   -> movie tmdb=1631807
+
+[sync] 'Boulevard 2026 1080p WEB-DL EgyDead CoM' (8oo4vk6v4ry1)
+[tmdb] Found TMDB ID: 1595852 for 'Boulevard' (movie, 2026)
+[sync]   -> movie tmdb=1595852
+
+[sync] 'Crybaby Bridge 2026 1080p WEB-DL EgyDead CoM' (psdqn2nhi77m)
+[tmdb] Found TMDB ID: 1431247 for 'Crybaby Bridge' (movie, 2026)
+[sync]   -> movie tmdb=1431247
+
+[sync] 'Descendants Wicked Wonderland 2026 1080p WEB-DL EgyDead CoM' (ic0k0pdiszn9)
+[tmdb] Found TMDB ID: 1318621 for 'Descendants Wicked Wonderland' (movie, 2026)
+[sync]   -> movie tmdb=1318621
+
+[sync] 'Desire 2026 1080p WEB-DL EgyDead CoM' (a5dvvff5kj6c)
+[tmdb] Found TMDB ID: 1668364 for 'Desire' (movie, 2026)
+[sync]   -> movie tmdb=1668364
+
+[sync] 'Desire 2026 1080p WEB-DL EgyDead CoM' (eso30a5qe9cq)
+[tmdb] Found TMDB ID: 1668364 for 'Desire' (movie, 2026)
+[sync]   -> movie tmdb=1668364
+
+[sync] 'Summers Last Resort 2026 720p WEB-DL EgyDead CoM' (1wknfjtq2jzr)
+[tmdb] Found TMDB ID: 1617191 for 'Summers Last Resort' (movie, 2026)
+[sync]   -> movie tmdb=1617191
+
+[sync] 'The Crying Game 1992 REMASTERED 1080p BluRay EgyDead CoM' (5og5x3n6ia3n)
+[tmdb] No results found for 'The Crying Game REMASTERED' (movie, 1992)
+[sync]   -> movie tmdb=None
+
+[sync] 'Ghostbusters 2 1989 REMASTERED 1080p BluRay EgyDead CoM' (9mi848owwp49)
+[tmdb] No results found for 'Ghostbusters 2 REMASTERED' (movie, 1989)
+[sync]   -> movie tmdb=None
+
+[sync] 'Labyrinth 1986 REMASTERED 1080p BluRay EgyDead CoM' (4xheiaevl52e)
+[tmdb] No results found for 'Labyrinth REMASTERED' (movie, 1986)
+[sync]   -> movie tmdb=None
+
+[sync] 'The Chronicles of Riddick 2004 DC 1080p BluRay EgyDead CoM' (kg7utdpv68q0)
+[tmdb] No results found for 'The Chronicles of Riddick DC' (movie, 2004)
+[sync]   -> movie tmdb=None
+
+[sync] 'The Amazing Spider Man 2012 1080p BluRay EgyDead CoM' (0kj847bxx29j)
+[tmdb] Found TMDB ID: 1930 for 'The Amazing Spider Man' (movie, 2012)
+[sync]   -> movie tmdb=1930
+
+[sync] 'Corrida Dos Bichos 2026 1080p WEB-DL EgyDead CoM' (hd8mfk59ggio)
+[tmdb] Found TMDB ID: 1263532 for 'Corrida Dos Bichos' (movie, 2026)
+[sync]   -> movie tmdb=1263532
+
+[sync] 'Lockbox 2026 1080p WEB-DL EgyDead CoM' (94e6uhik50j5)
+[tmdb] Found TMDB ID: 1500890 for 'Lockbox' (movie, 2026)
+[sync]   -> movie tmdb=1500890
+
+[sync] 'The Panic in Needle Park 1971 1080p BluRay EgyDead CoM' (q3jo29bvi90x)
+[tmdb] Found TMDB ID: 27554 for 'The Panic in Needle Park' (movie, 1971)
+[sync]   -> movie tmdb=27554
+
+[sync] 'Bombshell 2019 1080p BluRay EgyDead CoM' (1pbourqmt7db)
+[tmdb] Found TMDB ID: 525661 for 'Bombshell' (movie, 2019)
+[sync]   -> movie tmdb=525661
+
+[sync] 'Cheaper by the Dozen 2 2005 1080p BluRay EgyDead CoM' (yi0xi81bl649)
+[tmdb] Found TMDB ID: 9641 for 'Cheaper by the Dozen 2' (movie, 2005)
+[sync]   -> movie tmdb=9641
+
+[sync] 'Cheaper By the Dozen 2003 1080p WEB-DL EgyDead CoM' (bkfpcfk2sa1s)
+[tmdb] Found TMDB ID: 11007 for 'Cheaper By the Dozen' (movie, 2003)
+[sync]   -> movie tmdb=11007
+
+[sync] 'Cheaper by the Dozen 1950 1080p WEB-DL EgyDead CoM' (qmj45qv8zll4)
+[tmdb] Found TMDB ID: 33839 for 'Cheaper by the Dozen' (movie, 1950)
+[sync]   -> movie tmdb=33839
+
+[sync] 'Summers Last Resort 2026 720p WEB-DL EgyDead CoM' (nrz9ft1mwve1)
+[tmdb] Found TMDB ID: 1617191 for 'Summers Last Resort' (movie, 2026)
+[sync]   -> movie tmdb=1617191
+
+[sync] 'Ace Ventura Jr Pet Detective 2009 1080p WEB-DL EgyDead CoM' (zs0hwmrlsx83)
+[tmdb] Found TMDB ID: 15338 for 'Ace Ventura Jr Pet Detective' (movie, 2009)
+[sync]   -> movie tmdb=15338
+
+[sync] 'Green Book 2018 1080p BluRay EgyDead CoM' (mq9cl8im93e8)
+[tmdb] Found TMDB ID: 490132 for 'Green Book' (movie, 2018)
+[sync]   -> movie tmdb=490132
+
+[sync] 'Grand Theft Auto VI An Extended Look 2026 1080p NF WEB-DL' (0jnzeoj725xa)
+[tmdb] Found TMDB ID: 1744462 for 'Grand Theft Auto VI An Extended Look' (movie, 2026)
+[sync]   -> movie tmdb=1744462
+
+[sync] 'Miracles From Heaven 2016 1080p BluRay EgyDead CoM' (3qnx0bfdu6ll)
+[tmdb] Found TMDB ID: 339984 for 'Miracles From Heaven' (movie, 2016)
+[sync]   -> movie tmdb=339984
+
+[sync] 'Ghostbusters 2016 EXTENDED 1080p BluRay EgyDead CoM' (nsw0t1kecq0a)
+[tmdb] No results found for 'Ghostbusters EXTENDED' (movie, 2016)
+[sync]   -> movie tmdb=None
+
+[sync] 'Ghostbusters 2 1989 REMASTERED 1080p BluRay EgyDead CoM' (ec0tl5jjlsqy)
+[tmdb] No results found for 'Ghostbusters 2 REMASTERED' (movie, 1989)
+[sync]   -> movie tmdb=None
+
+[sync] 'Hereditary 2018 1080p BluRay EgyDead CoM' (coo2cjrxirco)
+[tmdb] Found TMDB ID: 493922 for 'Hereditary' (movie, 2018)
+[sync]   -> movie tmdb=493922
+
+[sync] 'The Devils Mouth 2026 1080p WEB-DL EgyDead CoM' (6qutdbluxgj0)
+[tmdb] Found TMDB ID: 1481343 for 'The Devils Mouth' (movie, 2026)
+[sync]   -> movie tmdb=1481343
+
+[sync] 'Corrida Dos Bichos 2026 1080p WEB-DL EgyDead CoM' (r49qazv2e46e)
+[tmdb] Found TMDB ID: 1263532 for 'Corrida Dos Bichos' (movie, 2026)
+[sync]   -> movie tmdb=1263532
+
+[sync] 'The Wrong Girls 2026 1080p AMZN WEB-DL' (e4ex07758nys)
+[tmdb] Found TMDB ID: 1226699 for 'The Wrong Girls' (movie, 2026)
+[sync]   -> movie tmdb=1226699
+
+[sync] 'Spider Island 2026 1080p WEB-DL' (uc13kef3aysi)
+[tmdb] Found TMDB ID: 1462861 for 'Spider Island' (movie, 2026)
+[sync]   -> movie tmdb=1462861
+
+[sync] 'I Want Your Sex 2026 1080p AMZN WEB-DL' (c7zmt7qoe6gz)
+[tmdb] Found TMDB ID: 1288059 for 'I Want Your Sex' (movie, 2026)
+[sync]   -> movie tmdb=1288059
+
+[sync] 'I Want Your Sex 2026 1080p AMZN WEB-DL' (qqn2yrdr352o)
+[tmdb] Found TMDB ID: 1288059 for 'I Want Your Sex' (movie, 2026)
+[sync]   -> movie tmdb=1288059
+
+[sync] 'I Want Your Sex 2026 1080p AMZN WEB-DL' (uohxgeywo0wr)
+[tmdb] Found TMDB ID: 1288059 for 'I Want Your Sex' (movie, 2026)
+[sync]   -> movie tmdb=1288059
+
+[sync] 'I Want Your Sex 2026 1080p AMZN WEB-DL' (jb2ihehrmwxa)
+[tmdb] Found TMDB ID: 1288059 for 'I Want Your Sex' (movie, 2026)
+[sync]   -> movie tmdb=1288059
+
+[sync] 'Rescue Me S05E20 1080p NF WEB-DL' (28t2ihcs86l8)
+[tmdb] Found TMDB ID: 4344 for 'Rescue Me' (tv, )
+[tmdb] Season: 5, Episode: 20
+[sync]   -> TV tmdb=4344 S5E20
+
+[sync] 'The Old Woman With The Knife 2025 1080p BluRay' (00rozf1f1bft)
+[tmdb] Found TMDB ID: 1247002 for 'The Old Woman With The Knife' (movie, 2025)
+[sync]   -> movie tmdb=1247002
+
+[sync] 'Tee Yai Born to Be Bad 2025 1080p WEB' (nt2735a7vgaj)
+[tmdb] Found TMDB ID: 1429738 for 'Tee Yai Born to Be Bad' (movie, 2025)
+[sync]   -> movie tmdb=1429738
+
+[sync] 'A Normal Family 2023 1080p BluRay' (4z9dfnqhehpl)
+[tmdb] Found TMDB ID: 973628 for 'A Normal Family' (movie, 2023)
+[sync]   -> movie tmdb=973628
+
+[sync] 'My Daughter is a Zombie 2025 1080p 1080p WEB-DL' (tjk5kuowus14)
+[sync]   -> movie tmdb=1306816
+
+[sync] 'Army of Darkness 1992 DC 1080p BluRay EgyDead CoM' (9euilms6u30w)
+[tmdb] No results found for 'Army of Darkness DC' (movie, 1992)
+[sync]   -> movie tmdb=None
+
+[sync] 'Evil Dead 2 1987 REMASTERED 1080p BluRay EgyDead CoM' (6agur5gtpo9t)
+[tmdb] No results found for 'Evil Dead 2 REMASTERED' (movie, 1987)
+[sync]   -> movie tmdb=None
+
+[sync] 'The Evil Dead 1981 1080p BluRay EgyDead CoM' (i72tth2cq3q3)
+[tmdb] Found TMDB ID: 764 for 'The Evil Dead' (movie, 1981)
+[sync]   -> movie tmdb=764
+
+[sync] 'Riddick 2013 EXTENDED 1080p BluRay EgyDead CoM' (2ydco9rrsd5u)
+[tmdb] No results found for 'Riddick EXTENDED' (movie, 2013)
+[sync]   -> movie tmdb=None
+
+[sync] 'The Chronicles of Riddick 2004 DC 1080p BluRay EgyDead CoM' (elo1479sxwtc)
+[tmdb] No results found for 'The Chronicles of Riddick DC' (movie, 2004)
+[sync]   -> movie tmdb=None
+
+[sync] 'Pitch Black 2000 REMASTERED DC 1080p BluRay EgyDead CoM' (frjrh3tja3l6)
+[tmdb] No results found for 'Pitch Black REMASTERED DC' (movie, 2000)
+[sync]   -> movie tmdb=None
+
+[sync] 'The Outer Threat 2026 1080p WEB DL EgyDead CoM' (i32divso8bb8)
+[tmdb] No results found for 'The Outer Threat DL' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'The Outer Threat 2026 1080p WEB DL EgyDead CoM' (fzdexmy1tff9)
+[tmdb] No results found for 'The Outer Threat DL' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'The Outer Threat 2026 1080p WEB DL EgyDead CoM' (l6zn1ppxtz9b)
+[tmdb] No results found for 'The Outer Threat DL' (movie, 2026)
+[sync]   -> movie tmdb=None
+
+[sync] 'Spider Man No Way Home 2021 EXTENDED 1080p WEB-DL EgyDead CoM' (h2kojam3bio1)
+[tmdb] No results found for 'Spider Man No Way Home EXTENDED' (movie, 2021)
+[sync]   -> movie tmdb=None
+
+[sync] 'Spider Man Far from Home 2019 1080p BluRay EgyDead CoM' (6s5paurxdlxc)
+[tmdb] Found TMDB ID: 429617 for 'Spider Man Far from Home' (movie, 2019)
+[sync]   -> movie tmdb=429617
+
+[sync] 'Spider Man Homecoming 2017 1080p BluRay EgyDead CoM' (hkqm8jiol55j)
+[tmdb] Found TMDB ID: 315635 for 'Spider Man Homecoming' (movie, 2017)
+[sync]   -> movie tmdb=315635
+
+[sync] 'The Amazing Spider Man 2 2014 1080p BluRay EgyDead CoM' (i2zxwwd8jr6d)
+[tmdb] Found TMDB ID: 102382 for 'The Amazing Spider Man 2' (movie, 2014)
+[sync]   -> movie tmdb=102382
+
+[sync] 'The Amazing Spider Man 2012 1080p BluRay EgyDead CoM' (fe8g69nyhxi7)
+[tmdb] Found TMDB ID: 1930 for 'The Amazing Spider Man' (movie, 2012)
+[sync]   -> movie tmdb=1930
+
+[sync] 'The Sheriffs of Savage Wells 2026 1080p WEB-DL EgyDead CoM' (nhxwwcdyzefx)
+[tmdb] Found TMDB ID: 1614075 for 'The Sheriffs of Savage Wells' (movie, 2026)
+[sync]   -> movie tmdb=1614075
+
+[sync] 'Lucky Strike 2026 1080p WEB-DL EgyDead CoM' (wmpr1hmn5kjx)
+[tmdb] Found TMDB ID: 1594914 for 'Lucky Strike' (movie, 2026)
+[sync]   -> movie tmdb=1594914
+
+[sync] 'Corrida Dos Bichos 2026 1080p WEB-DL EgyDead CoM' (c1trdldan9mx)
+[tmdb] Found TMDB ID: 1263532 for 'Corrida Dos Bichos' (movie, 2026)
+[sync]   -> movie tmdb=1263532
+
+[sync] 'Anyone But You 2023 1080p BluRay EgyDead CoM' (sj8jdrl7wc2s)
+[tmdb] Found TMDB ID: 1072790 for 'Anyone But You' (movie, 2023)
+[sync]   -> movie tmdb=1072790
+
+[sync] 'The Expendables 4 2023 1080p BluRay EgyDead CoM' (wn601gk7l6cu)
+[tmdb] Found TMDB ID: 299054 for 'The Expendables 4' (movie, 2023)
+[sync]   -> movie tmdb=299054
+
+[sync] 'The Expendables 2 2012 EXTENDED 1080p BluRay EgyDead CoM' (87wfns3jlwiu)
+[tmdb] No results found for 'The Expendables 2 EXTENDED' (movie, 2012)
+[sync]   -> movie tmdb=None
+
+[sync] 'The Expendables 1 2010 EXTENDED 1080p BluRay EgyDead CoM' (8qlje3x5554u)
+[tmdb] No results found for 'The Expendables 1 EXTENDED' (movie, 2010)
+[sync]   -> movie tmdb=None
+
+[sync] 'Lockbox 2026 1080p WEB-DL EgyDead CoM' (ffvy5favvgkj)
+[tmdb] Found TMDB ID: 1500890 for 'Lockbox' (movie, 2026)
+[sync]   -> movie tmdb=1500890
+
+[sync] 'The Isolate Thief 2026 1080p WEB-DL EgyDead CoM' (nuho9kjyw9vc)
+[tmdb] Found TMDB ID: 1404304 for 'The Isolate Thief' (movie, 2026)
+[sync]   -> movie tmdb=1404304
+
+[sync] 'Ready Player One 2018 1080p BluRay EgyDead CoM' (rpcws16oh1i0)
+[tmdb] Found TMDB ID: 333339 for 'Ready Player One' (movie, 2018)
+[sync]   -> movie tmdb=333339
+
+[sync] 'The Intern 2015 1080p BluRay EgyDead CoM' (hyvq7e9kdimo)
+[tmdb] Found TMDB ID: 257211 for 'The Intern' (movie, 2015)
+[sync]   -> movie tmdb=257211
+
+[sync] 'Lockout 2012 UNRATED 1080p BluRay EgyDead CoM' (zvyb68n4b5tb)
+[tmdb] No results found for 'Lockout UNRATED' (movie, 2012)
+[sync]   -> movie tmdb=None
+
+[sync] 'The 40 Year Old Virgin 2005 EXTENDED 1080p BluRay EgyDead CoM' (n09qtpfab3xy)
+[tmdb] Found TMDB ID: 6957 for 'The 40 Year Old Virgin EXTENDED' (movie, 2005)
+[sync]   -> movie tmdb=6957
+
+[sync] 'The Longest Yard 2005 1080p BluRay EgyDead CoM' (y4ewpnskzvms)
+[tmdb] Found TMDB ID: 9291 for 'The Longest Yard' (movie, 2005)
+[sync]   -> movie tmdb=9291
+
+[sync] 'Black Knight 2001 1080p BluRay EgyDead CoM' (m0woyld4c5mr)
+[tmdb] Found TMDB ID: 11469 for 'Black Knight' (movie, 2001)
+[sync]   -> movie tmdb=11469
+
+[sync] 'Hope Floats 1998 1080p BluRay EgyDead CoM' (eaj7cimd26st)
+[tmdb] Found TMDB ID: 9715 for 'Hope Floats' (movie, 1998)
+[sync]   -> movie tmdb=9715
+
+[sync] 'The Vanishing 1988 REMASTERED 1080p BluRay EgyDead CoM' (3ibshfhv3cml)
+[tmdb] No results found for 'The Vanishing REMASTERED' (movie, 1988)
+[sync]   -> movie tmdb=None
+
+[sync] 'Newborn 2026 1080p WEB-DL EgyDead CoM' (pfpzggges4bq)
+[tmdb] Found TMDB ID: 787844 for 'Newborn' (movie, 2026)
+[sync]   -> movie tmdb=787844
+
+[sync] 'Young Washington 2026 1080p WEB-DL EgyDead CoM' (edgn4dlus8pl)
+[tmdb] Found TMDB ID: 1308767 for 'Young Washington' (movie, 2026)
+[sync]   -> movie tmdb=1308767
+
+[sync] 'Face Off 1997 1080p BluRay EgyDead CoM' (oac6joy05s9r)
+[tmdb] Found TMDB ID: 754 for 'Face Off' (movie, 1997)
+[sync]   -> movie tmdb=754
+
+[sync] 'War Wolves 2009 1080p WEB-DL EgyDead CoM' (slqo272cxykc)
+[tmdb] Found TMDB ID: 28686 for 'War Wolves' (movie, 2009)
+[sync]   -> movie tmdb=28686
+
+[sync] 'Hunter Killer 2018 1080p BluRay EgyDead CoM' (fb4dlq9pg91n)
+[tmdb] Found TMDB ID: 399402 for 'Hunter Killer' (movie, 2018)
+[sync]   -> movie tmdb=399402
+
+[sync] 'Nando Between Two Worlds A Sintonia Film 2026 1080p WEB-DL EgyDead CoM' (5geyfc2vdey0)
+[tmdb] Found TMDB ID: 1487864 for 'Nando Between Two Worlds A Sintonia Film' (movie, 2026)
+[sync]   -> movie tmdb=1487864
+
+[sync] 'Daddys in Trouble 2026 1080p WEB-DL EgyDead CoM' (amvuq2v21kfo)
+[tmdb] Found TMDB ID: 1315843 for 'Daddys in Trouble' (movie, 2026)
+[sync]   -> movie tmdb=1315843
+
+[sync] 'Camp Rock 3 2026 1080p WEB-DL EgyDead CoM' (86ztgi6pxsmj)
+[tmdb] Found TMDB ID: 1493400 for 'Camp Rock 3' (movie, 2026)
+[sync]   -> movie tmdb=1493400
+
+[sync] 'My Best Friend His Girlfriend And Me 2026 1080p WEB-DL EgyDead CoM' (qcur7nsb1nk5)
+[tmdb] Found TMDB ID: 1589248 for 'My Best Friend His Girlfriend And Me' (movie, 2026)
+[sync]   -> movie tmdb=1589248
+
+[sync] 'Dont Say Good Luck 2026 1080p WEB-DL EgyDead CoM' (qrdz3jh1lb9z)
+[tmdb] Found TMDB ID: 1504358 for 'Dont Say Good Luck' (movie, 2026)
+[sync]   -> movie tmdb=1504358
+
+[sync] 'Superhero Movie 2008 EXTENDED 1080p BluRay EgyDead CoM' (8nqsj79kdsox)
+[tmdb] No results found for 'Superhero Movie EXTENDED' (movie, 2008)
+[sync]   -> movie tmdb=None
+
+[sync] 'He ll Never Find Me 2026 1080p WEB EgyDead CoM' (wn6g7tatd389)
+[tmdb] Found TMDB ID: 1735229 for 'He ll Never Find Me' (movie, 2026)
+[sync]   -> movie tmdb=1735229
+
+[sync] 'video' (ib2jeii50nrn)
+[tmdb] Found TMDB ID: 29669 for 'video' (movie, )
+[sync]   -> movie tmdb=29669
+
+[sync] 'video' (dc1rsj763o26)
+[tmdb] Found TMDB ID: 29669 for 'video' (movie, )
+[sync]   -> movie tmdb=29669
+
+[sync] 'video' (fky9lftbwm7n)
+[tmdb] Found TMDB ID: 29669 for 'video' (movie, )
+[sync]   -> movie tmdb=29669
+
+[sync] 'One Piece E1176 EgyDead CoM' (qr99ozm6742z)
+Traceback (most recent call last):
+  File "/home/tomito/Desktop/vidio/sync_doodstream_to_db.py", line 299, in <module>
+    main()
+  File "/home/tomito/Desktop/vidio/sync_doodstream_to_db.py", line 234, in main
+    res = sync_file(args.api_key, filecode, write=not args.only_summary)
+  File "/home/tomito/Desktop/vidio/sync_doodstream_to_db.py", line 144, in sync_file
+    tmdb_id, season, episode = resolve_tv_episode(info)
+  File "/home/tomito/Desktop/vidio/sync_doodstream_to_db.py", line 107, in resolve_tv_episode
+    found = find_season_for_episode(tmdb_id, episode)
+  File "/home/tomito/Desktop/vidio/catalog.py", line 237, in find_season_for_episode
+    eps = requests.get(
+  File "/home/tomito/.local/lib/python3.10/site-packages/requests/api.py", line 87, in get
+    return request("get", url, params=params, **kwargs)
+  File "/home/tomito/.local/lib/python3.10/site-packages/requests/api.py", line 71, in request
+    return session.request(method=method, url=url, **kwargs)
+  File "/home/tomito/.local/lib/python3.10/site-packages/requests/sessions.py", line 651, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/home/tomito/.local/lib/python3.10/site-packages/requests/sessions.py", line 784, in send
+    r = adapter.send(request, **kwargs)
+  File "/home/tomito/.local/lib/python3.10/site-packages/requests/adapters.py", line 696, in send
+    resp = conn.urlopen(
+  File "/home/tomito/.local/lib/python3.10/site-packages/urllib3/connectionpool.py", line 788, in urlopen
+    response = self._make_request(
+  File "/home/tomito/.local/lib/python3.10/site-packages/urllib3/connectionpool.py", line 534, in _make_request
+    response = conn.getresponse()
+  File "/home/tomito/.local/lib/python3.10/site-packages/urllib3/connection.py", line 571, in getresponse
+    httplib_response = super().getresponse()
+  File "/usr/lib/python3.10/http/client.py", line 1375, in getresponse
+    response.begin()
+  File "/usr/lib/python3.10/http/client.py", line 318, in begin
+    version, status, reason = self._read_status()
+  File "/usr/lib/python3.10/http/client.py", line 279, in _read_status
+    line = str(self.fp.readline(_MAXLINE + 1), "iso-8859-1")
+  File "/usr/lib/python3.10/socket.py", line 705, in readinto
+    return self._sock.recv_into(b)
+  File "/usr/lib/python3.10/ssl.py", line 1303, in recv_into
+    return self.read(nbytes, buffer)
+  File "/usr/lib/python3.10/ssl.py", line 1159, in read
+    return self._sslobj.read(len, buffer)
+KeyboardInterrupt
