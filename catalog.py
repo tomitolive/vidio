@@ -828,6 +828,25 @@ def find_in_supabase(tmdb_id: int, media_type: str = "movie", season: int = None
     return False
 
 
+def find_episode_in_supabase_by_title(series_title: str, season: int = None, episode: int = None) -> bool:
+    """Fallback check: find episode by series_title + season + episode (no tmdb_id needed)."""
+    if not supabase or not series_title:
+        return False
+    try:
+        q = (
+            supabase.table("tv_episodes")
+            .select("id")
+            .ilike("series_title", f"%{series_title}%")
+        )
+        if season is not None:
+            q = q.eq("season_number", season)
+        if episode is not None:
+            q = q.eq("episode_number", episode)
+        return bool(q.execute().data)
+    except Exception:
+        return False
+
+
 def save_to_supabase(tmdb_id: int, title: str, doodstream_url: str, doodstream_download_url: str, 
                     media_type: str = "movie", season: int = None, episode: int = None) -> bool:
     """Save movie or TV episode data to Supabase database (backward compatible)."""

@@ -24,6 +24,7 @@ from jibi_bot import run_jibi_bot, clean_url
 from catalog import (
     supabase,
     find_in_supabase,
+    find_episode_in_supabase_by_title,
     search_tmdb_api,
     search_tmdb_by_slug,
     extract_cima4u_info,
@@ -249,7 +250,17 @@ def already_in_supabase(url: str, info: dict) -> bool:
         return False
     if info["type"] == "episode":
         ptmdb, psea, pep = resolve_episode_tmdb_precheck(info)
-        return bool(ptmdb) and find_in_supabase(ptmdb, "tv", psea, pep)
+        # Check 1: by tmdb_id (fast, precise)
+        if ptmdb and find_in_supabase(ptmdb, "tv", psea, pep):
+            return True
+        # Check 2: fallback by series_title + season + episode
+        series_name = info.get("series_name") or ""
+        season = info.get("season")
+        episode = info.get("episode")
+        if series_name and season is not None and episode is not None:
+            if find_episode_in_supabase_by_title(series_name, season, episode):
+                return True
+        return False
     ptmdb = resolve_movie_tmdb_precheck(url)
     return bool(ptmdb) and find_in_supabase(ptmdb, "movie")
 
