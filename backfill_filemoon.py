@@ -58,17 +58,15 @@ def get_pending_entries():
 
 
 def load_original_urls():
-    """Load the mapping of filecode -> original URL from processed_cima4u_movies.json"""
-    mapping = {}
+    """Load all URLs from processed_cima4u_movies.json"""
+    urls = []
     try:
         with open("processed_cima4u_movies.json", encoding="utf-8") as f:
             data = json.load(f)
-            for url, info in data.get("processed_urls", {}).items():
-                if info.get("filecode"):
-                    mapping[str(info["filecode"])] = url
+            urls = list(data.get("processed_urls", {}).keys())
     except Exception as e:
         print(f"Error loading processed JSON: {e}")
-    return mapping
+    return urls
 
 
 def update_entry(entry, filemoon_urls):
@@ -101,10 +99,19 @@ def process_entry(entry, mirror_db, original_urls):
         print(f"  Already has filemoon_url, skipping")
         return "skipped"
 
-    # Find the original Cima4u URL
-    watch_url = original_urls.get(filecode)
+    # Find the original Cima4u URL by matching title
+    watch_url = None
+    cleaned = re.sub(r"\b(1080p|720p|480p|WEB-DL|BluRay|AMZN|NF|SCREENER|EgyDead|CoM|METR|مترجم|مباشر|HD|WEB|DL)\b", "", title, flags=re.I)
+    c_title = re.sub(r"\s+", " ", cleaned).strip().lower().replace(" ", "-")
+    
+    for u in original_urls:
+        dec = urllib.parse.unquote(u).lower()
+        if c_title and c_title in dec:
+            watch_url = u
+            break
+
     if not watch_url:
-        print(f"  Could not find original Cima4u watch URL for filecode {filecode}")
+        print(f"  Could not find original Cima4u watch URL for title: {title}")
         return "no_source"
 
     print(f"  Original URL: {watch_url[:80]}...")
@@ -169,7 +176,16 @@ def main():
                 title = entry.get("title", "video")
                 m = re.search(r"/([A-Za-z0-9]{8,})(?:[/?#]|$)", entry.get("doodstream_url", ""))
                 fc = m.group(1) if m else "unknown"
-                url = original_urls.get(fc)
+                
+                # Match title
+                cleaned = re.sub(r"\b(1080p|720p|480p|WEB-DL|BluRay|AMZN|NF|SCREENER|EgyDead|CoM|METR|مترجم|مباشر|HD|WEB|DL)\b", "", title, flags=re.I)
+                c_title = re.sub(r"\s+", " ", cleaned).strip().lower().replace(" ", "-")
+                url = None
+                for u in original_urls:
+                    if c_title and c_title in urllib.parse.unquote(u).lower():
+                        url = u
+                        break
+                        
                 if url:
                     print(f"  Would mirror: {url[:90]}")
                     stats["success"] += 1
