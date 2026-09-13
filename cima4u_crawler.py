@@ -1146,26 +1146,24 @@ def _process_cards(cards: list[dict], seen: dict, stats: dict, save_to_db: bool)
             # 1. RUN JIBI_BOT TO UPLOAD TO DOODSTREAM
             result = run_jibi_bot(url_key, api_key=api_key)
             
-            if result.get("skipped_duplicate"):
+            is_duplicate = result.get("skipped_duplicate", False)
+            filecode = result.get("filecode")
+            tmdb_id = result.get("tmdb_id")
+
+            if is_duplicate:
                 stats["skipped"] += 1
-                print(f"[homepage] ↻ Duplicate (already uploaded on DoodStream): filecode={result.get('filecode')}")
-                # DON'T CONTINUE YET! We still want to mirror it to FileMoon if it's not mirrored!
-                pass
-                
-            if not result.get("success"):
+                print(f"[homepage] ↻ Duplicate on DoodStream: filecode={filecode}")
+            elif not result.get("success"):
+                # Genuine failure (not a duplicate) — skip entirely
                 stats["errors"].append(f"Upload failed: {url_key}")
                 print(f"[homepage] ✗ Failed: {result.get('errors', [])}")
                 continue
-                
-            filecode = result.get("filecode")
-            tmdb_id = result.get("tmdb_id")
-            
-            if card["is_episode"]:
-                stats["new_episodes"] += 1
             else:
-                stats["new_movies"] += 1
-                
-            print(f"[homepage] ✓ Success: filecode={filecode}, tmdb={tmdb_id}")
+                if card["is_episode"]:
+                    stats["new_episodes"] += 1
+                else:
+                    stats["new_movies"] += 1
+                print(f"[homepage] ✓ DoodStream success: filecode={filecode}, tmdb={tmdb_id}")
 
             # 2. MIRROR TO FILEMOON
             filemoon_urls = {}
