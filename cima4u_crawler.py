@@ -1166,7 +1166,21 @@ def _process_cards(cards: list[dict], seen: dict, stats: dict, save_to_db: bool)
                 
             print(f"[homepage] ✓ Success: filecode={filecode}, tmdb={tmdb_id}")
 
-            # 2. SAVE TO SUPABASE (Fallback to dummy ID if TMDB fails)
+            # 2. MIRROR TO FILEMOON
+            filemoon_urls = {}
+            if filecode:
+                try:
+                    title_for_fm = card.get("title") or url_key.split("/")[-2]
+                    fm = mirror_to_filemoon(url_key, title_for_fm, filecode)
+                    if fm:
+                        filemoon_urls = fm
+                        print(f"[homepage] 🌙 FileMoon: {fm.get('filemoon_url')}")
+                    else:
+                        print(f"[homepage] ⚠ FileMoon mirror failed for filecode={filecode}")
+                except Exception as e:
+                    print(f"[homepage] ⚠ FileMoon error: {str(e)[:100]}")
+
+            # 3. SAVE TO SUPABASE (Fallback to dummy ID if TMDB fails)
             if save_to_db and filecode:
                 doodstream_url = f"https://doodstream.com/e/{filecode}"
                 download_url = f"https://playmogo.com/d/{filecode}"
@@ -1186,7 +1200,8 @@ def _process_cards(cards: list[dict], seen: dict, stats: dict, save_to_db: bool)
                         "title": card["title"],
                         "filecode": filecode,
                         "doodstream_url": doodstream_url,
-                        "doodstream_download_url": download_url
+                        "doodstream_download_url": download_url,
+                        **filemoon_urls,
                     }
                     try:
                         existing = supabase.table("tv_episodes").select("id").eq("tmdb_id", tid).eq("season_number", season).eq("episode_number", episode).execute()
@@ -1207,7 +1222,8 @@ def _process_cards(cards: list[dict], seen: dict, stats: dict, save_to_db: bool)
                         "title": card["title"],
                         "doodstream_url": doodstream_url,
                         "doodstream_download_url": download_url,
-                        "media_type": "movie"
+                        "media_type": "movie",
+                        **filemoon_urls,
                     }
                     try:
                         existing = supabase.table("movies").select("id").eq("tmdb_id", tid).execute()
