@@ -1,14 +1,12 @@
 #!/usr/bin/env python3
-"""Backfill: Re-scrape Cimafu pages for DB entries, extract servers, upload to FileMoon.
+"""Backfill: Re-scrape Cimafu pages for DB entries using original URLs and upload to FileMoon.
 
 Flow:
   1. Load all movies/tv_episodes from Supabase that have doodstream_url but NO filemoon_url
-  2. For each entry: search Cimafu by cleaned title + season/episode
-  3. Scrape the watch page -> get servers (itemprop="contentUrl")
-  4. Resolve a playable direct URL (Streamtape browser resolver)
-  5. Upload to FileMoon (remote upload from direct URL)
-  6. Update Supabase row with filemoon_url / filemoon_download_url
-  7. Update local catalog + filemoon_mirror.json mapping
+  2. Load processed_cima4u_movies.json to get original Cimafu watch URLs.
+  3. Call cima4u_crawler.mirror_to_filemoon(watch_url, title)
+  4. Update Supabase row with filemoon_url / filemoon_download_url
+  5. Update local mirror DB
 """
 
 import os
@@ -16,9 +14,7 @@ import sys
 import time
 import json
 import re
-from urllib.parse import quote
-
-import requests
+import urllib.parse
 from dotenv import load_dotenv
 from supabase import create_client, Client
 
@@ -31,14 +27,8 @@ supabase: Client = create_client(supabase_url, supabase_key)
 
 # Import our modules
 sys.path.insert(0, "/home/tomito/Desktop/vidio")
-from cimafu_source import find_cimafu_page, resolve_embed
 import filemoon
-
-UA = (
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-    "AppleWebKit/537.36 (KHTML, like Gecko) "
-    "Chrome/124.0.0.0 Safari/537.36"
-)
+from cima4u_crawler import mirror_to_filemoon
 
 MIRROR_DB = "filemoon_mirror.json"
 
@@ -67,53 +57,18 @@ def get_pending_entries():
     return movies, episodes
 
 
-def find_source_for_entry(entry):
-    """Resolve direct playable URL from the existing DoodStream URL using yt-dlp."""
-    dood_url = entry.get("doodstream_url", "")
-    if not dood_url:
-        return None
-
-    print(f"  Attempting yt-dlp on DoodStream URL: {dood_url}")
+def load_original_urls():
+    """Load the mapping of filecode -> original URL from processed_cima4u_movies.json"""
+    mapping = {}
     try:
-        import yt_dlp
-        with yt_dlp.YoutubeDL({
-            "quiet": True, "no_warnings": True, "noplaylist": True, "skip_download": True,
-            "force_generic_extractor": True,
-            "extractor_args": {"generic": {"impersonate": ["chrome"]}},
-        }) as ydl:
-            info = ydl.extract_info(dood_url, download=False)
-            
-        for k in ("url", "hls_url", "manifest_url"):
-            if info.get(k):
-                print(f"  Resolved: {info[k][:90]}")
-                return info[k]
-                
-        fmts = info.get("formats") or []
-        if fmts:
-            best = max((f for f in fmts if f.get("url")), key=lambda f: f.get("height") or 0, default=None)
-            if best:
-                print(f"  Resolved: {best['url'][:90]}")
-                return best["url"]
-                
+        with open("processed_cima4u_movies.json", encoding="utf-8") as f:
+            data = json.load(f)
+            for url, info in data.get("processed_urls", {}).items():
+                if info.get("filecode"):
+                    mapping[str(info["filecode"])] = url
     except Exception as e:
-        print(f"  yt-dlp failed for {dood_url}: {str(e)[:80]}")
-        
-    return None
-
-
-def upload_to_filemoon(url, title):
-    """Upload a direct video URL to FileMoon via remote upload."""
-    try:
-        job = filemoon.remote_upload([url], title=title)
-        jid = job.get("id") or job.get("job_id") or job.get("uuid")
-        if not jid:
-            fid = job.get("file_id") or job.get("id")
-            if fid:
-                return filemoon.poll_remote_job(str(fid), title=title, max_wait=300, interval=15)
-            return {"status": "failed", "error": "no job id"}
-        return filemoon.poll_remote_job(jid, title=title, max_wait=1800, interval=30)
-    except Exception as e:
-        return {"status": "error", "error": str(e)}
+        print(f"Error loading processed JSON: {e}")
+    return mapping
 
 
 def update_entry(entry, filemoon_urls):
@@ -128,7 +83,7 @@ def update_entry(entry, filemoon_urls):
         return False
 
 
-def process_entry(entry, mirror_db):
+def process_entry(entry, mirror_db, original_urls):
     """Process a single DB entry end-to-end."""
     title = entry.get("title", "video")
     dood_url = entry.get("doodstream_url", "")
@@ -146,20 +101,21 @@ def process_entry(entry, mirror_db):
         print(f"  Already has filemoon_url, skipping")
         return "skipped"
 
-    # Find source on Cimafu
-    source_url = find_source_for_entry(entry)
-    if not source_url:
+    # Find the original Cima4u URL
+    watch_url = original_urls.get(filecode)
+    if not watch_url:
+        print(f"  Could not find original Cima4u watch URL for filecode {filecode}")
         return "no_source"
 
-    # Upload to FileMoon
-    print(f"  Uploading to FileMoon...")
-    result = upload_to_filemoon(source_url, title)
-    if result.get("status") != "completed" or not result.get("file_id"):
-        print(f"  Upload failed: {result.get('status')} - {result.get('error')}")
-        return "upload_failed"
+    print(f"  Original URL: {watch_url[:80]}...")
 
-    fid = result["file_id"]
-    urls = filemoon.build_urls(fid)
+    # Mirror to Filemoon (using Playwright + Streamtape)
+    print(f"  Uploading to FileMoon via Streamtape source...")
+    urls = mirror_to_filemoon(watch_url, title, filecode)
+    if not urls:
+        print(f"  Mirror to FileMoon failed")
+        return "upload_failed"
+        
     print(f"  FileMoon: {urls['filemoon_url']}")
 
     # Update Supabase
@@ -168,6 +124,7 @@ def process_entry(entry, mirror_db):
         return "db_update_failed"
 
     # Save to mirror DB
+    fid = urls["filemoon_url"].split("/")[-1]
     mirror_db["mapping"][filecode] = {
         "doodstream_filecode": filecode,
         "title": title,
@@ -175,7 +132,7 @@ def process_entry(entry, mirror_db):
         "filemoon_url": urls["filemoon_url"],
         "filemoon_download_url": urls["filemoon_download_url"],
         "status": "mirrored",
-        "source_url": source_url,
+        "source_url": watch_url,
     }
     save_mirror_db(mirror_db)
 
@@ -189,6 +146,9 @@ def main():
     ap.add_argument("--dry-run", action="store_true", help="Search only, don't upload")
     args = ap.parse_args()
 
+    # Disable playwright verbose output
+    os.environ["PLAYWRIGHT_BROWSERS_PATH"] = "0"
+    
     movies, episodes = get_pending_entries()
     all_entries = movies + episodes
 
@@ -196,6 +156,9 @@ def main():
         all_entries = all_entries[:args.limit]
 
     mirror_db = load_mirror_db()
+    original_urls = load_original_urls()
+    print(f"Loaded {len(original_urls)} original URLs from processed JSON.")
+    
     stats = {"success": 0, "skipped": 0, "no_source": 0, "upload_failed": 0, "db_update_failed": 0, "error": 0}
 
     for i, entry in enumerate(all_entries, 1):
@@ -203,14 +166,18 @@ def main():
         try:
             if args.dry_run:
                 # Just test search
-                source_url = find_source_for_entry(entry)
-                if source_url:
-                    print(f"  Would upload: {source_url[:90]}")
+                title = entry.get("title", "video")
+                m = re.search(r"/([A-Za-z0-9]{8,})(?:[/?#]|$)", entry.get("doodstream_url", ""))
+                fc = m.group(1) if m else "unknown"
+                url = original_urls.get(fc)
+                if url:
+                    print(f"  Would mirror: {url[:90]}")
                     stats["success"] += 1
                 else:
+                    print(f"  No original URL for {fc}")
                     stats["no_source"] += 1
             else:
-                res = process_entry(entry, mirror_db)
+                res = process_entry(entry, mirror_db, original_urls)
                 stats[res] = stats.get(res, 0) + 1
         except Exception as e:
             print(f"  ERROR: {e}")
