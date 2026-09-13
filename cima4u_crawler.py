@@ -33,7 +33,7 @@ from catalog import (
 import filemoon
 
 # Configuration
-PROCESSED_DB_FILE = "processed_cima4u_movies.json"
+PROCESSED_DB_FILE = "processed_cima4u_movies_temp.json"
 TV_DB_FILE = "tv_series.db"
 MOVIE_CATEGORIES = [
     "https://cimafu.cam/category/افلام-اجنبي/",
@@ -707,7 +707,7 @@ def process_category(
             # This stops duplicate clones even when the local cache is lost.
             if supabase is not None:
                 try:
-                    dup = already_in_supabase(url, info)
+                    dup = False
                 except Exception as e:
                     dup = False
                     print(f"[crawler] Supabase pre-check error ({str(e)[:80]}), continuing")
@@ -1148,8 +1148,9 @@ def _process_cards(cards: list[dict], seen: dict, stats: dict, save_to_db: bool)
             
             if result.get("skipped_duplicate"):
                 stats["skipped"] += 1
-                print(f"[homepage] ↻ Duplicate (already uploaded): filecode={result.get('filecode')}")
-                continue
+                print(f"[homepage] ↻ Duplicate (already uploaded on DoodStream): filecode={result.get('filecode')}")
+                # DON'T CONTINUE YET! We still want to mirror it to FileMoon if it's not mirrored!
+                pass
                 
             if not result.get("success"):
                 stats["errors"].append(f"Upload failed: {url_key}")
@@ -1236,6 +1237,10 @@ def _process_cards(cards: list[dict], seen: dict, stats: dict, save_to_db: bool)
                         stats["saved"] += 1
                     except Exception as e:
                         print(f"[homepage] ✗ Movie DB error: {e}")
+
+            # Now continue if it was skipped
+            if result.get("skipped_duplicate"):
+                continue
 
         except Exception as e:
             print(f"[homepage] Error: {url_key[:60]}: {e}")
