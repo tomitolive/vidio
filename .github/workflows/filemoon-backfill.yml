@@ -1,0 +1,69 @@
+name: FileMoon Backfill
+
+on:
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: 'Max entries to process (0 = all)'
+        required: false
+        type: number
+        default: 10
+      dry_run:
+        description: 'Dry run (search only, no upload)'
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          playwright install chromium
+          playwright install-deps chromium
+          sudo apt-get update && sudo apt-get install -y xvfb
+
+      - name: Start FlareSolverr
+        run: |
+          docker run -d -p 8191:8191 ghcr.io/flaresolverr/flaresolverr:latest
+          sleep 10
+
+      - name: Run FileMoon Backfill
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+          FILEMOON_API_KEY: ${{ secrets.FILEMOON_API_KEY }}
+          DOODSTREAM_API_KEY: ${{ secrets.DOODSTREAM_API_KEY }}
+        run: |
+          LIMIT="${{ inputs.limit }}"
+          DRY_RUN="${{ inputs.dry_run }}"
+
+          if [ -z "$LIMIT" ]; then LIMIT="10"; fi
+
+          CMD="xvfb-run --auto-servernum python3 backfill_filemoon.py --limit $LIMIT"
+          if [ "$DRY_RUN" = "true" ]; then
+            CMD="$CMD --dry-run"
+          fi
+
+          echo "Running: $CMD"
+          $CMD
+
+      - name: Upload mirror DB artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: filemoon-mirror-db-${{ github.run_number }}
+          path: filemoon_mirror.json
+          retention-days: 30
