@@ -340,6 +340,85 @@ def extract_episode_info(title: str) -> dict:
             "tmdb_id_hint": hint_tmdb,
         }
 
+    # Pattern 2b: "Episode N" (e.g., "Blossom Through the Cloud Episode 6 1080p")
+    ep_word = re.search(r'\b[Ee]pisode[-\s]*(\d+)', title)
+    if ep_word:
+        episode = int(ep_word.group(1))
+        cleaned_title = re.sub(r'\b[Ee]pisode[-\s]*\d+\b', ' ', title)
+        cleaned_title = re.sub(r'\s+', ' ', cleaned_title).strip()
+        hint_tmdb, hint_season = _known_override(cleaned_title)
+        return {
+            "season": hint_season,
+            "episode": episode,
+            "media_type": "tv",
+            "cleaned_title": cleaned_title,
+            "tmdb_id_hint": hint_tmdb,
+        }
+
+    # Pattern 2c: anime-style "Title 2 - 12 [1080p]" or "Title - 09 [1080p]"
+    dash_ep = re.search(
+        r'(\d{1,2})\s*-\s*(\d{1,3})\s*(?:\[[^\]]*(?:1080p|720p|2160p|4k)[^\]]*\]|\s*(?:1080p|720p|2160p|4k)\b)',
+        title, re.IGNORECASE,
+    )
+    if dash_ep:
+        season = int(dash_ep.group(1))
+        episode = int(dash_ep.group(2))
+        if not (1 <= season <= 60 and 1 <= episode <= 2000):
+            dash_ep = None
+    if dash_ep:
+        cleaned_title = re.sub(
+            r'\s*\d{1,2}\s*-\s*\d{1,3}\s*(\[[^\]]*\]|\S*)\s*$',
+            ' ', title,
+        )
+        cleaned_title = re.sub(r'\[[^\]]*\]', ' ', cleaned_title)
+        cleaned_title = re.sub(r'\s+', ' ', cleaned_title).strip(' -')
+        hint_tmdb, hint_season = _known_override(cleaned_title)
+        if hint_tmdb and hint_season is not None:
+            season = hint_season
+        return {
+            "season": season,
+            "episode": episode,
+            "media_type": "tv",
+            "cleaned_title": cleaned_title,
+            "tmdb_id_hint": hint_tmdb,
+        }
+
+    dash_ep2 = re.search(
+        r'\s-\s(\d{1,3})\s*(?:\[[^\]]*(?:1080p|720p|2160p|4k)[^\]]*\]|\s*(?:1080p|720p|2160p|4k)\b)',
+        title, re.IGNORECASE,
+    )
+    if dash_ep2:
+        episode = int(dash_ep2.group(1))
+        cleaned_title = re.sub(
+            r'\s-\s\d{1,3}\s*(\[[^\]]*\]|\S*)\s*$',
+            ' ', title,
+        )
+        cleaned_title = re.sub(r'\[[^\]]*\]', ' ', cleaned_title)
+        cleaned_title = re.sub(r'\s+', ' ', cleaned_title).strip(' -')
+        hint_tmdb, hint_season = _known_override(cleaned_title)
+        return {
+            "season": hint_season,
+            "episode": episode,
+            "media_type": "tv",
+            "cleaned_title": cleaned_title,
+            "tmdb_id_hint": hint_tmdb,
+        }
+
+    # Pattern 2d: "EP05" style single episode markers
+    ep_bare = re.search(r'\b[Ee][Pp]\d+\b', title)
+    if ep_bare:
+        episode = int(re.search(r'\b[Ee][Pp](\d+)\b', title).group(1))
+        cleaned_title = re.sub(r'\b[Ee][Pp]\d+\b', ' ', title)
+        cleaned_title = re.sub(r'\s+', ' ', cleaned_title).strip()
+        hint_tmdb, hint_season = _known_override(cleaned_title)
+        return {
+            "season": hint_season,
+            "episode": episode,
+            "media_type": "tv",
+            "cleaned_title": cleaned_title,
+            "tmdb_id_hint": hint_tmdb,
+        }
+
     # No episode pattern found, treat as movie
     return {
         "season": None,
@@ -478,25 +557,127 @@ def search_tmdb_by_slug(slug: str, year: str) -> int | None:
 
 
 def _clean_search_title(title: str) -> str:
-    """Strip release/quality noise from a title before querying TMDB."""
+    """Strip ALL noise from a title and return only the core name for TMDB search."""
     if not title:
         return ""
+
+    t = title
+
+    # Unify separators (dots, underscores, dashes, brackets, commas -> spaces)
+    t = re.sub(r'\.', ' ', t)
+    t = re.sub(r'_', ' ', t)
+    t = re.sub(r'[\[\](){}]', ' ', t)
+    t = re.sub(r'\s*-\s*', ' ', t) if not re.search(r'[\u0600-\u06ff]', t) else t
+    t = re.sub(r'\s*[–—]\s*', ' ', t)
+    t = re.sub(r'\s*[,;:]\s*', ' ', t)
+    t = re.sub(r'\s*\+\s*', ' ', t)
+    t = re.sub(r'\s*/\s*', ' ', t)
+
+    # Remove Arabic noise words (longest first so "مترجمة" is stripped before "مترجم")
+    arabic_noise = [
+        'مشاهدة مسلسل وتحميل', 'مشاهدة فيلم وتحميل', 'مشاهدة مشاهدة', 'الحلقة الاخيرة',
+        'مشاهدة مسلسل بجودة', 'مشاهدة وتحميل فيلم', 'مشاهدة وتحميل مسلسل',
+        'مشاهدة', 'مسلسل', 'فيلم', 'وتحميل', 'وتحميل',
+        'مترجم مباشر', 'مترجمة', 'مترجم', 'ترجمة', 'ترجم', 'مباشر', 'حلقة',
+        'الحلقة', 'الموسم', 'انمي', 'أعجبني', 'ملفوف', 'مترجمه',
+        'الأولى', 'الاولى', 'الأول', 'الاول', 'الثانية', 'الثانية', 'الثاني', 'التانية', 'التاني',
+        'الثالثة', 'الثالث', 'الرابعة', 'الرابع', 'الخامسة', 'الخامس',
+        'السادسة', 'السادس', 'السابعة', 'السابع', 'الثامنة', 'الثامن',
+        'التاسعة', 'التاسع', 'العاشرة', 'العاشر',
+        'والاخيرة', 'والاخير', 'والاخيرة', 'الجزء', 'الكاملة', 'الكامل',
+        'جودة', 'قياسي', 'السنة', 'السنه', 'نسخة', 'نسخه', 'النسخة',
+        'قصة', 'الابطال', 'ابطال', 'الحكاية', 'الموسم الاول', 'الموسم الثاني',
+        'البورصة', 'امبريال', 'برستيج', 'مشاهدة اجنبي',
+    ]
+    for word in sorted(set(arabic_noise), key=len, reverse=True):
+        t = t.replace(word, ' ')
+
+    # Remove season/episode markers
+    t = re.sub(r'\b[Ss]\d+[Ee]\d+\b', ' ', t)
+    t = re.sub(r'\b[Ee][Pp]?\d+\b', ' ', t)
+    t = re.sub(r'\b[Ee]pisode[-\s]*\d+\b', ' ', t)
+    t = re.sub(r'\bالحلقة[-\s]*\d+\b', ' ', t)
+    t = re.sub(r'\b[Ss]eason[-\s]*\d+\b', ' ', t, flags=re.IGNORECASE)
+    t = re.sub(r'\bج[-\s]?\d+\b', ' ', t)
+
+    # Remove years only (real titles may legitimately contain other numbers)
+    t = re.sub(r'\b(?:19|20)\d{2}\b', ' ', t)
+
+    # Remove empty brackets
+    t = re.sub(r'\[[^\]]*\]', ' ', t)
+
+    # Remove quality / source / site tokens
     noisy = re.compile(
         r'\b(?:'
-        r'1080p|1080|720p|720|480p|2160p|4k|4kuhd|uhd|hdr|bluray|blu-ray|'
-        r'brrip|bdrip|web-dl|webdl|webrip|web|hdtv|hdtvrip|hdrip|dvdrip|'
-        r'x264|x265|hevc|aac|ac3|dts|'
-        r'nf|netflix|prime|amzn|atvp|aapple|hulu|disney|disneyplus|\btv\b|'
-        r'egydead|egybest|eg01|mycima|cima4u|cimafu|movizland|mkvmovies|'
-        r'mkv|mp4|avi|complete|season|series|multi|vosten|subbed|[Ss]\d+[Ee]\d+|[Ee]\d{2,4}|'
-        r'com|wmv'
-        r')\b|\.|,|\(|\)',
+        r'1080p|1080|720p|720|480p|2160p|2k|4k|4kuhd|8k|uhd|hdr10|hdr|\bdv\b|dolby|'
+        r'vision|bluray|blu-ray|hdrip|hdmirip|dvdrip|dvdr|\bbrrip\b|\bbdrip\b|'
+        r'web-dl|webdl|webrip|\bweb\b|hdtv|hdtvrip|\bhd\b|\bcam\b|camrip|hqcam|'
+        r'screener|telesync|\bts\b|remux|\btheater\b|\bcinemas\b|cinema|'
+        r'x264|x265|hevc|h264|h265|aac|ac3|dts|truehd|atmos|mp3|\bmp4\b|'
+        r'\bmkv\b|\bavi\b|m2ts|\bwmv\b|\bflac\b|\bwebm\b|'
+        r'yify|\byts\b|rarbg|galaxysubs|mteam|videoediting|cinecalidad|'
+        r'proper|repack|internal|extended|unrated|uncut|remastered|remastered|'
+        r'multi|\bsubbed\b|\bsub\b|vosten|\bvf\b|\bvo\b|\bdl\b|hls|\bcom\b|'
+        r'amzn|amazon|atvp|appletv|appletvplus|dsnp|disneyplus|disney|\bnf\b|'
+        r'netflix|hulu|prime|peacock|paramount|vudu|itunes|starz|showtime|\bhbo\b|'
+        r'dc|\bamc\b|\bcbs\b|oneplus|weflixtv|'
+        r'egydead|egybest|mycima|cima4u|cimafu|movizland|akwam|shahid4u|arabseed|weflix|faselhd|'
+        r'complete|season|series|episode|episodes|uncut|uncensored|dubbed|\bdub\b'
+        r')\b|\.|,|\(|\)|\[|\]',
         re.IGNORECASE,
     )
-    clean = noisy.sub(' ', title)
-    clean = re.sub(r'\b(?:19|20)\d{2}\b', ' ', clean)
-    clean = re.sub(r'\s{2,}', ' ', clean).strip()
-    return clean[:80]
+    t = noisy.sub(' ', t)
+
+    # Collapse whitespace
+    t = re.sub(r'\s+', ' ', t).strip(' -_.,')
+
+    # If the title mixes Arabic and Latin script, keep only the Latin part for TMDB
+    has_arabic = bool(re.search(r'[\u0600-\u06ff]', t))
+    has_latin = bool(re.search(r'[A-Za-z]', t))
+    if has_arabic and has_latin:
+        latin = re.sub(r'[\u0600-\u06ff]+', ' ', t)
+        tokens = re.findall(r"[A-Za-z0-9]+(?:['’][A-Za-z0-9]+)*", latin)
+        if tokens:
+            t = ' '.join(tokens)
+
+    # Collapse whitespace again
+    t = re.sub(r'\s+', ' ', t).strip()
+
+    # Don't cut in the middle of a word
+    if len(t) > 100:
+        t = t[:100].rsplit(' ', 1)[0]
+
+    return t
+
+
+def _pick_best_tmdb_result(results: list[dict], clean_title: str, year: str = "") -> int | None:
+    """Pick the most likely TMDB ID from a result list (name match + year bonus)."""
+    clean_norm = normalize_key(clean_title)
+    clean_tokens = set(clean_norm.split())
+    best_id = None
+    best_score = -1.0
+    for r in results:
+        name = r.get("name") or r.get("title") or ""
+        rn = normalize_key(name)
+        if rn == clean_norm:
+            score = 100.0
+        elif rn.startswith(clean_norm) or clean_norm.startswith(rn):
+            score = 60.0
+        else:
+            rw = set(rn.split())
+            if not rw:
+                score = 0.0
+            else:
+                overlap = len(rw & clean_tokens)
+                score = 10.0 * overlap / max(1, max(len(rw), len(clean_tokens)))
+        if year:
+            air = (r.get("release_date") or r.get("first_air_date") or "").split("-")[0]
+            if air and air == year:
+                score += 30.0
+        if score > best_score:
+            best_score = score
+            best_id = r.get("id")
+    return best_id
 
 
 def search_tmdb_api(title: str, year: str = "", media_type: str = "movie", season: int = None, episode: int = None) -> int | None:
@@ -544,16 +725,20 @@ def search_tmdb_api(title: str, year: str = "", media_type: str = "movie", seaso
         
         data = _do_search(clean_title, year)
         results = data.get("results") or []
-        
-        # Fallback: shorten until a likely word boundary if nothing found
+
+        # Fallback: progressively shorten the CLEAN title if nothing found
         if not results and clean_title != title:
-            data = _do_search(title[:60], year)
-            results = data.get("results") or []
-        
+            for cut in (60, 40, 25):
+                shorter = clean_title[:cut].rsplit(' ', 1)[0]
+                if shorter and shorter != clean_title:
+                    data = _do_search(shorter, year)
+                    results = data.get("results") or []
+                    if results:
+                        print(f"[tmdb] Found via shortened query {shorter!r}")
+                        break
+
         if results:
-            # Return first result's ID
-            first_result = results[0]
-            tmdb_id = first_result.get("id")
+            tmdb_id = _pick_best_tmdb_result(results, clean_title, year)
             print(f"[tmdb] Found TMDB ID: {tmdb_id} for '{clean_title}' ({media_type}, {year})")
             if media_type == "tv" and season is not None and episode is not None:
                 print(f"[tmdb] Season: {season}, Episode: {episode}")

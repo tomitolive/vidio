@@ -1,5 +1,56 @@
 {
-  "processed_urls": {},
+  "processed_urls": {
+    "https://cimafu.cam/%d9%85%d8%b4%d8%a7%d9%87%d8%af%d8%a9-%d9%81%d9%8a%d9%84%d9%85-%d9%88%d8%aa%d8%ad%d9%85%d9%8a%d9%84-go-team-2026-%d9%85%d8%aa%d8%b1%d8%ac%d9%85-%d9%85%d8%a8%d8%a7%d8%b4%d8%b1/watch/": {
+      "processed_at": "2026-09-13 21:46:13",
+      "filecode": null,
+      "tmdb_id": null,
+      "type": "movie",
+      "series_name": null,
+      "season": null,
+      "episode": null,
+      "reason": "already_in_supabase"
+    },
+    "https://cimafu.cam/%d9%85%d8%b4%d8%a7%d9%87%d8%af%d8%a9-%d9%81%d9%8a%d9%84%d9%85-%d9%88%d8%aa%d8%ad%d9%85%d9%8a%d9%84-knightfall-2026-%d9%85%d8%aa%d8%b1%d8%ac%d9%85-%d9%85%d8%a8%d8%a7%d8%b4%d8%b1/watch/": {
+      "processed_at": "2026-09-13 21:46:13",
+      "filecode": null,
+      "tmdb_id": null,
+      "type": "movie",
+      "series_name": null,
+      "season": null,
+      "episode": null,
+      "reason": "already_in_supabase"
+    },
+    "https://cimafu.cam/%d9%85%d8%b4%d8%a7%d9%87%d8%af%d8%a9-%d9%81%d9%8a%d9%84%d9%85-%d9%88%d8%aa%d8%ad%d9%85%d9%8a%d9%84-call-my-agent-the-movie-2026-%d9%85%d8%aa%d8%b1%d8%ac%d9%85-%d9%85%d8%a8%d8%a7%d8%b4%d8%b1/watch/": {
+      "processed_at": "2026-09-13 21:46:14",
+      "filecode": null,
+      "tmdb_id": null,
+      "type": "movie",
+      "series_name": null,
+      "season": null,
+      "episode": null,
+      "reason": "already_in_supabase"
+    },
+    "https://cimafu.cam/%d9%85%d8%b4%d8%a7%d9%87%d8%af%d8%a9-%d9%81%d9%8a%d9%84%d9%85-%d9%88%d8%aa%d8%ad%d9%85%d9%8a%d9%84-hellcat-2025-%d9%85%d8%aa%d8%b1%d8%ac%d9%85-%d9%85%d8%a8%d8%a7%d8%b4%d8%b1/watch/": {
+      "processed_at": "2026-09-13 21:46:14",
+      "filecode": null,
+      "tmdb_id": null,
+      "type": "movie",
+      "series_name": null,
+      "season": null,
+      "episode": null,
+      "reason": "already_in_supabase"
+    },
+    "https://cimafu.cam/%d9%85%d8%b4%d8%a7%d9%87%d8%af%d8%a9-%d9%81%d9%8a%d9%84%d9%85-%d9%88%d8%aa%d8%ad%d9%85%d9%8a%d9%84-reminders-of-him-2026-%d9%85%d8%aa%d8%b1%d8%ac%d9%85-%d9%85%d8%a8%d8%a7%d8%b4%d8%b1/watch/": {
+      "processed_at": "2026-09-13 21:46:14",
+      "filecode": null,
+      "tmdb_id": null,
+      "type": "movie",
+      "series_name": null,
+      "season": null,
+      "episode": null,
+      "reason": "already_in_supabase"
+    }
+  },
   "last_pages": {},
-  "last_updated": "2026-08-31 21:35:46"
+  "last_updated": "2026-09-13 21:46:14"
 }

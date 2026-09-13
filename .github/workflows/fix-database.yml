@@ -1,0 +1,118 @@
+name: Database Auto-Repair (24h)
+
+on:
+  schedule:
+    - cron: '0 3 * * *'  # كل 24 ساعة الساعة 03:00 UTC
+  workflow_dispatch:
+
+jobs:
+  repair-database:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests "supabase>=2.0.0" "python-dotenv>=1.0.0"
+
+      - name: Sync new data from DoodStream
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+          TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
+          DOODSTREAM_API_KEY: ${{ secrets.DOODSTREAM_API_KEY }}
+        continue-on-error: true   # DoodStream قد يعطي 502 أحياناً؛ لا نوقف الـ workflow
+        run: |
+          echo "=== Sync DoodStream → Supabase (بيانات جديدة) ==="
+          python3 sync_doodstream_to_db.py || echo "⚠️ sync فشل (غالباً DoodStream 502) — نكمل بالإصلاح"
+
+      - name: Repair fake TMDB IDs
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+          TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
+          DOODSTREAM_API_KEY: ${{ secrets.DOODSTREAM_API_KEY }}
+        run: |
+          echo "=== إصلاح الـ tmdb_id المزورة ==="
+          python3 repair_fake_tmdb_ids.py
+
+      - name: Move TV episodes out of movies table
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+        run: |
+          echo "=== نقل حلقات المسلسلات من movies إلى tv_episodes ==="
+          python3 fix_movies_conflicts.py || echo "⚠️ لا تعارضات أو خطأ"
+
+      - name: Deduplicate tv_episodes rows
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+        run: |
+          echo "=== تنظيف مكررات tv_episodes ==="
+          python3 dedupe_tv_duplicates.py || echo "⚠️ لا مكررات أو خطأ"
+
+      - name: Upload repair reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: db-repair-report-${{ github.run_number }}
+          path: |
+            data.json
+            repair_report.json
+            move_report.json
+            dedupe_report.json
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Display summary
+        if: always()
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+        run: |
+          echo "=== Database Auto-Repair Summary ==="
+          if [ -f data.json ]; then
+            python3 -c "
+            import json
+            d = json.load(open('data.json'))
+            print('غير المكتشف (data.json)   :', d.get('total_unresolved', 0))
+            "
+          fi
+          if [ -f repair_report.json ]; then
+            python3 -c "
+            import json
+            from collections import Counter
+            r = json.load(open('repair_report.json'))
+            c = Counter()
+            for x in r['results']:
+                s = x['status']
+                c['found' if s=='found' else ('dberr' if s.startswith('dberr') else s)] += 1
+            print('مُصلح (found)      :', c.get('found', 0))
+            print('لم يُعثر (unresolved):', c.get('unresolved', 0))
+            print('أخطاء DB           :', c.get('dberr', 0))
+            "
+          fi
+          if [ -f move_report.json ]; then
+            python3 -c "
+            import json
+            m = json.load(open('move_report.json'))
+            print('نقل حلقات→tv_episodes :', m.get('moved', 0))
+            print('أفلام مكررة مسجلة      :', m.get('movie_dups', 0))
+            "
+          fi
+          if [ -f dedupe_report.json ]; then
+            python3 -c "
+            import json
+            dd = json.load(open('dedupe_report.json'))
+            print('مكررات tv محذوفة      :', dd.get('deleted', 0))
+            "
+          fi

@@ -1291,8 +1291,49 @@ def run_jibi_bot(page_url: str, api_key: str = "", download: bool = False, tmdb_
                 embed_url=(result.get("selected_server") or {}).get("embed_url", ""),
             )
 
+    _maybe_mirror_to_filemoon(result)
     _save_result(result)
     return result
+
+
+def _maybe_mirror_to_filemoon(result: dict):
+    """Best-effort: mirror a freshly uploaded DoodStream file to FileMoon.
+    Only runs when FILEMOON_API_KEY is set; never fails the main result."""
+    if not result.get("filecode") or not result.get("success"):
+        return
+    if not (os.environ.get("FILEMOON_API_KEY") or os.environ.get("FILEMOON_API_TOKEN")):
+        return
+    try:
+        import filemoon as _fm
+    except Exception as e:
+        print(f"[filemoon] provider import failed: {str(e)[:100]}")
+        return
+
+    source = (result.get("direct_stream_url") or "").strip()
+    if not source:
+        source = ((result.get("selected_server") or {}).get("embed_url") or "").strip()
+    if not source:
+        print("[filemoon] no source stream to mirror; skipping")
+        return
+
+    title = str(result.get("movie_title") or result.get("title") or "video")[:200]
+    try:
+        job = _fm.remote_upload([source], title=title)
+        jid = job.get("id") or job.get("job_id") or job.get("uuid")
+        if jid:
+            poll = _fm.poll_remote_job(jid, title=title, max_wait=900, interval=20)
+        else:
+            fid = job.get("file_id") or job.get("id")
+            poll = {"status": "completed" if fid else "failed", "file_id": fid}
+        if poll.get("file_id") and poll.get("status") == "completed":
+            urls = _fm.build_urls(poll["file_id"])
+            result["filemoon_url"] = urls["filemoon_url"]
+            result["filemoon_download_url"] = urls["filemoon_download_url"]
+            print(f"[filemoon] mirrored {result['filecode']} -> {urls['filemoon_url']}")
+        else:
+            print(f"[filemoon] mirror not completed for {result['filecode']}: {poll.get('status')}")
+    except Exception as e:
+        print(f"[filemoon] mirror error for {result['filecode']}: {str(e)[:120]}")
 
 
 def _save_result(result: dict):
@@ -1311,6 +1352,8 @@ def _save_result(result: dict):
         "filecode": fc,
         "doodstream_url": result.get("doodstream_url") or (f"https://doodstream.com/e/{fc}" if fc else None),
         "playmogo_url": result.get("playmogo_url") or (f"https://playmogo.com/e/{fc}" if fc else None),
+        "filemoon_url": result.get("filemoon_url"),
+        "filemoon_download_url": result.get("filemoon_download_url"),
         "vidsrc_url": catalog_entry.get("vidsrc_url"),
         "selected_server": result.get("selected_server"),
         "servers_tried": len(result.get("servers_found", [])),

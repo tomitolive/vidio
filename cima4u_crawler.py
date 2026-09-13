@@ -30,6 +30,7 @@ from catalog import (
     extract_cima4u_info,
     _known_override,
 )
+import filemoon
 
 # Configuration
 PROCESSED_DB_FILE = "processed_cima4u_movies.json"
@@ -426,6 +427,165 @@ def get_category_page_with_playwright(category_url: str, page_num: int = 1) -> s
     return ""
 
 
+# ─── FileMoon Mirror Helper ────────────────────────────────────────────────────
+
+def mirror_to_filemoon(watch_url: str, title: str, dood_filecode: str) -> dict | None:
+    """
+    After successful DoodStream upload, find a playable source on the Cimafu watch page
+    and upload to FileMoon. Returns {"filemoon_url": ..., "filemoon_download_url": ...} or None.
+    """
+    try:
+        print(f"[filemoon] Searching source on Cimafu for: {title[:60]}")
+        
+        # 1. Get the watch page HTML (reuse FlareSolverr/Playwright logic)
+        html = get_category_page_with_playwright(watch_url, page_num=1)
+        if not html:
+            print(f"[filemoon] Could not load watch page: {watch_url[:60]}")
+            return None
+        
+        # 2. Extract server embeds from itemprop="contentUrl"
+        soup = BeautifulSoup(html, "html.parser")
+        servers = []
+        for meta in soup.find_all("meta", itemprop="contentUrl"):
+            content = meta.get("content", "")
+            if content and content.startswith("http"):
+                servers.append(content)
+        
+        if not servers:
+            print(f"[filemoon] No servers found on page")
+            return None
+        
+        print(f"[filemoon] Found {len(servers)} servers")
+        
+        # 3. Try each server until we get a playable URL
+        # Priority: Streamtape (works via browser) > others
+        source_url = None
+        
+        for server_url in servers:
+            print(f"[filemoon] Trying server: {server_url[:70]}")
+            resolved = _resolve_stream_for_filemoon(server_url)
+            if resolved:
+                source_url = resolved
+                break
+        
+        if not source_url:
+            print(f"[filemoon] No playable source resolved from {len(servers)} servers")
+            return None
+        
+        # 4. Upload to FileMoon via remote upload
+        print(f"[filemoon] Uploading to FileMoon: {source_url[:80]}")
+        job = filemoon.remote_upload([source_url], title=title)
+        jid = job.get("id") or job.get("job_id") or job.get("uuid")
+        
+        if not jid:
+            fid = job.get("file_id") or job.get("id")
+            if fid:
+                result = filemoon.poll_remote_job(str(fid), title=title, max_wait=300, interval=15)
+            else:
+                print(f"[filemoon] No job ID returned: {job}")
+                return None
+        else:
+            result = filemoon.poll_remote_job(jid, title=title, max_wait=1800, interval=30)
+        
+        if result.get("status") != "completed" or not result.get("file_id"):
+            print(f"[filemoon] Upload failed: {result.get('status')} - {result.get('error')}")
+            return None
+        
+        fid = result["file_id"]
+        urls = filemoon.build_urls(fid)
+        print(f"[filemoon] Success: {urls['filemoon_url']}")
+        return urls
+        
+    except Exception as e:
+        print(f"[filemoon] Error: {str(e)[:150]}")
+        return None
+
+
+def _resolve_stream_for_filemoon(embed_url: str) -> str | None:
+    """Resolve a server embed to a direct playable URL (mp4/m3u8)."""
+    host = embed_url.split("/")[2].lower() if "//" in embed_url else embed_url
+    
+    # Streamtape: use browser to get real MP4 URL
+    if "streamtape" in host:
+        return _streamtape_browser_resolve(embed_url)
+    
+    # MixDrop, DoodStream, etc. - try yt-dlp with impersonation
+    try:
+        import yt_dlp
+        with yt_dlp.YoutubeDL({
+            "quiet": True, "no_warnings": True, "noplaylist": True, "skip_download": True,
+            "force_generic_extractor": True,
+            "extractor_args": {"generic": {"impersonate": ["chrome"]}},
+        }) as ydl:
+            info = ydl.extract_info(embed_url, download=False)
+        for k in ("url", "hls_url", "manifest_url"):
+            if info.get(k):
+                print(f"[filemoon] yt-dlp stream for {host}: {info[k][:90]}")
+                return info[k]
+        fmts = info.get("formats") or []
+        if fmts:
+            best = max((f for f in fmts if f.get("url")), key=lambda f: f.get("height") or 0, default=None)
+            if best:
+                return best["url"]
+    except Exception as e:
+        print(f"[filemoon] yt-dlp failed for {host}: {str(e)[:80]}")
+    
+    return None
+
+
+def _streamtape_browser_resolve(embed_url: str) -> str | None:
+    """Open streamtape /v/ page in browser and capture the real video URL."""
+    import re
+    m = re.match(r"https?://([^/]+)/(?:e|v)/([A-Za-z0-9_\-]+)", embed_url)
+    if not m:
+        return None
+    host, fid = m.group(1), m.group(2)
+    
+    try:
+        from playwright.sync_api import sync_playwright
+    except Exception:
+        return None
+    
+    with sync_playwright() as p:
+        b = p.chromium.launch(headless=True, args=[
+            "--no-sandbox", "--disable-dev-shm-usage", "--disable-blink-features=AutomationControlled",
+        ])
+        ctx = b.new_context(user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36", viewport={"width":1280,"height":720})
+        pg = ctx.new_page()
+        found = []
+        
+        def on_resp(r):
+            ct = r.headers.get("content-type","").lower()
+            url = r.url
+            if any(k in ct for k in ["video","mpegurl","mp4","octet-stream"]) or url.lower().endswith((".mp4",".m3u8")) or "tapecontent" in url or "thatdisform" in url:
+                if url not in found:
+                    found.append(url)
+                    print(f"[filemoon] captured video: {url[:110]}")
+        
+        pg.on("response", on_resp)
+        try:
+            pg.goto(f"https://{host}/v/{fid}", wait_until="domcontentloaded", timeout=45000)
+            pg.wait_for_timeout(5000)
+            for sel in ["button.plyr__control--overlaid", "button[aria-label='Play']", "div.vjs-big-play-button", ".plyr__control", "video"]:
+                try:
+                    el = pg.query_selector(sel)
+                    if el and el.is_visible():
+                        el.click(timeout=2000)
+                        print(f"[filemoon] clicked {sel}")
+                        pg.wait_for_timeout(3000)
+                        break
+                except Exception:
+                    pass
+            import time
+            deadline = time.time() + 30
+            while time.time() < deadline and not found:
+                pg.wait_for_timeout(2000)
+        finally:
+            b.close()
+    
+    return found[0] if found else None
+
+
 def has_next_page(html: str) -> bool:
     """Check if there's a next page."""
     soup = BeautifulSoup(html, "html.parser")
@@ -637,6 +797,25 @@ def process_category(
                         "episode": info.get("episode"),
                     }
                     save_processed_movies(processed_db)
+                    
+                    # ---- NEW: Mirror to FileMoon ----
+                    filecode = result.get("filecode")
+                    title = info.get("series_name") or url.split("/")[-2] if "/" in url else "video"
+                    if filecode:
+                        try:
+                            filemoon_urls = mirror_to_filemoon(url, title, filecode)
+                            if filemoon_urls:
+                                # Update Supabase with FileMoon URLs
+                                table = "tv_episodes" if info["type"] == "episode" else "movies"
+                                if supabase:
+                                    if info["type"] == "episode":
+                                        supabase.table("tv_episodes").update(filemoon_urls).eq("doodstream_url", f"https://doodstream.com/e/{filecode}").execute()
+                                    else:
+                                        supabase.table("movies").update(filemoon_urls).eq("doodstream_url", f"https://doodstream.com/e/{filecode}").execute()
+                                    print(f"[filemoon] Updated Supabase {table} with FileMoon URLs")
+                        except Exception as e:
+                            print(f"[filemoon] Mirror error: {str(e)[:100]}")
+                    # -----------------------------------
                     
                     print(f"[crawler] Video uploaded, continuing...")
                 else:
