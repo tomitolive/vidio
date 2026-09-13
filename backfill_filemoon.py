@@ -68,35 +68,36 @@ def get_pending_entries():
 
 
 def find_source_for_entry(entry):
-    """Find a playable source URL by searching Cimafu."""
-    title = entry.get("title", "")
-    media_type = entry.get("media_type", "movie")
-    season = entry.get("season_number")
-    episode = entry.get("episode_number")
-
-    # Clean title for search (remove noise)
-    cleaned = re.sub(r'\b(?:1080p|720p|480p|WEB-DL|BluRay|AMZN|NF|SCREENER|EgyDead|CoM|METR|مترجم|مباشر|HD|WEB|DL)\b', ' ', title, flags=re.I)
-    cleaned = re.sub(r'\s+', ' ', cleaned).strip()
-    # Extract series name for TV
-    if media_type == "tv":
-        # Try to get series name from title
-        s = re.sub(r'\s*S\d+E\d+.*$', '', cleaned, flags=re.I)
-        s = re.sub(r'\s*الحلقة\s*\d+.*$', '', s)
-        s = re.sub(r'\s*Episode\s*\d+.*$', '', s, flags=re.I)
-        cleaned = s.strip()
-    print(f"  Searching Cimafu: '{cleaned}' S{season}E{episode}")
-    page = find_cimafu_page(cleaned, season, episode)
-    if not page:
-        print(f"  No Cimafu page found")
+    """Resolve direct playable URL from the existing DoodStream URL using yt-dlp."""
+    dood_url = entry.get("doodstream_url", "")
+    if not dood_url:
         return None
 
-    # Try each server embed until we get a playable URL
-    for emb in page["servers"]:
-        url = resolve_embed(emb)
-        if url:
-            print(f"  Resolved: {url[:90]}")
-            return url
-    print(f"  No playable stream from {len(page['servers'])} servers")
+    print(f"  Attempting yt-dlp on DoodStream URL: {dood_url}")
+    try:
+        import yt_dlp
+        with yt_dlp.YoutubeDL({
+            "quiet": True, "no_warnings": True, "noplaylist": True, "skip_download": True,
+            "force_generic_extractor": True,
+            "extractor_args": {"generic": {"impersonate": ["chrome"]}},
+        }) as ydl:
+            info = ydl.extract_info(dood_url, download=False)
+            
+        for k in ("url", "hls_url", "manifest_url"):
+            if info.get(k):
+                print(f"  Resolved: {info[k][:90]}")
+                return info[k]
+                
+        fmts = info.get("formats") or []
+        if fmts:
+            best = max((f for f in fmts if f.get("url")), key=lambda f: f.get("height") or 0, default=None)
+            if best:
+                print(f"  Resolved: {best['url'][:90]}")
+                return best["url"]
+                
+    except Exception as e:
+        print(f"  yt-dlp failed for {dood_url}: {str(e)[:80]}")
+        
     return None
 
 
